@@ -1,0 +1,308 @@
+<!-- This page is a simple frontend to show instruction and to run API calls -->
+<!-- TODO: dynamically remove default values -->
+<!-- TODO: 1. connect to NEAR wallet and Algorand wallet -->
+<!-- TODO: 2. before mint, user should opt in to goNEAR ASA -->
+<!-- TODO: 3. before API call, user should make a transaction, and use the returned txnId -->
+<!-- TODO: 4. on button click: pass 4 params(to,from,amount,txnId) to API in server.ts -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      * {
+        box-sizing: border-box;
+        background-color: #000;
+        color: #fff;
+      }
+
+      html {
+        font-size: 24px;
+      }
+
+      table,
+      th,
+      td {
+        border-collapse: collapse;
+        border: 1px solid #fff;
+      }
+    </style>
+    <title>Algorand - NEAR Bridge</title>
+  </head>
+
+  <body>
+    <header>
+      <h1>Algorand - NEAR Bridge</h1>
+      <p>This is a demo of the Algorand Bridge for NEAR.</p>
+    </header>
+
+    <div id="app">
+      <div id="near-group">
+        <button id="near-connect-btn">Connect NEAR Wallet</button>
+        <button id="near-signout-btn" style="display: none;">Sign Out</button>
+      </div>
+
+      <div id="algorand-group">
+        <button id="algorand-connect-btn" onclick="connectToMyAlgo()">Connect My Algo Wallet</button>
+      </div>
+
+      <div id="txn">
+        <div>
+          <h2>Mint</h2>
+          <div>
+            <h3>1. Transfer NEAR token to Escrow account</h3>
+            <p>After you finish the transaction, please click 'view on explorer' button to get the transaction hash for next step</p>
+            <a href="https://wallet.testnet.near.org/send-money" target="_blank"><button id="near-transfer">Transfer</button></a>
+          </div>
+
+          <div>
+            <h3>2. Fill in the transaction hash based on your explorer information you get on first step</h3>
+            <label>Transaction Hash
+              <input type="text" name="mint_txnId" id="mint_txnId" placeholder="Input your send NEAR token transaction hash" value="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K">
+            </label>
+            <label>
+              From (NEAR public address)
+              <input type="text" name="mint_from" id="mint_from" placeholder="abstrlabs.testnet" value="testalgo.testnet" />
+            </label>
+            <button id="check-tx" onclick="checkNEARtx()">Hash Check</button>
+          </div>
+
+          <div>
+            <h3>3. Mint</h3>
+            <form action="/api/mint" method="post">
+              <label>
+                From (NEAR public address) <p id="near-address"></p>
+              </label>
+              <br />
+              <label>
+                To (Algorand public address)
+                <input type="text" name="mint_to" id="mint_to" value="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA" />
+              </label>
+              <br />
+              <label>
+                Amount
+                <input type="number" name="mint_amount" value="1" />
+              </label>
+              <br />
+              <label>Transaction ID
+                <input type="text" name="mint_txnId" value="8mdZck4aC7UCNsM86W7fTqi8P9r1upw8vtoFscqJwgC7">
+              </label>
+              <button id="mint" disabled>MINT</button>
+            </form>
+          </div>
+        </div>
+
+        <div>
+          <div>
+            <h2>Burn</h2>
+            <button id="algorand-transfer" onclick="algorandTransfer()">Algo Tra</button>
+          </div>
+
+          <form action="/api/burn" method="post">
+            <label>
+              From (Algorand public address)
+              <input type="text" name="burn_from" value="abstrlabs-test.testnet" />
+            </label>
+            <br />
+            <label>
+              To (NEAR public address)
+              <input type="text" name="burn_to" value="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA" />
+            </label>
+            <br />
+            <label>
+              Amount
+              <input type="number" name="burn_amount" value="987.654" />
+            </label>
+            <label>Transaction ID
+              <input type="text" name="burn_txnId">
+            </label>
+            <button>BURN</button>
+          </form>
+        </div>
+      </div>
+
+      <a
+        href="https://dispenser.testnet.aws.algodev.network/?account=JMJLRBZQSTS6ZINTD3LLSXCW46K44EI2YZHYKCPBGZP3FLITIQRGPELOBE">testnet
+        dispense algorand main acc</a>
+      <p>Some log should come here.</p>
+    </div>
+
+    <footer>
+      <h2>
+        Site Map
+      </h2>
+      <table>
+        <tr>
+          <td>route</td>
+          <td>functionality</td>
+          <td>Params</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>/</td>
+          <td>Instruction & Example (This page)</td>
+          <td>N/A</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>/api</td>
+          <td>API root</td>
+          <td>N/A</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>/api/mint?from=${MINT_FROM}&to=${MINT_TO}&amount=${MINT_AMOUNT}&txnId=${TXID}</td>
+          <td>Mint API (POST)</td>
+          <td>from,to,amount,txnId</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>/api/burn?from=${BURN_FROM}&to=${BURN_TO}&amount=${BURN_AMOUNT}&txnId=${TXID}</td>
+          <td>Burn API (POST)</td>
+          <td>from,to,amount,txnId</td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>/history</td>
+          <td>History</td>
+          <td>[txnId]</td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+    </footer>
+  </body>
+
+  <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.min.js"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/algosdk@v1.16.0/dist/browser/algosdk.min.js"
+  crossorigin="anonymous"
+></script>
+  <script src="./public/myalgo.min.js"></script>
+
+  <script>
+    /* NEAR wallet CONNECT and function */
+
+    // modified from https://docs.near.org/docs/faq/naj-faq
+    // connect to NEAR
+    const near = new nearApi.Near({
+      keyStore: new nearApi.keyStores.BrowserLocalStorageKeyStore(),
+      networkId: 'testnet',
+      nodeUrl: 'https://rpc.testnet.near.org',
+      walletUrl: 'https://wallet.testnet.near.org'
+    });
+
+    // connect to the NEAR Wallet
+    const nearWallet = new nearApi.WalletConnection(near, 'algorand-bridge');
+
+    const nearConnectButton = document.getElementById('near-connect-btn');
+    const nearSignoutButton = document.getElementById('near-signout-btn');
+
+    if (!nearWallet.isSignedIn()) {
+      nearConnectButton.textContent = 'Sign In with NEAR wallet'
+    } else if(nearWallet.isSignedIn()) {
+      nearConnectButton.textContent = 'NEAR Wallet Connected with ' + nearWallet.getAccountId().toString()
+    }
+
+    // Either sign in or transaction method on button click
+    nearConnectButton.addEventListener('click', () => {
+      if (nearWallet.isSignedIn()) {
+        nearConnectButton.disabled = true;
+        nearSignoutButton.style.display = 'block';
+      }else {
+        nearConnectButton.textContent = 'loading...'
+        nearWallet.requestSignIn('abstrlabs.testnet');
+      }
+    });
+
+    nearSignoutButton.addEventListener('click', () => {
+      if (nearWallet.isSignedIn()) {
+        nearWallet.signOut();
+        nearSignoutButton.textContent = 'loading...'
+        location.reload();
+      }
+    });
+
+    /* NEAR transaction check*/
+    const nearTxhash = document.getElementById('mint_txnId');
+    const nearSigner = document.getElementById('mint_from');
+
+    const checkNEARtx = async() => {
+      try {
+        const result = await near.connection.provider.txStatus(nearTxhash.value, nearSigner.value)
+        console.log(result)
+        console.log(result.status.SuccessValue === "")
+        if(result.status.SuccessValue === ""){
+          document.getElementById('mint').disabled = false
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    
+  </script>
+  
+  <script>
+    /* Algorand wallet connect and function */
+    const myAlgoWallet = new MyAlgoConnect();
+
+    const connectToMyAlgo = async() => {
+      try {
+        const accounts = await myAlgoWallet.connect();
+
+        const addresses = accounts.map(account => account.address);
+        console.log(addresses)
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    const algodClient = new algosdk.Algodv2('', 'https://node.testnet.algoexplorerapi.io', '');
+
+    /*Warning: Browser will block pop-up if user doesn't trigger myAlgoWallet.connect() with a button interation */
+    
+    async function signTransaction (from, to, amountAlgo) {
+      // try {
+        const suggestedParams = await algodClient.getTransactionParams().do();
+        console.log({ suggestedParams, from, to, amount:amountAlgo })
+        const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({ suggestedParams, from, to, amount:amountAlgo, assetIndex: 83251085 });
+        const signedTxn = await myAlgoWallet.signTransaction(txn.toByte());  
+        const response = await algodClient.sendRawTransaction(signedTxn.blob).do();
+        return response
+      // } catch(err) {
+      //   console.error(err); 
+      // }
+    };
+
+    const algorandTransfer = async() => {
+      // try {
+        const from = 'ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA'; // change
+        const to   = 'JMJLRBZQSTS6ZINTD3LLSXCW46K44EI2YZHYKCPBGZP3FLITIQRGPELOBE';
+        const amountAlgo = 1;
+        const response = await signTransaction(from,to, amountAlgo);
+        console.log(response)
+      // } catch (err) {
+      //   console.error(err);
+      // }
+    }
+
+    const optIngoNEAR = async () => {
+      const from = 'ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA'; // change
+        const to   = 'JMJLRBZQSTS6ZINTD3LLSXCW46K44EI2YZHYKCPBGZP3FLITIQRGPELOBE';
+        const amountAlgo = 0;
+        const response = await signTransaction(from,to, amountAlgo);
+        console.log(response)
+    }
+  </script>
+
+  
+</html>
