@@ -33,7 +33,8 @@
         <div id="algorand-group">
           <button id="algorand-connect-btn" onclick="connectToMyAlgo()">Connect My Algo Wallet</button>
           <p id="algo-address"></p>
-          <button id="algorand-optin" onclick="optIngoNEAR()" style="display: none;">goNEAR Opt In(skip if finished first time)</button>
+          <button id="algorand-optin" onclick="optIngoNEAR()" style="display: none;">goNEAR Opt In(skip if finished
+            first time)</button>
         </div>
       </div>
 
@@ -41,14 +42,14 @@
         <div id="tab-interface">
           <ul class="tabs func-selection" role="tablist">
             <li class="func-selection">
-              <input type="radio" name="tabs" id="tab1" checked class="func-selection"> 
-              <label for="tab1" role="tab"  aria-controls="mint" class="panel1 func-selection" tabindex="0">
+              <input type="radio" name="tabs" id="tab1" checked class="func-selection">
+              <label for="tab1" role="tab" aria-controls="mint" class="panel1 func-selection" tabindex="0">
                 mint
-              </label> 
+              </label>
             </li>
             <li class="func-selection">
-              <input type="radio" name="tabs" id="tab2"  class="func-selection"> 
-              <label for="tab2" role="tab"  aria-controls="burn" class="panel2 func-selection" tabindex="1">
+              <input type="radio" name="tabs" id="tab2" class="func-selection">
+              <label for="tab2" role="tab" aria-controls="burn" class="panel2 func-selection" tabindex="1">
                 burn
               </label>
             </li>
@@ -58,7 +59,8 @@
         <div id="mint" role="tabpanel" style="display: block;">
           <div>
             <h3>1. Transfer NEAR token to Escrow account</h3>
-            <p>After you finish the transaction, please click 'View on Explorer' button to get the transaction hash for next step</p>
+            <p>After you finish the transaction, please click 'View on Explorer' button to get the transaction hash for
+              next step</p>
             <a href="https://wallet.testnet.near.org/send-money" target="_blank">
               <button id="near-transfer" class="clickBtn">Transfer</button>
             </a>
@@ -67,12 +69,13 @@
           <div>
             <h3>2. Fill in the transaction hash from first step</h3>
             <label>Transaction Hash
-              <input type="text" name="mint_txnId" id="mint_txnId" placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50">
+              <input type="text" name="mint_txnId" id="mint_txnId"
+                placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50">
             </label>
             <br />
             <label>
               From (NEAR public address)
-              <input type="text" name="mint_from" id="mint_from" placeholder="abstrlabs.testnet" size="50"/>
+              <input type="text" name="mint_from" id="mint_from" placeholder="abstrlabs.testnet" size="50" />
             </label>
             <br />
             <button id="check-tx" onclick="checkNEARtx()" class="clickBtn">Hash Check</button>
@@ -83,21 +86,23 @@
             <form action="/api/mint" method="post">
               <label>
                 To (Algorand public address)
-                <input type="text" name="mint_to" id="mint_to" placeholder="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA" size="50"/>
+                <input type="text" name="mint_to" id="mint_to"
+                  placeholder="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA" size="50" />
               </label>
               <br />
               <label>
                 From (NEAR public address)
-                <input type="text" name="mint_from" id="mint_from_filled" placeholder="abstrlabs.testnet" size="50"/>
+                <input type="text" name="mint_from" id="mint_from_filled" placeholder="abstrlabs.testnet" size="50" />
               </label>
               <br />
               <label>
                 Amount
-                <input type="number" name="mint_amount" id="mint_amount" placeholder="10" />
+                <input type="number" name="mint_amount" id="mint_amount" placeholder="10" step="0.0000000001" />
               </label>
               <br />
               <label>Transaction Hash
-                <input type="text" name="mint_txnId" id="mint_txnId_filled" placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50">
+                <input type="text" name="mint_txnId" id="mint_txnId_filled"
+                  placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50">
               </label>
               <br />
               <button id="mint-button" class="clickBtn" disabled>MINT</button>
@@ -114,7 +119,8 @@
             <h3>1. Transfer goNEAR token to Escrow account</h3>
             <label>
               Amount
-              <input type="number" name="burn_amount" id="burn_amount" placeholder="10" />
+
+              <input type="number" name="burn_amount" id="burn_amount" placeholder="10" step="0.0000000001" />
             </label>
             <button id="algorand-transfer" onclick="goNEARTransfer()" class="clickBtn">Algo Transfer</button>
           </div>
@@ -122,7 +128,8 @@
           <div>
             <h3>2. Fill in the transaction ID</h3>
             <label>Transaction ID
-              <input type="text" name="burn_txnId" id="burn_txnId" placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50">
+              <input type="text" name="burn_txnId" id="burn_txnId"
+                placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50">
             </label>
             <br />
             <button id="check-tx-algo" onclick="checkAlgotx()" class="clickBtn">Hash Check</button>
@@ -133,7 +140,8 @@
             <form action="/api/burn" method="post">
               <label>
                 From (Algorand public address)
-                <input type="text" name="burn_from" placeholder="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA" size="50"/>
+                <input type="text" name="burn_from"
+                  placeholder="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA" size="50" />
               </label>
               <br />
               <label>
@@ -156,14 +164,12 @@
         </div>
       </div>
     </div>
-    
+
   </body>
 
   <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.min.js"></script>
-  <script
-  src="https://cdn.jsdelivr.net/npm/algosdk@v1.16.0/dist/browser/algosdk.min.js"
-  crossorigin="anonymous"
-></script>
+  <script src="https://cdn.jsdelivr.net/npm/algosdk@v1.16.0/dist/browser/algosdk.min.js"
+    crossorigin="anonymous"></script>
   <script src="./myalgo.min.js"></script>
 
   <script>
@@ -187,7 +193,7 @@
 
     if (!nearWallet.isSignedIn()) {
       nearConnectButton.textContent = 'Sign In with NEAR wallet'
-    } else if(nearWallet.isSignedIn()) {
+    } else if (nearWallet.isSignedIn()) {
       nearConnectButton.textContent = 'NEAR Wallet Connected'
       nearAddress.textContent = ' ' + nearWallet.getAccountId().toString()
     }
@@ -197,7 +203,7 @@
       if (nearWallet.isSignedIn()) {
         nearConnectButton.disabled = true;
         nearSignoutButton.style.display = 'block';
-      }else {
+      } else {
         nearConnectButton.textContent = 'loading...'
         nearWallet.requestSignIn('abstrlabs.testnet');
       }
@@ -219,12 +225,12 @@
     let filledTx = document.getElementById('mint_txnId_filled');
     let filledAccount = document.getElementById('mint_from_filled');
 
-    const checkNEARtx = async() => {
+    const checkNEARtx = async () => {
       try {
         const result = await near.connection.provider.txStatus(nearTxhash.value, nearSigner.value)
         console.log(result.status.SuccessValue === "")
         let NEARamount = nearApi.utils.format.formatNearAmount(result.transaction.actions[0].Transfer.deposit)
-        if(result.status.SuccessValue === ""){
+        if (result.status.SuccessValue === "") {
           document.getElementById('mint-button').disabled = false
           nearAmount.value = NEARamount
           filledTx.value = result.transaction.hash
@@ -245,7 +251,7 @@
     let algoOptInButton = document.getElementById('algorand-optin');
     let algorandAddress;
 
-    const connectToMyAlgo = async() => {
+    const connectToMyAlgo = async () => {
       try {
         const accounts = await myAlgoWallet.connect();
         algorandAddress = accounts[0].address;
@@ -262,28 +268,28 @@
     const to = 'JMJLRBZQSTS6ZINTD3LLSXCW46K44EI2YZHYKCPBGZP3FLITIQRGPELOBE';
 
     /*Warning: Browser will block pop-up if user doesn't trigger myAlgoWallet.connect() with a button interation */
-    
+
     /* Algorand wallet transfer function */
-    async function signTransaction (from, to, amountAlgo) {
+    async function signTransaction(from, to, amountAlgo) {
       try {
         const suggestedParams = await algodClient.getTransactionParams().do();
-        console.log({ suggestedParams, from, to, amount:amountAlgo })
-        const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({ suggestedParams, from, to, amount:amountAlgo, assetIndex: 83251085 });
-        const signedTxn = await myAlgoWallet.signTransaction(txn.toByte());  
+        console.log({ suggestedParams, from, to, amount: amountAlgo })
+        const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({ suggestedParams, from, to, amount: amountAlgo, assetIndex: 83251085 });
+        const signedTxn = await myAlgoWallet.signTransaction(txn.toByte());
         const response = await algodClient.sendRawTransaction(signedTxn.blob).do();
         return response
-      } catch(err) {
-        console.error(err); 
+      } catch (err) {
+        console.error(err);
       }
     };
 
     let algoAmount = document.getElementById('burn_amount');
     const algo_unit = 10000000000;
-    const goNEARTransfer = async() => {
+    const goNEARTransfer = async () => {
       try {
         const from = algorandAddress; // change
         const amountAlgo = algoAmount.value * 10000000000;
-        const response = await signTransaction(from,to, amountAlgo);
+        const response = await signTransaction(from, to, amountAlgo);
         console.log(response)
       } catch (err) {
         console.error(err);
@@ -291,18 +297,18 @@
     }
 
     const optIngoNEAR = async () => {
-        const from = algorandAddress; 
-        const amountAlgo = 0;
-        const response = await signTransaction(from, from, amountAlgo);
-        console.log(response)
+      const from = algorandAddress;
+      const amountAlgo = 0;
+      const response = await signTransaction(from, from, amountAlgo);
+      console.log(response)
     }
 
-    const checkAlgotx = async() => {
+    const checkAlgotx = async () => {
       try {
         const result = await near.connection.provider.txStatus(nearTxhash.value, nearSigner.value)
         console.log(result.status.SuccessValue === "")
         let NEARamount = nearApi.utils.format.formatNearAmount(result.transaction.actions[0].Transfer.deposit)
-        if(result.status.SuccessValue === ""){
+        if (result.status.SuccessValue === "") {
           document.getElementById('mint').disabled = false
           nearAmount.value = NEARamount
           filledTx.value = result.transaction.hash
@@ -322,24 +328,24 @@
     let burnForm = document.getElementById('burn');
 
     tab1Button.addEventListener('change', (event) => {
-      if(tab1Button.checked === true){
+      if (tab1Button.checked === true) {
         mintForm.style.display = "block"
         burnForm.style.display = "none"
-      }else {
+      } else {
         mintForm.style.display = "none"
         burn.style.display = "block"
       }
     })
 
     tab2Button.addEventListener('change', (event) => {
-      if(tab2Button.checked === true){
+      if (tab2Button.checked === true) {
         mintForm.style.display = "none"
         burn.style.display = "block"
-      }else {
+      } else {
         mintForm.style.display = "block"
         burnForm.style.display = "none"
       }
     })
   </script>
-  
+
 </html>
