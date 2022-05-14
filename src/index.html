@@ -82,31 +82,26 @@
           </div>
 
           <div>
-            <h3>3. Mint to get goNEAR from Escrow account</h3>
-            <form action="/api/mint" method="post">
+            <h3>3. Confirm algorand receiver to get goNEAR from Escrow account</h3>
+            <div>
               <label>
                 To (Algorand public address)
                 <input type="text" name="mint_to" id="mint_to"
                   placeholder="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA" size="50" />
               </label>
-              <br />
-              <label>
-                From (NEAR public address)
-                <input type="text" name="mint_from" id="mint_from_filled" placeholder="abstrlabs.testnet" size="50" />
-              </label>
-              <br />
-              <label>
-                Amount
-                <input type="number" name="mint_amount" id="mint_amount" placeholder="10" step="0.0000000001" />
-              </label>
-              <br />
-              <label>Transaction Hash
-                <input type="text" name="mint_txnId" id="mint_txnId_filled"
-                  placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50">
-              </label>
-              <br />
-              <button id="mint-button" class="clickBtn" disabled>MINT</button>
-            </form>
+              <button id="mint-confirm" class="clickBtn" onclick="confirmMint()">Confirm</button>
+            </div>
+          </div>
+
+          <div id="mint-confirm-page" style="display: none;">
+            <ul>
+              <li><p id="mint_from_filled"></p></li>
+              <li><p id="mint_to_filled"></p></li>
+              <li><p id="mint_amount"></p></li>
+              <li><p id="mint_txnId_filled"></p></li>
+            </ul>
+            <button id="mint-button" class="clickBtn" disabled onclick="startMint()">Mint</button>
+            <p id="mint-finished" style="display: none;"></p>
           </div>
         </div>
 
@@ -234,14 +229,27 @@
         console.log(result.status.SuccessValue === "")
         let NEARamount = nearApi.utils.format.formatNearAmount(result.transaction.actions[0].Transfer.deposit)
         if (result.status.SuccessValue === "") {
-          document.getElementById('mint-button').disabled = false
-          nearAmount.value = NEARamount
-          filledTx.value = result.transaction.hash
-          filledAccount.value = result.transaction.signer_id
+          nearAmount.textContent = NEARamount
+          filledTx.textContent = result.transaction.hash
+          filledAccount.textContent = result.transaction.signer_id
         }
       } catch (err) {
         console.error(err);
       }
+    }
+
+    /* confirm */
+    let confirmPage = document.getElementById('mint-confirm-page');
+    let receiver = document.getElementById('mint_to');
+    let filledReceiver = document.getElementById('mint_to_filled');
+    const confirmMint = () => {
+      filledReceiver.textContent = receiver.value
+      document.getElementById('mint-button').disabled = false
+    }
+
+    /* mint*/
+    const startMint = async () => {
+      // fill in after get api
     }
   </script>
 
