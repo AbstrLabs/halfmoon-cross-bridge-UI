@@ -62,7 +62,7 @@
             <p>After you finish the transaction, please click 'View on Explorer' button to get the transaction hash for
               next step</p>
             <a href="https://wallet.testnet.near.org/send-money" target="_blank">
-              <button id="near-transfer" class="clickBtn">Transfer</button>
+              <button id="near-transfer" class="clickBtn" disabled>Transfer</button>
             </a>
           </div>
 
@@ -122,7 +122,7 @@
 
               <input type="number" name="burn_amount" id="burn_amount" placeholder="10" step="0.0000000001" />
             </label>
-            <button id="algorand-transfer" onclick="goNEARTransfer()" class="clickBtn">Algo Transfer</button>
+            <button id="algorand-transfer" onclick="goNEARTransfer()" class="clickBtn" disabled>Transfer</button>
           </div>
 
           <div>
@@ -190,12 +190,15 @@
     let nearConnectButton = document.getElementById('near-connect-btn');
     let nearSignoutButton = document.getElementById('near-signout-btn');
     let nearAddress = document.getElementById('near-address');
+    let nearTransferButton = document.getElementById('near-transfer');
 
     if (!nearWallet.isSignedIn()) {
       nearConnectButton.textContent = 'Sign In with NEAR wallet'
+      nearTransferButton.disabled = true
     } else if (nearWallet.isSignedIn()) {
       nearConnectButton.textContent = 'NEAR Wallet Connected'
       nearAddress.textContent = ' ' + nearWallet.getAccountId().toString()
+      nearTransferButton.disabled = false
     }
 
     // Either sign in or transaction method on button click
@@ -249,6 +252,7 @@
     let algoAccountButton = document.getElementById('algorand-connect-btn');
     let algoAddressContext = document.getElementById('algo-address');
     let algoOptInButton = document.getElementById('algorand-optin');
+    let algoTransferButton = document.getElementById('algorand-transfer');
     let algorandAddress;
 
     const connectToMyAlgo = async () => {
@@ -259,6 +263,7 @@
         algoAddressContext.textContent = algorandAddress
         algoAccountButton.disabled = true;
         algoOptInButton.style.display = 'block';
+        algoTransferButton.disabled = false;
       } catch (err) {
         console.error(err);
       }
@@ -303,17 +308,29 @@
       console.log(response)
     }
 
+    /* check algo transaction */
+    const indexerParam = {
+      token: { 'X-API-Key': ENV.PURE_STAKE_API_KEY },
+      server: 'https://testnet-algorand.api.purestake.io/idx2',
+      port: '', // from https://developer.purestake.io/code-samples
+    };
+
+    const indexer = new Indexer(
+      indexerParam.token,
+      indexerParam.server,
+      indexerParam.port
+    );
+
     const checkAlgotx = async () => {
       try {
-        const result = await near.connection.provider.txStatus(nearTxhash.value, nearSigner.value)
-        console.log(result.status.SuccessValue === "")
-        let NEARamount = nearApi.utils.format.formatNearAmount(result.transaction.actions[0].Transfer.deposit)
-        if (result.status.SuccessValue === "") {
-          document.getElementById('mint').disabled = false
-          nearAmount.value = NEARamount
-          filledTx.value = result.transaction.hash
-          filledAccount.value = result.transaction.signer_id
-        }
+        const result = await indexer.lookupTransactionByID(txnParam.txnId).do()
+        console.log(result)
+        // if (result.status.SuccessValue === "") {
+        //   document.getElementById('mint').disabled = false
+        //   nearAmount.value = NEARamount
+        //   filledTx.value = result.transaction.hash
+        //   filledAccount.value = result.transaction.signer_id
+        // }
       } catch (err) {
         console.error(err);
       }
