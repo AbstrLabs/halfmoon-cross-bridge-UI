@@ -132,7 +132,7 @@
                 placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50">
             </label>
             <br />
-            <button id="check-tx-algo" onclick="checkAlgotx()" class="clickBtn">Hash Check</button>
+            <button id="check-tx-algo" onclick="checkAlgotx()" class="clickBtn" required>Hash Check</button>
           </div>
 
           <div>
@@ -253,6 +253,7 @@
     let algoAddressContext = document.getElementById('algo-address');
     let algoOptInButton = document.getElementById('algorand-optin');
     let algoTransferButton = document.getElementById('algorand-transfer');
+    let algoTxInput = document.getElementById('burn_txnId')
     let algorandAddress;
 
     const connectToMyAlgo = async () => {
@@ -278,7 +279,6 @@
     async function signTransaction(from, to, amountAlgo) {
       try {
         const suggestedParams = await algodClient.getTransactionParams().do();
-        console.log({ suggestedParams, from, to, amount: amountAlgo })
         const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({ suggestedParams, from, to, amount: amountAlgo, assetIndex: 83251085 });
         const signedTxn = await myAlgoWallet.signTransaction(txn.toByte());
         const response = await algodClient.sendRawTransaction(signedTxn.blob).do();
@@ -296,6 +296,7 @@
         const amountAlgo = algoAmount.value * 10000000000;
         const response = await signTransaction(from, to, amountAlgo);
         console.log(response)
+        algoTxInput.value = response.txId
       } catch (err) {
         console.error(err);
       }
@@ -310,12 +311,12 @@
 
     /* check algo transaction */
     const indexerParam = {
-      token: { 'X-API-Key': ENV.PURE_STAKE_API_KEY },
+      token: { 'X-API-Key': 'WLJDqY55G5560kyCJVp647ERNZ5kJkdZ8OUdGNnV' },
       server: 'https://testnet-algorand.api.purestake.io/idx2',
       port: '', // from https://developer.purestake.io/code-samples
     };
 
-    const indexer = new Indexer(
+    const indexer = new algosdk.Indexer(
       indexerParam.token,
       indexerParam.server,
       indexerParam.port
@@ -323,14 +324,8 @@
 
     const checkAlgotx = async () => {
       try {
-        const result = await indexer.lookupTransactionByID(txnParam.txnId).do()
-        console.log(result)
-        // if (result.status.SuccessValue === "") {
-        //   document.getElementById('mint').disabled = false
-        //   nearAmount.value = NEARamount
-        //   filledTx.value = result.transaction.hash
-        //   filledAccount.value = result.transaction.signer_id
-        // }
+          const result = await indexer.lookupTransactionByID(algoTxInput.value).do()
+          console.log(result)
       } catch (err) {
         console.error(err);
       }
