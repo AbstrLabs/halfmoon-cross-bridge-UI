@@ -68,29 +68,31 @@
 
           <div>
             <h3>2. Fill in the transaction hash from first step</h3>
-            <label>Transaction Hash
-              <input type="text" name="mint_txnId" id="mint_txnId"
-                placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50" required>
-            </label>
-            <br />
-            <label>
-              From (NEAR public address)
-              <input type="text" name="mint_from" id="mint_from" placeholder="abstrlabs.testnet" size="50" required/>
-            </label>
-            <br />
-            <button id="check-tx" onclick="checkNEARtx()" class="clickBtn">Hash Check</button>
+            <form>
+              <label>Transaction Hash
+                <input type="text" name="mint_txnId" id="mint_txnId"
+                  placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50" required>
+              </label>
+              <br />
+              <label>
+                From (NEAR public address)
+                <input type="text" name="mint_from" id="mint_from" placeholder="abstrlabs.testnet" size="50" required/>
+              </label>
+              <br />
+              <button id="check-tx" onclick="checkNEARtx()" class="clickBtn">Hash Check</button>
+            </form>
           </div>
 
           <div>
             <h3>3. Confirm algorand receiver to get goNEAR from Escrow account</h3>
-            <div>
+            <form>
               <label>
                 To (Algorand public address)
                 <input type="text" name="mint_to" id="mint_to"
                   placeholder="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA" size="50" required />
               </label>
               <button id="mint-confirm" class="clickBtn" onclick="confirmMint()">Confirm</button>
-            </div>
+            </form>
           </div>
 
           <div id="mint-confirm-page" style="display: none;">
@@ -101,40 +103,44 @@
               <li><p id="mint_txnId_filled"></p></li>
             </ul>
             <button id="mint-button" class="clickBtn" disabled onclick="startMint()">Mint</button>
-            <p id="mint-finished" style="display: none;"></p>
+            <p id="mint-finished">Start Minting</p>
           </div>
         </div>
 
         <div id="burn" role="tabpanel" style="display: none;">
           <div>
             <h3>1. Transfer goNEAR token to Escrow account</h3>
-            <label>
-              Amount
-              <input type="number" name="burn_amount" id="burn_amount" placeholder="10" step="0.0000000001" required/>
-            </label>
-            <button id="algorand-transfer" onclick="goNEARTransfer()" class="clickBtn" disabled>Transfer</button>
+            <form>
+              <label>
+                Amount
+                <input type="number" name="burn_amount" id="burn_amount" placeholder="10" step="0.0000000001" required/>
+              </label>
+              <button id="algorand-transfer" onclick="goNEARTransfer()" class="clickBtn" disabled>Transfer</button>
+            </form>
           </div>
 
           <div>
             <h3>2. Fill in the transaction ID</h3>
-            <label>Transaction ID
-              <input type="text" name="burn_txnId" id="burn_txnId"
-                placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50" required>
-            </label>
-            <br />
-            <button id="check-tx-algo" onclick="checkAlgotx()" class="clickBtn" required>Hash Check</button>
+            <form>
+              <label>Transaction ID
+                <input type="text" name="burn_txnId" id="burn_txnId"
+                  placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50" required>
+              </label>
+              <br />
+              <button id="check-tx-algo" onclick="checkAlgotx()" class="clickBtn" required>Hash Check</button>
+            </form>
           </div>
 
           <div>
             <h3>3. Confirm NEAR account to get NEAR from Escrow account</h3>
-            <div>
+            <form>
               <label>
                 To (NEAR public address)
                 <input type="text" name="burn_to" placeholder="abstrlabs-test.testnet" required/>
               </label>
               <br />
               <button id="burn-confirm" class="clickBtn" onclick="confirmBurn()">Confirm</button>
-            </div>
+            </form>
           </div>
 
           <div id="burn-confirm-page" style="display: none;">
@@ -145,7 +151,7 @@
               <li><p id="burn_txnId_filled"></p></li>
             </ul>
             <button id="burn-button" class="clickBtn" disabled onclick="startBurn()">Burn</button>
-            <p id="burn-finished" style="display: none;"></p>
+            <p id="burn-finished">Start Burning</p>
           </div>
         </div>
       </div>
@@ -214,7 +220,8 @@
     let filledTx = document.getElementById('mint_txnId_filled');
     let filledAccount = document.getElementById('mint_from_filled');
 
-    const checkNEARtx = async () => {
+    const checkNEARtx = async (event) => {
+      event.preventDefault()
       try {
         const result = await near.connection.provider.txStatus(nearTxhash.value, nearSigner.value)
         console.log(result.status.SuccessValue === "")
@@ -229,12 +236,14 @@
       }
     }// change after get api method
 
-    /* confirm */
-    let confirmPage = document.getElementById('mint-confirm-page');
+    /* confirm mint */
+    let mintConfirmPage = document.getElementById('mint-confirm-page');
     let mintReceiver = document.getElementById('mint_to');
-    let filledReceiver = document.getElementById('mint_to_filled');
-    const confirmMint = () => {
-      filledReceiver.textContent = mintReceiver.value
+    let mintFilledReceiver = document.getElementById('mint_to_filled');
+    const confirmMint = (event) => {
+      event.preventDefault();
+      mintConfirmPage.style.display = 'block';
+      mintFilledReceiver.textContent = mintReceiver.value
       document.getElementById('mint-button').disabled = false
     }
 
@@ -289,7 +298,8 @@
 
     let algoAmount = document.getElementById('burn_amount');
     const algo_unit = 10000000000;
-    const goNEARTransfer = async () => {
+    const goNEARTransfer = async (event) => {
+      event.preventDefault()
       try {
         const from = algorandAddress; // change
         const amountAlgo = algoAmount.value * 10000000000;
@@ -325,7 +335,8 @@
     let algoFilledTx = document.getElementById('burn_txnId_filled');
     let algoFilledAccount = document.getElementById('burn_from_filled');
 
-    const checkAlgotx = async () => {
+    const checkAlgotx = async (event) => {
+      event.preventDefault()
       try {
           const result = await indexer.lookupTransactionByID(algoTxInput.value).do()
           console.log(result)
@@ -334,12 +345,14 @@
       }
     }
 
-    /* confirm */
-    let confirmPage = document.getElementById('burn-confirm-page');
-    let mintReceiver = document.getElementById('burn_to');
-    let filledReceiver = document.getElementById('burn_to_filled');
-    const confirmBurn = () => {
-      filledReceiver.textContent = mintReceiver.value
+    /* confirm burn */
+    let burnConfirmPage = document.getElementById('burn-confirm-page');
+    let burnReceiver = document.getElementById('burn_to');
+    let burnFilledReceiver = document.getElementById('burn_to_filled');
+    const confirmBurn = (event) => {
+      event.preventDefault()
+      burnConfirmPage.style.display = 'block';
+      burnFilledReceiver.textContent = burnReceiver.value
       document.getElementById('burn-button').disabled = false
     }
 
