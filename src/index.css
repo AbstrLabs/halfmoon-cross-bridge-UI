@@ -43,6 +43,7 @@ line-height: 20px;
     display: flex;
     align-items: center;
     margin:auto;
+    margin-bottom: 5px;
 }
 
 #near-group,#algorand-group {
