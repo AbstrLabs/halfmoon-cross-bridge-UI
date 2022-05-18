@@ -87,10 +87,11 @@ function requestSignNearTxn(tx) {
   nearWallet.requestSignTransactions({ transactions: [tx] });
 }
 
-async function nearTest() {
-  let tx = await createNearTxn({ receiver: 'abstrlabs.testnet', amount: '1.234' })
+async function nearTest(amount) {
+  console.log('amount : ', amount); // DEV_LOG_TO_REMOVE
 
-  // requestSignNearTxn(tx)
+  let tx = await createNearTxn({ receiver: 'abstrlabs.testnet', amount })
+  requestSignNearTxn(tx)
   return
 }
 
