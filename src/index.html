@@ -33,7 +33,7 @@
         <div id="algorand-group">
           <button id="algorand-connect-btn" onclick="connectToMyAlgo()">Connect My Algo Wallet</button>
           <p id="algo-address"></p>
-          <button id="algorand-optin" onclick="optIngoNEAR()" style="display: none;">goNEAR Opt In(skip if finished
+          <button id="algorand-optin" onclick="optInGoNear()" style="display: none;">goNEAR Opt In(skip if finished
             first time)</button>
         </div>
       </div>
@@ -76,7 +76,7 @@
               <br />
               <label>
                 From (NEAR public address)
-                <input type="text" name="mint_from" id="mint_from" placeholder="abstrlabs.testnet" size="50" required/>
+                <input type="text" name="mint_from" id="mint_from" placeholder="abstrlabs.testnet" size="50" required />
               </label>
               <br />
               <button id="check-tx" onclick="checkNEARtx()" class="clickBtn">Hash Check</button>
@@ -97,10 +97,18 @@
 
           <div id="mint-confirm-page" style="display: none;">
             <ul>
-              <li><p id="mint_from_filled"></p></li>
-              <li><p id="mint_to_filled"></p></li>
-              <li><p id="mint_amount_filled"></p></li>
-              <li><p id="mint_txnId_filled"></p></li>
+              <li>
+                <p id="mint_from_filled"></p>
+              </li>
+              <li>
+                <p id="mint_to_filled"></p>
+              </li>
+              <li>
+                <p id="mint_amount_filled"></p>
+              </li>
+              <li>
+                <p id="mint_txnId_filled"></p>
+              </li>
             </ul>
             <button id="mint-button" class="clickBtn" disabled onclick="startMint()">Mint</button>
             <p id="mint-finished">Start Minting</p>
@@ -113,7 +121,8 @@
             <form>
               <label>
                 Amount
-                <input type="number" name="burn_amount" id="burn_amount" placeholder="10" step="0.0000000001" required/>
+                <input type="number" name="burn_amount" id="burn_amount" placeholder="10" step="0.0000000001"
+                  required />
               </label>
               <button id="algorand-transfer" onclick="goNEARTransfer()" class="clickBtn" disabled>Transfer</button>
             </form>
@@ -127,7 +136,7 @@
                   placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50" required>
               </label>
               <br />
-              <button id="check-tx-algo" onclick="checkAlgotx()" class="clickBtn" required>Hash Check</button>
+              <button id="check-tx-algo" onclick="checkAlgoTx()" class="clickBtn" required>Hash Check</button>
             </form>
           </div>
 
@@ -136,7 +145,7 @@
             <form>
               <label>
                 To (NEAR public address)
-                <input type="text" name="burn_to" placeholder="abstrlabs-test.testnet" required/>
+                <input type="text" name="burn_to" placeholder="abstrlabs-test.testnet" required />
               </label>
               <br />
               <button id="burn-confirm" class="clickBtn" onclick="confirmBurn()">Confirm</button>
@@ -145,10 +154,18 @@
 
           <div id="burn-confirm-page" style="display: none;">
             <ul>
-              <li><p id="burn_from_filled"></p></li>
-              <li><p id="burn_to_filled"></p></li>
-              <li><p id="burn_amount_filled"></p></li>
-              <li><p id="burn_txnId_filled"></p></li>
+              <li>
+                <p id="burn_from_filled"></p>
+              </li>
+              <li>
+                <p id="burn_to_filled"></p>
+              </li>
+              <li>
+                <p id="burn_amount_filled"></p>
+              </li>
+              <li>
+                <p id="burn_txnId_filled"></p>
+              </li>
             </ul>
             <button id="burn-button" class="clickBtn" disabled onclick="startBurn()">Burn</button>
             <p id="burn-finished">Start Burning</p>
@@ -180,7 +197,7 @@
     const nearWallet = new nearApi.WalletConnection(near, 'algorand-bridge');
 
     let nearConnectButton = document.getElementById('near-connect-btn');
-    let nearSignoutButton = document.getElementById('near-signout-btn');
+    let nearSignOutButton = document.getElementById('near-signout-btn');
     let nearAddress = document.getElementById('near-address');
     let nearTransferButton = document.getElementById('near-transfer');
 
@@ -197,17 +214,17 @@
     nearConnectButton.addEventListener('click', () => {
       if (nearWallet.isSignedIn()) {
         nearConnectButton.disabled = true;
-        nearSignoutButton.style.display = 'block';
+        nearSignOutButton.style.display = 'block';
       } else {
         nearConnectButton.textContent = 'loading...'
         nearWallet.requestSignIn('abstrlabs.testnet');
       }
     });
 
-    nearSignoutButton.addEventListener('click', () => {
+    nearSignOutButton.addEventListener('click', () => {
       if (nearWallet.isSignedIn()) {
         nearWallet.signOut();
-        nearSignoutButton.textContent = 'loading...'
+        nearSignOutButton.textContent = 'loading...'
         location.reload();
       }
     });
@@ -311,7 +328,7 @@
       }
     }
 
-    const optIngoNEAR = async () => {
+    const optInGoNear = async () => {
       const from = algorandAddress;
       const amountAlgo = 0;
       const response = await signTransaction(from, from, amountAlgo);
@@ -335,11 +352,11 @@
     let algoFilledTx = document.getElementById('burn_txnId_filled');
     let algoFilledAccount = document.getElementById('burn_from_filled');
 
-    const checkAlgotx = async (event) => {
+    const checkAlgoTx = async (event) => {
       event.preventDefault()
       try {
-          const result = await indexer.lookupTransactionByID(algoTxInput.value).do()
-          console.log(result)
+        const result = await indexer.lookupTransactionByID(algoTxInput.value).do()
+        console.log(result)
       } catch (err) {
         console.error(err);
       }
