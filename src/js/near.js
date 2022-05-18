@@ -3,12 +3,20 @@
 // modified from https://docs.near.org/docs/faq/naj-faq
 // connect to NEAR
 // imported nearApi
+
+/* RPC provider, not needed */
+// networkId = 'testnet'
+// const nearProvider = new nearApi.providers.JsonRpcProvider(
+//   `https://rpc.${networkId}.near.org`
+// );
+
 const near = new nearApi.Near({
   keyStore: new nearApi.keyStores.BrowserLocalStorageKeyStore(),
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
   walletUrl: 'https://wallet.testnet.near.org'
 });
+
 
 // connect to the NEAR Wallet
 const nearWallet = new nearApi.WalletConnection(near, 'algorand-bridge');
@@ -46,6 +54,49 @@ nearSignOutButton.addEventListener('click', () => {
   }
 });
 
+/* GET WALLET ACCOUNT */
+
+const nearWalletAccount = nearWallet.account();
+
+/* MAKE TXN */
+
+async function createNearTxn({
+  receiver: receiverId,
+  amount: amountStr
+}) {
+  // const action = new nearApi.transactions.Transfer({ deposit: nearApi.utils.format.parseNearAmount(amountStr) });
+  const action = new nearApi.transactions.transfer(nearApi.utils.format.parseNearAmount(amountStr));
+  const ak = await nearWallet.account().findAccessKey(nearWallet.getAccountId(), []);
+  console.log('ak : ', ak); // DEV_LOG_TO_REMOVE
+
+  const recentBlockHash = nearApi.utils.serialize.base_decode(
+    // https://docs.near.org/docs/tutorials/create-transactions#6-blockhash
+    ak.accessKey.block_hash
+  );
+
+  const tx = new nearApi.transactions.Transaction({
+    signerId: nearWallet.getAccountId(),
+    publicKey: ak.publicKey,
+    nonce: ++ak.accessKey.nonce,
+    receiverId,
+    actions: [action],
+    blockHash: recentBlockHash,
+  });
+  return tx;
+}
+
+function requestSignNearTxn(tx) {
+  // new one not working: https://github.com/near/near-api-js/blob/6f83d39f47624b4223746c0d27d10f78471575f7/src/wallet-account.ts#L177
+  nearWallet.requestSignTransactions({ transactions: [tx] });
+}
+
+async function nearTest() {
+  let tx = await createNearTxn({ receiver: 'abstrlabs.testnet', amount: '1.234' })
+  console.log('tx : ', tx); // DEV_LOG_TO_REMOVE
+
+  requestSignNearTxn(tx)
+  return
+}
 
 /* NEAR transaction check*/
 let nearTxhash = document.getElementById('mint_txnId');
