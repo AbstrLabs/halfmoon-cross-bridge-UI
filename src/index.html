@@ -21,8 +21,9 @@
       <p>This is a demo of the Algorand Bridge for NEAR.</p>
     </header>
 
-    <div id="app">
+    <div role="body">
       <div id="account-nav">
+        <!-- TODO: we don't need connect both wallet. Move them to respective process -->
         <div id="near-group">
           <button id="near-connect-btn">Connect NEAR Wallet</button>
           <p id="near-address"></p>
@@ -38,7 +39,8 @@
       </div>
 
       <div id="txn">
-        <div id="tab-interface">
+        <!-- todo: merge #txn to body -->
+        <div role="tab-switch">
           <ul class="tabs func-selection" role="tablist">
             <li class="func-selection">
               <input type="radio" name="tabs" id="tab1" checked class="func-selection">
@@ -55,8 +57,28 @@
           </ul>
         </div>
 
-        <div id="mint" role="tabpanel" style="display: block;">
-          <div>
+        <div id="mint" role="tab-panel" class="two-columns">
+          <div role="left-column">
+            <form>
+              <label>
+                Amount (in NEAR or goNEAR)
+                <br />
+                <input type="number" name="mint_amount" id="burn_amount" placeholder="10" step="0.0000000001"
+                  required />
+              </label>
+              <br />
+              <label>
+                To (Algorand public address)
+                <br />
+                <input type="text" name="mint_to" id="mint_to"
+                  placeholder="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA" size="50" required />
+              </label>
+            </form>
+          </div>
+
+          <div role="right-steps">
+            <h3>0. Opt In</h3>
+            <span>Make sure your Algorand account has Opted In to the goNEAR asset</span>
             <h3>1. Transfer NEAR token to Escrow account</h3>
             <p>After you finish the transaction, please click 'View on Explorer' button to get the transaction hash for
               next step</p>
@@ -64,35 +86,19 @@
               <button id="near-transfer" class="clickBtn" disabled>Transfer</button>
             </a>
             <button id="request-near-transfer" class="clickBtn" onclick="nearTest()">Make the Transfer</button>
-          </div>
 
-          <div>
-            <h3>2. Fill in the transaction hash from first step</h3>
-            <form>
-              <label>Transaction Hash
-                <input type="text" name="mint_txnId" id="mint_txnId"
-                  placeholder="Am1ZQx651WwYXZzBbtKV35YYPP6Tc5epvCfebv5XRn4K" size="50" required>
-              </label>
-              <br />
-              <label>
-                From (NEAR public address)
-                <input type="text" name="mint_from" id="mint_from" placeholder="abstrlabs.testnet" size="50" required />
-              </label>
-              <br />
+            <div>
+              <h3>2. Fill in the transaction hash from first step</h3>
               <button id="check-tx" onclick="checkNearTx()" class="clickBtn">Hash Check</button>
-            </form>
-          </div>
 
-          <div>
-            <h3>3. Confirm algorand receiver to get goNEAR from Escrow account</h3>
-            <form>
-              <label>
-                To (Algorand public address)
-                <input type="text" name="mint_to" id="mint_to"
-                  placeholder="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA" size="50" required />
-              </label>
-              <button id="mint-confirm" class="clickBtn" onclick="confirmMint()">Confirm</button>
-            </form>
+            </div>
+
+            <div>
+              <h3>3. Confirm algorand receiver to get goNEAR from Escrow account</h3>
+              <form>
+                <button id="mint-confirm" class="clickBtn" onclick="confirmMint()">Confirm</button>
+              </form>
+            </div>
           </div>
 
           <div id="mint-confirm-page" style="display: none;">
@@ -115,7 +121,7 @@
           </div>
         </div>
 
-        <div id="burn" role="tabpanel" style="display: none;">
+        <div id="burn" role="tab-panel" style="display: none;">
           <div>
             <h3>1. Transfer goNEAR token to Escrow account</h3>
             <form>
@@ -182,9 +188,8 @@
   <script src="./js/dependencies/myalgo.min.js"></script>
   <script src="./js/near.js"></script>
 
-  <script>
+  <script comment="Algorand wallet connect">
 
-    /* Algorand wallet connect */
     const myAlgoWallet = new MyAlgoConnect();
     let algoAccountButton = document.getElementById('algorand-connect-btn');
     let algoAddressContext = document.getElementById('algo-address');
@@ -291,7 +296,7 @@
     }
   </script>
 
-  <script>
+  <script comment="tab-switch-handler">
     /*tab selection for mint and burn*/
     let tab1Button = document.getElementById('tab1');
     let tab2Button = document.getElementById('tab2');
