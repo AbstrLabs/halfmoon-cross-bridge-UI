@@ -64,10 +64,8 @@ async function createNearTxn({
   receiver: receiverId,
   amount: amountStr
 }) {
-  // const action = new nearApi.transactions.Transfer({ deposit: nearApi.utils.format.parseNearAmount(amountStr) });
   const action = new nearApi.transactions.transfer(nearApi.utils.format.parseNearAmount(amountStr));
   const ak = await nearWallet.account().findAccessKey(nearWallet.getAccountId(), []);
-  console.log('ak : ', ak); // DEV_LOG_TO_REMOVE
 
   const recentBlockHash = nearApi.utils.serialize.base_decode(
     // https://docs.near.org/docs/tutorials/create-transactions#6-blockhash
@@ -86,15 +84,13 @@ async function createNearTxn({
 }
 
 function requestSignNearTxn(tx) {
-  // new one not working: https://github.com/near/near-api-js/blob/6f83d39f47624b4223746c0d27d10f78471575f7/src/wallet-account.ts#L177
   nearWallet.requestSignTransactions({ transactions: [tx] });
 }
 
 async function nearTest() {
   let tx = await createNearTxn({ receiver: 'abstrlabs.testnet', amount: '1.234' })
-  console.log('tx : ', tx); // DEV_LOG_TO_REMOVE
 
-  requestSignNearTxn(tx)
+  // requestSignNearTxn(tx)
   return
 }
 
