@@ -7,14 +7,30 @@ import {
   styled,
 } from "@mui/material";
 import React, { useCallback, useMemo } from "react";
+import { authorizeMintTransaction, nearWallet } from "../utils/near";
+
+window.Buffer = window.Buffer || require("buffer").Buffer; // for near connect wallet
 
 export function MintPanel() {
+  /* NEAR wallet */
+  // only blockchain == near
+
+  // This is in the official docs but why using await?
   // async function initNear() {
-  //   const near = await connect({
+  //   const near = await nearAPI.connect({
+  //     headers: {},
+  //     keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore(),
   //     networkId: "testnet",
   //     nodeUrl: "https://rpc.testnet.near.org",
+  //     walletUrl: "https://wallet.testnet.near.org",
   //   });
+  //   return near;
   // }
+
+  // const near = useMemo(async () => await initNear(), []);
+
+  // If not signed in redirect to the NEAR wallet to sign in
+  // keys will be stored in the BrowserLocalStorageKeyStore
 
   enum TTxnStepName {
     FORM = "Fill up the Form",
@@ -27,17 +43,25 @@ export function MintPanel() {
     setActiveStep(1);
   }, []);
   const connectWallet = useCallback(() => {
-    alert("Wallet connected (fake)");
+    if (nearWallet.isSignedIn()) {
+      alert("you've signed in");
+      nearWallet.signOut();
+    } else {
+      nearWallet.requestSignIn("abstrlabs.testnet");
+    }
     setActiveStep(2);
   }, []);
-  const authorizeTxn = useCallback(() => {
-    alert("Txn authorized (fake)");
+  const authorizeTxn = useCallback(async () => {
+    await authorizeMintTransaction(
+      "1.357",
+      "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA"
+    );
   }, []);
 
   type TStep = {
     stepId: number;
     icon: JSX.Element;
-    action: () => void;
+    action: (() => void) | (() => Promise<any>);
     isCompleted: boolean;
   };
   type TSteps = {
@@ -61,7 +85,9 @@ export function MintPanel() {
       [TTxnStepName.AUTH]: {
         stepId: 3,
         icon: <></>,
-        action: authorizeTxn,
+        action: async () => {
+          await authorizeTxn();
+        },
         isCompleted: false,
       },
     }),
