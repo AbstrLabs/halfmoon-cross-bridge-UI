@@ -1,17 +1,46 @@
-import React from "react";
-import { styled } from "@mui/material";
+import { Box, Tab, Typography, styled } from "@mui/material";
+import { Download, Upload } from "@mui/icons-material";
+import React, { SyntheticEvent, useCallback, useState } from "react";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 export function HomePage() {
   /* ======== MUI ======== */
+  enum TabName {
+    MINT = "MINT",
+    BURN = "BURN",
+  }
+  const [currentTab, setCurrentTab] = useState<TabName>(TabName.MINT);
+  const handleTabChange = useCallback(
+    (event: SyntheticEvent<Element, Event>, tabName: TabName) => {
+      setCurrentTab(tabName);
+    },
+    []
+  );
 
   return (
     <BodyWrap>
-      <CardsWrap>
-        Lorem ipsum @2022-05-20 17:27:13 dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </CardsWrap>
-      <CardsWrap>
-        Lorem ipsum @2022-05-20 17:27:16 dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </CardsWrap>
+      <Typography
+        variant="h3"
+        component="h1"
+        sx={{ fontSize: "1rem", fontWeight: 800 }}
+        margin="2rem auto 4rem"
+      >
+        Algorand - Near Bridge
+      </Typography>
+      <TabContext value={currentTab}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <TabList onChange={handleTabChange} centered>
+            <Tab
+              icon={<Download />}
+              label={TabName.MINT}
+              value={TabName.MINT}
+            />
+            <Tab icon={<Upload />} label={TabName.BURN} value={TabName.BURN} />
+          </TabList>
+        </Box>
+        <TabPanel value={TabName.MINT}>MINT TO</TabPanel>
+        <TabPanel value={TabName.BURN}>BURN TO</TabPanel>
+      </TabContext>
     </BodyWrap>
   );
 }
