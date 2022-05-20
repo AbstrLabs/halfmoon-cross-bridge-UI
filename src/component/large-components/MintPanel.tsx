@@ -6,52 +6,103 @@ import {
   TextField,
   styled,
 } from "@mui/material";
-
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 
 export function MintPanel() {
-  const steps = [
-    "Fill up the Form",
-    "Connect to Wallet",
-    "Authorize Mint Transaction",
-  ];
+  // async function initNear() {
+  //   const near = await connect({
+  //     networkId: "testnet",
+  //     nodeUrl: "https://rpc.testnet.near.org",
+  //   });
+  // }
 
-  const [activeStep, setActiveStep] = React.useState(0);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [completed, setCompleted] = React.useState([false, false, false]);
+  enum TTxnStepName {
+    FORM = "Fill up the Form",
+    WALLET = "Connect to Wallet",
+    AUTH = "Authorize Mint Transaction",
+  }
 
-  const handleStep = (step: number) => () => {
-    setActiveStep(step);
+  const validateForm = useCallback(() => {
+    alert("Form is valid (fake)");
+    setActiveStep(1);
+  }, []);
+  const connectWallet = useCallback(() => {
+    alert("Wallet connected (fake)");
+    setActiveStep(2);
+  }, []);
+  const authorizeTxn = useCallback(() => {
+    alert("Txn authorized (fake)");
+  }, []);
+
+  type TStep = {
+    stepId: number;
+    icon: JSX.Element;
+    action: () => void;
+    isCompleted: boolean;
   };
+  type TSteps = {
+    [key in TTxnStepName]: TStep;
+  };
+
+  const steps: TSteps = useMemo(
+    () => ({
+      [TTxnStepName.FORM]: {
+        stepId: 1,
+        icon: <></>,
+        action: validateForm,
+        isCompleted: false,
+      },
+      [TTxnStepName.WALLET]: {
+        stepId: 2,
+        icon: <></>,
+        action: connectWallet,
+        isCompleted: false,
+      },
+      [TTxnStepName.AUTH]: {
+        stepId: 3,
+        icon: <></>,
+        action: authorizeTxn,
+        isCompleted: false,
+      },
+    }),
+    [
+      TTxnStepName.AUTH,
+      TTxnStepName.FORM,
+      TTxnStepName.WALLET,
+      authorizeTxn,
+      connectWallet,
+      validateForm,
+    ]
+  );
+
+  const [activeStep, setActiveStep] = React.useState<TStep["stepId"]>(0);
 
   return (
     <React.Fragment>
       <FormWrap>
         <TextField
-          helperText="like 1.357, up to 10 decimals"
+          helperText="like ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA"
           id="mint_to"
           label="Beneficiary (Algorand public address)"
           fullWidth
           margin="normal"
+          value="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA"
         />
         <TextField
-          helperText="like ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA"
+          helperText="like 1.357, up to 10 decimals"
           id="mint_amount"
           label="Amount (NEAR)"
-          margin="normal"
           fullWidth
+          margin="normal"
+          value="1.357"
         />
       </FormWrap>
       <Box height="60px"></Box>
       <Stepper nonLinear activeStep={activeStep} alternativeLabel>
-        {steps.map((label, index: number) => (
-          <Step key={label} completed={completed[index]}>
-            <StepButton
-              color="inherit"
-              onClick={handleStep(index)}
-              // style={{ orientation: "vertical" }}
-            >
-              {label}
+        {Object.entries(steps).map(([stepName, stepObject]) => (
+          <Step key={stepName} completed={stepObject.isCompleted}>
+            <StepButton color="inherit" onClick={stepObject.action}>
+              {stepName}
             </StepButton>
           </Step>
         ))}
