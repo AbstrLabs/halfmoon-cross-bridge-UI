@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 
+import { E404Page } from "./E404Page";
 import { Header } from "../component/Header";
 import { HomePage } from "./HomePage";
 
@@ -17,7 +18,7 @@ export function Router() {
   }
 
   useEffect(() => {
-    return () => { };
+    return () => {};
     /* this is a lifecycle */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -35,6 +36,7 @@ export function Router() {
         <Route path="/redirect" element={<HomePage />} />
         <Route path="/result" element={<HomePage />} />
         <Route path="/help" element={<HomePage />} />
+        <Route path="*" element={<E404Page />} />
       </Routes>
     </React.Fragment>
   );
