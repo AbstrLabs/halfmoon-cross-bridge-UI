@@ -29,8 +29,10 @@ export function Navbar() {
           <Button onClick={test}>Test</Button>
         )} */}
         {/* // TODO: real Product href */}
+        <Button href="/">Home</Button>
+        <Button href="/help">Help</Button>
+        <Button href="/result">Result</Button>
         <Button href="/about">About</Button>
-        <Button href="/help">help</Button>
       </ButtonGroup>
     </div>
   );
