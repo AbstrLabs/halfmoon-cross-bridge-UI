@@ -84,11 +84,11 @@ async function authorizeMintTransaction(
   //   window.alert("beneficiary account opted in to goNEAR in txn" + optInTxnId);
   //   firstTimeCheckOptedIn = false;
   // }
-  const cbUrl = new URL("/redirect", window.location.href);
-  cbUrl.searchParams.set("path", "/api/mint");
-  cbUrl.searchParams.set("mint_amount", amountStr);
-  cbUrl.searchParams.set("mint_to", mintReceiver);
-  cbUrl.searchParams.set("mint_from", nearWallet.getAccountId().toString());
+  const cbUrl = new URL("/process", window.location.href);
+  cbUrl.searchParams.set("type", "mint");
+  cbUrl.searchParams.set("amount", amountStr);
+  cbUrl.searchParams.set("to", mintReceiver);
+  cbUrl.searchParams.set("from", nearWallet.getAccountId().toString());
   const callbackUrl = cbUrl.toString();
   await requestSignNearTxn(amountStr, callbackUrl);
   return;

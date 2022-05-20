@@ -4,6 +4,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { E404Page } from "./E404Page";
 import { Header } from "../component/Header";
 import { HomePage } from "./HomePage";
+import { ProcessPage } from "./ProcessPage";
 
 export function Router() {
   /* ======== URL_QUERY ======== */
@@ -33,7 +34,7 @@ export function Router() {
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/redirect" element={<HomePage />} />
+        <Route path="/process" element={<ProcessPage />} />
         <Route path="/result" element={<HomePage />} />
         <Route path="/help" element={<HomePage />} />
         <Route path="*" element={<E404Page />} />

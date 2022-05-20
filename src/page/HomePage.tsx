@@ -6,6 +6,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { MintPanel } from "../component/large-components/MintPanel";
 
 export function HomePage() {
+  // TODO: ref this to TxnType
   enum TabName {
     MINT = "MINT",
     BURN = "BURN",
