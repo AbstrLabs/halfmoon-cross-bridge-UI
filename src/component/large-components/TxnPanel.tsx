@@ -11,8 +11,6 @@ import { authorizeMintTransaction, nearWallet } from "../utils/near";
 
 import { TxnType } from "../..";
 
-window.Buffer = window.Buffer || require("buffer").Buffer; // for near connect wallet
-
 const DEFAULT_MINT_BENEFICIARY =
   "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA";
 const DEFAULT_MINT_AMOUNT = "1.357";

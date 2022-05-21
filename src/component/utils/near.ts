@@ -6,8 +6,6 @@ export { nearWallet, authorizeMintTransaction };
 // const receiverId = "abstrlabs.testnet";
 // const amountStr = "1.56789";
 
-window.Buffer = window.Buffer || require("buffer").Buffer; // for near connect wallet
-
 const near = new nearAPI.Near({
   headers: {},
   keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore(),
