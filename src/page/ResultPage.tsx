@@ -56,9 +56,12 @@ export function ResultPage() {
   return (
     <Box textAlign="center" marginBottom="80px">
       <Box height="4rem" />
-      <Typography variant="h2">Processing Transaction...</Typography>
+      <Typography variant="h2">Transaction Completed</Typography>
       <Box height="2rem" />
-      <Typography variant="h4">Please wait for redirection.</Typography>
+      <Typography variant="h4">See Invoice Transaction on Explorer</Typography>
+      {Links[params.txnType].toTxnId({
+        txnId: params.toTxnId,
+      })}
       <Box height="4rem" />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
