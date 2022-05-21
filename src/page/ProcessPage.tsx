@@ -7,13 +7,13 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { StringifiedBridgeTxnObject, TxnType } from "..";
 
 import { AlgorandAddressLink } from "../component/links/AlgorandAddressLink";
 import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionLink";
 import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
-import { TxnType } from "..";
 import { callApi } from "../component/utils/api-call";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -48,7 +48,24 @@ export function ProcessPage() {
     },
   };
 
+  function getResultUrl(bridgeTxnObject: StringifiedBridgeTxnObject) {
+    const url = new URL("/result", window.location.href);
+    url.searchParams.set("dbId", bridgeTxnObject.dbId);
+    url.searchParams.set("fixedFeeAtom", bridgeTxnObject.fixedFeeAtom);
+    url.searchParams.set("marginFeeAtom", bridgeTxnObject.marginFeeAtom);
+    url.searchParams.set("createdTime", bridgeTxnObject.createdTime);
+    url.searchParams.set("fromAddr", bridgeTxnObject.fromAddr);
+    url.searchParams.set("fromAmountAtom", bridgeTxnObject.fromAmountAtom);
+    url.searchParams.set("fromTxnId", bridgeTxnObject.fromTxnId);
+    url.searchParams.set("toAddr", bridgeTxnObject.toAddr);
+    url.searchParams.set("toAmountAtom", bridgeTxnObject.toAmountAtom);
+    url.searchParams.set("toTxnId", bridgeTxnObject.toTxnId);
+    url.searchParams.set("txnType", bridgeTxnObject.txnType);
+    return url.toString();
+  }
+
   useEffect(() => {
+    // TODO: ref: these two paragraphs
     if (params.type === TxnType.MINT) {
       const mintParam = {
         mint_from: params.from,
@@ -59,6 +76,7 @@ export function ProcessPage() {
       console.log("minting with mintParam : ", mintParam); // DEV_LOG_TO_REMOVE
       callApi(mintParam, params.type).then((res: any) => {
         console.log("res : ", res); // DEV_LOG_TO_REMOVE
+        window.location.replace(getResultUrl(res));
       });
     }
     if (params.type === TxnType.BURN) {
@@ -71,6 +89,7 @@ export function ProcessPage() {
       console.log("burning with burnParam : ", burnParam); // DEV_LOG_TO_REMOVE
       callApi(burnParam, params.type).then((res: any) => {
         console.log("res : ", res); // DEV_LOG_TO_REMOVE
+        window.location.replace(getResultUrl(res));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
