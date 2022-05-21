@@ -13,13 +13,25 @@ import { TxnType } from "../..";
 
 window.Buffer = window.Buffer || require("buffer").Buffer; // for near connect wallet
 
+const DEFAULT_MINT_BENEFICIARY =
+  "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA";
+const DEFAULT_MINT_AMOUNT = "1.357";
+const DEFAULT_BURN_BENEFICIARY = "abstrLabs-test.testnet";
+const DEFAULT_BURN_AMOUNT = "1.234";
+
 export function TxnPanel({ txnType }: { txnType: TxnType }) {
-  /* NEAR wallet */
   enum TTxnStepName {
     FORM = "Fill up the Form",
     WALLET = "Connect to Wallet",
     AUTH = "Authorize Mint Transaction",
   }
+
+  const DEFAULT_BENEFICIARY =
+    txnType === TxnType.MINT
+      ? DEFAULT_MINT_BENEFICIARY
+      : DEFAULT_BURN_BENEFICIARY;
+  const DEFAULT_AMOUNT =
+    txnType === TxnType.MINT ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
 
   const validateForm = useCallback(() => {
     alert("Form is valid (fake)");
@@ -27,24 +39,28 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   }, []);
   const connectWallet = useCallback(() => {
     // only blockchain == near
-    if (nearWallet.isSignedIn()) {
-      const answer = window.confirm(
-        "you've signed in, do you want to sign out?"
-      );
-      if (answer) {
-        nearWallet.signOut();
+    if (txnType === TxnType.MINT) {
+      if (nearWallet.isSignedIn()) {
+        const answer = window.confirm(
+          "you've signed in, do you want to sign out?"
+        );
+        if (answer) {
+          nearWallet.signOut();
+        }
+      } else {
+        nearWallet.requestSignIn("abstrlabs.testnet");
       }
-    } else {
-      nearWallet.requestSignIn("abstrlabs.testnet");
+    }
+
+    if (txnType === TxnType.BURN) {
     }
     setActiveStep(2);
-  }, []);
+  }, [txnType]);
   const authorizeTxn = useCallback(async () => {
-    await authorizeMintTransaction(
-      "1.357",
-      "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA"
-    );
-  }, []);
+    if (txnType === TxnType.MINT) {
+      await authorizeMintTransaction(DEFAULT_AMOUNT, DEFAULT_BENEFICIARY);
+    }
+  }, [txnType, DEFAULT_BENEFICIARY, DEFAULT_AMOUNT]);
 
   type TStep = {
     stepId: number;
@@ -95,12 +111,12 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     <React.Fragment>
       <FormWrap>
         <TextField
-          helperText="like ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA"
+          helperText={`like ${DEFAULT_BENEFICIARY}`}
           id="mint_to"
           label="Beneficiary (Algorand public address)"
           fullWidth
           margin="normal"
-          value="ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA"
+          value={DEFAULT_BENEFICIARY}
         />
         <TextField
           helperText="like 1.357, up to 10 decimals"
