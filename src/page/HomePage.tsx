@@ -52,4 +52,5 @@ export function HomePage() {
 const BodyWrap = styled("div")({
   flex: "1 1 auto",
   margin: "0 20px 40px",
+  width: "max(50%,24rem)",
 });

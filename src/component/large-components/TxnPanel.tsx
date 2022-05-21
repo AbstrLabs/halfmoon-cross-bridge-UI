@@ -6,7 +6,7 @@ import {
   TextField,
   styled,
 } from "@mui/material";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { authorizeMintTransaction, nearWallet } from "../utils/near";
 
 import { TxnType } from "../..";
@@ -16,7 +16,7 @@ window.Buffer = window.Buffer || require("buffer").Buffer; // for near connect w
 const DEFAULT_MINT_BENEFICIARY =
   "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA";
 const DEFAULT_MINT_AMOUNT = "1.357";
-const DEFAULT_BURN_BENEFICIARY = "abstrLabs-test.testnet";
+const DEFAULT_BURN_BENEFICIARY = "abstrlabs-test.testnet";
 const DEFAULT_BURN_AMOUNT = "1.234";
 
 export function TxnPanel({ txnType }: { txnType: TxnType }) {
@@ -32,6 +32,9 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       : DEFAULT_BURN_BENEFICIARY;
   const DEFAULT_AMOUNT =
     txnType === TxnType.MINT ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
+
+  const [beneficiary, setBeneficiary] = useState(DEFAULT_BENEFICIARY);
+  const [amount, setAmount] = useState(DEFAULT_AMOUNT);
 
   const validateForm = useCallback(() => {
     alert("Form is valid (fake)");
@@ -56,11 +59,14 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     }
     setActiveStep(2);
   }, [txnType]);
-  const authorizeTxn = useCallback(async () => {
-    if (txnType === TxnType.MINT) {
-      await authorizeMintTransaction(DEFAULT_AMOUNT, DEFAULT_BENEFICIARY);
-    }
-  }, [txnType, DEFAULT_BENEFICIARY, DEFAULT_AMOUNT]);
+  const authorizeTxn = useCallback(
+    async (/* amount: string, beneficiary: string */) => {
+      if (txnType === TxnType.MINT) {
+        await authorizeMintTransaction(amount, beneficiary);
+      }
+    },
+    [txnType, amount, beneficiary]
+  );
 
   type TStep = {
     stepId: number;
@@ -116,15 +122,17 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
           label="Beneficiary (Algorand public address)"
           fullWidth
           margin="normal"
-          value={DEFAULT_BENEFICIARY}
+          value={beneficiary}
+          onChange={(e) => setBeneficiary(e.target.value)}
         />
         <TextField
-          helperText="like 1.357, up to 10 decimals"
+          helperText={`like ${DEFAULT_AMOUNT}, up to 10 decimals`}
           id="mint_amount"
           label="Amount (NEAR)"
           fullWidth
           margin="normal"
-          value="1.357"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
         />
       </FormWrap>
       <Box height="60px"></Box>
@@ -147,7 +155,7 @@ const FormWrap = styled("div")(({ theme }) => ({
   position: "relative",
   margin: "20px 0 0",
   // display: "flex",
-  maxWidth: "100%",
+  width: "100%",
   padding: "1rem",
   backgroundColor: theme.palette.background.default,
   wrap: "pre-wrap",
