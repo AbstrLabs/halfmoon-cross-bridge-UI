@@ -7,6 +7,7 @@ import {
   styled,
 } from "@mui/material";
 import React, { useCallback, useMemo, useState } from "react";
+import { authorizeBurnTransaction, connectToMyAlgo } from "../utils/algorand";
 import { authorizeMintTransaction, nearWallet } from "../utils/near";
 
 import { TxnType } from "../..";
@@ -38,7 +39,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     alert("Form is valid (fake)");
     setActiveStep(1);
   }, []);
-  const connectWallet = useCallback(() => {
+  const connectWallet = useCallback(async () => {
     // only blockchain == near
     if (txnType === TxnType.MINT) {
       if (nearWallet.isSignedIn()) {
@@ -52,6 +53,9 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         nearWallet.requestSignIn("abstrlabs.testnet");
       }
     }
+    if (txnType === TxnType.BURN) {
+      await connectToMyAlgo();
+    }
 
     if (txnType === TxnType.BURN) {
     }
@@ -61,6 +65,9 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     async (/* amount: string, beneficiary: string */) => {
       if (txnType === TxnType.MINT) {
         await authorizeMintTransaction(amount, beneficiary);
+      }
+      if (txnType === TxnType.BURN) {
+        await authorizeBurnTransaction(beneficiary, amount);
       }
     },
     [txnType, amount, beneficiary]
@@ -87,15 +94,13 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       [TTxnStepName.WALLET]: {
         stepId: 2,
         icon: <></>,
-        action: connectWallet,
+        action: async () => await connectWallet(),
         isCompleted: false,
       },
       [TTxnStepName.AUTH]: {
         stepId: 3,
         icon: <></>,
-        action: async () => {
-          await authorizeTxn();
-        },
+        action: async () => await authorizeTxn(),
         isCompleted: false,
       },
     }),

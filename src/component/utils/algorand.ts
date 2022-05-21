@@ -2,14 +2,21 @@ import { CONFIG } from "../..";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
 
-export { connectToMyAlgo, optInGoNear, checkOptedIn, authorizeBurnTransaction };
+export {
+  myAlgoWallet,
+  connectToMyAlgo,
+  optInGoNear,
+  checkOptedIn,
+  authorizeBurnTransaction,
+};
+
 const myAlgoWallet = new MyAlgoConnect();
 
 const ALGO_UNIT = 10_000_000_000;
 const GO_NEAR_ASA_ID = 83251085;
 let ALGORAND_ADDRESS: string;
 
-const connectToMyAlgo = async () => {
+async function connectToMyAlgo() {
   try {
     const accounts = await myAlgoWallet.connect();
     ALGORAND_ADDRESS = accounts[0].address;
@@ -17,7 +24,7 @@ const connectToMyAlgo = async () => {
   } catch (err) {
     console.error(err);
   }
-};
+}
 
 // const algodClient = new algosdk.Algodv2('', 'https://node.testnet.algoexplorerapi.io', '');
 const algodClient = new algosdk.Algodv2(
@@ -93,20 +100,19 @@ const authorizeBurnTransaction = async (
   burnReceiver: string,
   amount: string
 ) => {
-  const cbUrl = new URL("/redirect", window.location.href);
+  const cbUrl = new URL("/process", window.location.href);
   cbUrl.searchParams.set("type", "BURN");
   cbUrl.searchParams.set("amount", amount);
   cbUrl.searchParams.set("to", burnReceiver);
   cbUrl.searchParams.set("from", ALGORAND_ADDRESS);
-  console.log("cbUrl : ", cbUrl.toString()); // DEV_LOG_TO_REMOVE
 
   let txnId = await requestSignGoNearTxn(amount);
   cbUrl.searchParams.set("txnId", txnId);
 
   const callbackUrl = cbUrl.toString();
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      window.location.assign(callbackUrl);
-    }, 10000);
-  });
+  console.log("callbackUrl : ", callbackUrl); // DEV_LOG_TO_REMOVE
+
+  setTimeout(() => {
+    window.location.assign(callbackUrl);
+  }, 10000);
 };
