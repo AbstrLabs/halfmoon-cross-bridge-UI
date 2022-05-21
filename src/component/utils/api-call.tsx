@@ -1,7 +1,7 @@
 import { Constants } from "../..";
 
 export async function callMintApi(postParam: Record<string, string>) {
-  // todo: refactor this type after ref backend
+  // todo: refactor this type after backend refactor
   const mintResp = await fetch(
     Constants.apiServer.hostname +
       ":" +
@@ -18,5 +18,5 @@ export async function callMintApi(postParam: Record<string, string>) {
     }
   );
   // TODO: check if status 200, err handling here
-  return mintResp.json();
+  return mintResp.json(); // will have a BridgeTxnObj
 }

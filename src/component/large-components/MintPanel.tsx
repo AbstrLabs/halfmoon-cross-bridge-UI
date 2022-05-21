@@ -44,8 +44,12 @@ export function MintPanel() {
   }, []);
   const connectWallet = useCallback(() => {
     if (nearWallet.isSignedIn()) {
-      alert("you've signed in");
-      nearWallet.signOut();
+      const answer = window.confirm(
+        "you've signed in, do you want to sign out?"
+      );
+      if (answer) {
+        nearWallet.signOut();
+      }
     } else {
       nearWallet.requestSignIn("abstrlabs.testnet");
     }
