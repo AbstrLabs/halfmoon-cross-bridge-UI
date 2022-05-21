@@ -1,12 +1,17 @@
-import { CONFIG } from "../..";
+import { CONFIG, TxnType } from "../..";
 
-export async function callMintApi(postParam: Record<string, string>) {
+export async function callApi(
+  postParam: Record<string, string>,
+  txnType: TxnType
+) {
   // todo: refactor this type after backend refactor
-  const mintResp = await fetch(
+  const resp = await fetch(
     CONFIG.apiServer.hostname +
       ":" +
       CONFIG.apiServer.port +
-      CONFIG.apiServer.mintPath,
+      (txnType === TxnType.MINT
+        ? CONFIG.apiServer.mintPath
+        : CONFIG.apiServer.burnPath),
     {
       method: "POST",
       mode: "cors",
@@ -18,5 +23,5 @@ export async function callMintApi(postParam: Record<string, string>) {
     }
   );
   // TODO: check if status 200, err handling here
-  return mintResp.json(); // will have a BridgeTxnObj
+  return resp.json(); // will have a BridgeTxnObj
 }

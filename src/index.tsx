@@ -29,6 +29,7 @@ export const CONFIG = {
     hostname: "http://localhost",
     port: "4190",
     mintPath: "/api/mint",
+    burnPath: "/api/burn",
   },
   acc: {
     algorand_master:
