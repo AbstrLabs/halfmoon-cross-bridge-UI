@@ -1,4 +1,3 @@
-import { BrowserRouter, HashRouter } from "react-router-dom";
 import {
   GlobalStyles,
   StyledEngineProvider,
@@ -9,6 +8,7 @@ import {
 } from "@mui/material";
 import { grey, orange, yellow } from "@mui/material/colors";
 
+import { HashRouter } from "react-router-dom";
 import React from "react";
 import { Router } from "./page/Router";
 import { useTernaryDarkMode } from "usehooks-ts";

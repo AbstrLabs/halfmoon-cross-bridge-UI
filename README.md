@@ -6,6 +6,7 @@
 ## How to use
 
 - This repo is hosted on [Half Moon Cross](http://www.halfmooncross.com/)
+- Host on localhost with `yarn install && yarn start`
 
 ## Contributing
 
