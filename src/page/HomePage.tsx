@@ -3,17 +3,13 @@ import { Download, Upload } from "@mui/icons-material";
 import React, { SyntheticEvent, useCallback, useState } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
-import { MintPanel } from "../component/large-components/TxnPanel";
+import { TxnPanel } from "../component/large-components/TxnPanel";
+import { TxnType } from "..";
 
 export function HomePage() {
-  // TODO: ref this to TxnType
-  enum TabName {
-    MINT = "MINT",
-    BURN = "BURN",
-  }
-  const [currentTab, setCurrentTab] = useState<TabName>(TabName.MINT);
+  const [currentTab, setCurrentTab] = useState<TxnType>(TxnType.MINT);
   const handleTabChange = useCallback(
-    (event: SyntheticEvent<Element, Event>, tabName: TabName) => {
+    (event: SyntheticEvent<Element, Event>, tabName: TxnType) => {
       setCurrentTab(tabName);
     },
     []
@@ -35,16 +31,18 @@ export function HomePage() {
           <TabList onChange={handleTabChange} centered>
             <Tab
               icon={<Download />}
-              label={TabName.MINT}
-              value={TabName.MINT}
+              label={TxnType.MINT}
+              value={TxnType.MINT}
             />
-            <Tab icon={<Upload />} label={TabName.BURN} value={TabName.BURN} />
+            <Tab icon={<Upload />} label={TxnType.BURN} value={TxnType.BURN} />
           </TabList>
         </Box>
-        <TabPanel value={TabName.MINT}>
-          <MintPanel />
+        <TabPanel value={TxnType.MINT}>
+          <TxnPanel txnType={TxnType.MINT} />
         </TabPanel>
-        <TabPanel value={TabName.BURN}>BURN TO</TabPanel>
+        <TabPanel value={TxnType.BURN}>
+          <TxnPanel txnType={TxnType.BURN} />
+        </TabPanel>
       </TabContext>
     </BodyWrap>
   );

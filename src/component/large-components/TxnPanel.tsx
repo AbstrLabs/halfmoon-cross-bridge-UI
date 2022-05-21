@@ -9,29 +9,12 @@ import {
 import React, { useCallback, useMemo } from "react";
 import { authorizeMintTransaction, nearWallet } from "../utils/near";
 
+import { TxnType } from "../..";
+
 window.Buffer = window.Buffer || require("buffer").Buffer; // for near connect wallet
 
-export function MintPanel() {
+export function TxnPanel({ txnType }: { txnType: TxnType }) {
   /* NEAR wallet */
-  // only blockchain == near
-
-  // This is in the official docs but why using await?
-  // async function initNear() {
-  //   const near = await nearAPI.connect({
-  //     headers: {},
-  //     keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore(),
-  //     networkId: "testnet",
-  //     nodeUrl: "https://rpc.testnet.near.org",
-  //     walletUrl: "https://wallet.testnet.near.org",
-  //   });
-  //   return near;
-  // }
-
-  // const near = useMemo(async () => await initNear(), []);
-
-  // If not signed in redirect to the NEAR wallet to sign in
-  // keys will be stored in the BrowserLocalStorageKeyStore
-
   enum TTxnStepName {
     FORM = "Fill up the Form",
     WALLET = "Connect to Wallet",
@@ -43,6 +26,7 @@ export function MintPanel() {
     setActiveStep(1);
   }, []);
   const connectWallet = useCallback(() => {
+    // only blockchain == near
     if (nearWallet.isSignedIn()) {
       const answer = window.confirm(
         "you've signed in, do you want to sign out?"
