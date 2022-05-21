@@ -36,9 +36,7 @@ async function createNearTxn({
     nearWallet.getAccountId(),
     []
   );
-
-  console.log("ak : ", ak); // DEV_LOG_TO_REMOVE
-
+  // assert ak none null
   const recentBlockHash = nearAPI.utils.serialize.base_decode(
     // https://docs.near.org/docs/tutorials/create-transactions#6-blockhash
     ak.accessKey.block_hash
@@ -85,7 +83,7 @@ async function authorizeMintTransaction(
   //   firstTimeCheckOptedIn = false;
   // }
   const cbUrl = new URL("/process", window.location.href);
-  cbUrl.searchParams.set("type", "mint");
+  cbUrl.searchParams.set("type", "MINT");
   cbUrl.searchParams.set("amount", amountStr);
   cbUrl.searchParams.set("to", mintReceiver);
   cbUrl.searchParams.set("from", nearWallet.getAccountId().toString());

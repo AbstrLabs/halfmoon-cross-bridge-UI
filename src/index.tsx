@@ -9,9 +9,9 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <App />
+  // <React.StrictMode>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
@@ -23,3 +23,11 @@ export enum TxnType {
   MINT = "MINT",
   BURN = "BURN",
 }
+
+export const Constants = {
+  apiServer: {
+    hostname: "http://localhost",
+    port: "4190",
+    mintPath: "/api/mint",
+  },
+};
