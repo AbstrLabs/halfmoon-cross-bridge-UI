@@ -18,9 +18,7 @@ export function Logo(
 
   return (
     <StyledLink to="/">
-      <div style={{ ...variantFontSize, ...style }}>
-        🌓✝️🌗 Half Moon Cross
-      </div>
+      <div style={{ ...variantFontSize, ...style }}>🌓 </div>
     </StyledLink>
   );
 }
