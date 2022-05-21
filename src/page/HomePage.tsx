@@ -3,7 +3,7 @@ import { Download, Upload } from "@mui/icons-material";
 import React, { SyntheticEvent, useCallback, useState } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
-import { MintPanel } from "../component/large-components/MintPanel";
+import { MintPanel } from "../component/large-components/TxnPanel";
 
 export function HomePage() {
   // TODO: ref this to TxnType
