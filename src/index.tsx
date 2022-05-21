@@ -24,10 +24,15 @@ export enum TxnType {
   BURN = "BURN",
 }
 
-export const Constants = {
+export const CONFIG = {
   apiServer: {
     hostname: "http://localhost",
     port: "4190",
     mintPath: "/api/mint",
+  },
+  acc: {
+    algorand_master:
+      "JMJLRBZQSTS6ZINTD3LLSXCW46K44EI2YZHYKCPBGZP3FLITIQRGPELOBE",
+    near_master: "abstrlabs.testnet",
   },
 };

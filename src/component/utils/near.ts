@@ -1,5 +1,7 @@
 import * as nearAPI from "near-api-js";
 
+import { CONFIG } from "../..";
+
 export { nearWallet, authorizeMintTransaction };
 // const receiverId = "abstrlabs.testnet";
 // const amountStr = "1.56789";
@@ -70,7 +72,10 @@ async function requestSignNearTxn(
   amountStr: string,
   callbackUrl: string | undefined = undefined
 ) {
-  let tx = await createNearTxn({ receiverId: "abstrlabs.testnet", amountStr });
+  let tx = await createNearTxn({
+    receiverId: CONFIG.acc.near_master,
+    amountStr,
+  });
   nearWallet.requestSignTransactions({ transactions: [tx], callbackUrl });
 }
 

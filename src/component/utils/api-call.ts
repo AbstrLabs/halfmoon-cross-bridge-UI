@@ -1,12 +1,12 @@
-import { Constants } from "../..";
+import { CONFIG } from "../..";
 
 export async function callMintApi(postParam: Record<string, string>) {
   // todo: refactor this type after backend refactor
   const mintResp = await fetch(
-    Constants.apiServer.hostname +
+    CONFIG.apiServer.hostname +
       ":" +
-      Constants.apiServer.port +
-      Constants.apiServer.mintPath,
+      CONFIG.apiServer.port +
+      CONFIG.apiServer.mintPath,
     {
       method: "POST",
       mode: "cors",
