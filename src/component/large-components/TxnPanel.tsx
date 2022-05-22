@@ -26,12 +26,13 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     AUTH = "Authorize Mint Transaction",
   }
 
-  const DEFAULT_BENEFICIARY =
-    txnType === TxnType.MINT
-      ? DEFAULT_MINT_BENEFICIARY
-      : DEFAULT_BURN_BENEFICIARY;
-  const DEFAULT_AMOUNT =
-    txnType === TxnType.MINT ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
+  const isMint = useMemo(() => txnType === TxnType.MINT, [txnType]);
+  const isBurn = useMemo(() => txnType === TxnType.BURN, [txnType]);
+
+  const DEFAULT_BENEFICIARY = isMint
+    ? DEFAULT_MINT_BENEFICIARY
+    : DEFAULT_BURN_BENEFICIARY;
+  const DEFAULT_AMOUNT = isMint ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
 
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
@@ -44,16 +45,16 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         setAmount(DEFAULT_AMOUNT);
       }
     }
-    if (txnType === TxnType.MINT) {
+    if (isMint) {
       // algorand address
       algosdk.isValidAddress(beneficiary);
     }
 
     setActiveStep(1);
-  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY, beneficiary, txnType]);
+  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY, beneficiary, isMint]);
   const connectWallet = useCallback(async () => {
     // only blockchain == near
-    if (txnType === TxnType.MINT) {
+    if (isMint) {
       if (nearWallet.isSignedIn()) {
         const answer = window.confirm(
           "you've signed in, do you want to sign out?"
@@ -65,24 +66,24 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         nearWallet.requestSignIn("abstrlabs.testnet");
       }
     }
-    if (txnType === TxnType.BURN) {
+    if (isBurn) {
       await connectToMyAlgo();
     }
 
-    if (txnType === TxnType.BURN) {
+    if (isBurn) {
     }
     setActiveStep(2);
-  }, [txnType]);
+  }, [isBurn, isMint]);
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
-      if (txnType === TxnType.MINT) {
+      if (isMint) {
         await authorizeMintTransaction(amount, beneficiary);
       }
-      if (txnType === TxnType.BURN) {
+      if (isBurn) {
         await authorizeBurnTransaction(beneficiary, amount);
       }
     },
-    [txnType, amount, beneficiary]
+    [amount, beneficiary, isBurn, isMint]
   );
 
   type TStep = {
