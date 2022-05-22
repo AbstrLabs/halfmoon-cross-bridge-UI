@@ -19,6 +19,11 @@ const DEFAULT_MINT_AMOUNT = "1.357";
 const DEFAULT_BURN_BENEFICIARY = "abstrlabs-test.testnet";
 const DEFAULT_BURN_AMOUNT = "1.234";
 
+// from backend
+const AMOUNT_REGEX = /^[0-9]*\.?[0-9]{0,10}$/;
+const ALGORAND_ADDR_REGEX = /^[2-79A-Z]{58}$/;
+const NEAR_ADDR_REGEX = /^[0-9a-z][0-9a-z\-_]{2,64}.(testnet|mainnet)$/;
+
 export function TxnPanel({ txnType }: { txnType: TxnType }) {
   enum TTxnStepName {
     FORM = "Fill up the Form",
@@ -37,6 +42,41 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
 
+  const quickCheckAddress = useCallback(
+    (addr: string) =>
+      (isMint && addr.match(ALGORAND_ADDR_REGEX) === null) ||
+      (isBurn && addr.match(NEAR_ADDR_REGEX) === null),
+    [isBurn, isMint]
+  );
+  // {
+  //   if (isMint) {
+  //     if (addr.match(ALGORAND_ADDR_REGEX) === null) {
+  //       return false;
+  //     }
+  //   }
+  //   if (isBurn) {
+  //     if (addr.match(NEAR_ADDR_REGEX) === null) {
+  //       return false;
+  //     }
+  //     return true; // i don't know how to check
+  //   }
+  //   return false;
+  // }
+
+  const validateAddress = useCallback(
+    (addr: string) => (isMint && algosdk.isValidAddress(addr)) || isBurn,
+    [isBurn, isMint]
+  );
+  // {
+  //   if (isMint) {
+  //     return algosdk.isValidAddress(addr);
+  //   }
+  //   if (isBurn) {
+  //     return true;
+  //   }
+  //   return false;
+  // },
+
   const validateForm = useCallback(() => {
     if (process.env.NODE_ENV === "development") {
       const c = window.confirm("Fill with test values?");
@@ -45,13 +85,13 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         setAmount(DEFAULT_AMOUNT);
       }
     }
-    if (isMint) {
-      // algorand address
-      algosdk.isValidAddress(beneficiary);
+    if (!validateAddress(beneficiary)) {
+      setActiveStep(0);
+      alert("Invalid address");
+      return;
     }
-
     setActiveStep(1);
-  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY, beneficiary, isMint]);
+  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY, beneficiary, validateAddress]);
   const connectWallet = useCallback(async () => {
     // only blockchain == near
     if (isMint) {
@@ -137,6 +177,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
           margin="normal"
           value={beneficiary}
           onChange={(e) => setBeneficiary(e.target.value)}
+          error={!quickCheckAddress(beneficiary)}
         />
         <TextField
           helperText={`like ${DEFAULT_AMOUNT}, up to 10 decimals`}
@@ -145,7 +186,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
             step: 0.000_000_000_1,
             pattern: "[0-9].*",
           }}
-          error={amount.match(/^[0-9]*\.?[0-9]{0,10}$/) === null}
+          error={amount.match(AMOUNT_REGEX) === null}
           id="mint_amount"
           label="Amount (NEAR)"
           fullWidth
