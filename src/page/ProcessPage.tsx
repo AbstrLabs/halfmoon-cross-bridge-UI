@@ -1,3 +1,4 @@
+import { ApiParam, StringifiedBridgeTxnObject, TxnType } from "..";
 import {
   Paper,
   Table,
@@ -7,7 +8,6 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { StringifiedBridgeTxnObject, TxnType } from "..";
 
 import { AlgorandAddressLink } from "../component/links/AlgorandAddressLink";
 import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionLink";
@@ -20,7 +20,7 @@ import { useSearchParams } from "react-router-dom";
 
 export function ProcessPage() {
   let [searchParams] = useSearchParams();
-  const params = {
+  const params: ApiParam = {
     type: searchParams.get("type") as TxnType,
     txnId: (searchParams.get("type") === TxnType.MINT
       ? searchParams.get("transactionHashes")
@@ -48,7 +48,7 @@ export function ProcessPage() {
     },
   };
 
-  function getResultUrl(bridgeTxnObject: StringifiedBridgeTxnObject) {
+  function getResultUrlFromParam(bridgeTxnObject: StringifiedBridgeTxnObject) {
     const url = new URL("/result", window.location.href);
     url.searchParams.set("dbId", bridgeTxnObject.dbId);
     url.searchParams.set("fixedFeeAtom", bridgeTxnObject.fixedFeeAtom);
@@ -65,33 +65,22 @@ export function ProcessPage() {
   }
 
   useEffect(() => {
-    // TODO: ref: these two paragraphs
-    if (params.type === TxnType.MINT) {
-      const mintParam = {
-        mint_from: params.from,
-        mint_to: params.to,
-        mint_txnId: params.txnId,
-        mint_amount: params.amount,
-      };
-      console.log("minting with mintParam : ", mintParam); // DEV_LOG_TO_REMOVE
-      callApi(mintParam, params.type).then((res: any) => {
+    const newParam: ApiParam = {
+      type: params.type,
+      from: params.from,
+      to: params.to,
+      txnId: params.txnId,
+      amount: params.amount,
+    };
+    callApi(newParam)
+      .then((res: any) => {
         console.log("res : ", res); // DEV_LOG_TO_REMOVE
-        window.location.replace(getResultUrl(res));
+        window.location.replace(getResultUrlFromParam(res.json()));
+      })
+      .catch((err: any) => {
+        console.error("API Server not available. Error : ", err); // DEV_LOG_TO_REMOVE
+        alert("wrong api param!");
       });
-    }
-    if (params.type === TxnType.BURN) {
-      const burnParam = {
-        burn_from: params.from,
-        burn_to: params.to,
-        burn_txnId: params.txnId,
-        burn_amount: params.amount,
-      };
-      console.log("burning with burnParam : ", burnParam); // DEV_LOG_TO_REMOVE
-      callApi(burnParam, params.type).then((res: any) => {
-        console.log("res : ", res); // DEV_LOG_TO_REMOVE
-        window.location.replace(getResultUrl(res));
-      });
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

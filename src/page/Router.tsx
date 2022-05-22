@@ -1,5 +1,5 @@
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
 
 import { DocsPage } from "./DocsPage";
 import { E404Page } from "./E404Page";
@@ -10,9 +10,9 @@ import { ResultPage } from "./ResultPage";
 
 export function Router() {
   /* ======== URL_QUERY ======== */
-  const location = useLocation();
 
   function ScrollToTop() {
+    const location = useLocation();
     const { pathname } = location;
     useEffect(() => {
       window.scrollTo(0, 0);
@@ -32,15 +32,17 @@ export function Router() {
 
   return (
     <React.Fragment>
-      <ScrollToTop />
-      <Header />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/process" element={<ProcessPage />} />
-        <Route path="/result" element={<ResultPage />} />
-        <Route path="/docs" element={<DocsPage />} />
-        <Route path="/*" element={<E404Page />} />
-      </Routes>
+      <BrowserRouter>
+        <ScrollToTop />
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/process" element={<ProcessPage />} />
+          <Route path="/result" element={<ResultPage />} />
+          <Route path="/docs" element={<DocsPage />} />
+          <Route path="/*" element={<E404Page />} />
+        </Routes>
+      </BrowserRouter>
     </React.Fragment>
   );
 }
