@@ -18,7 +18,7 @@ import { useSearchParams } from "react-router-dom";
 
 export function ResultPage() {
   let [searchParams] = useSearchParams();
-  const params = {
+  const parsedParams = {
     dbId: searchParams.get("dbId")!,
     fixedFeeAtom: searchParams.get("fixedFeeAtom")!,
     marginFeeAtom: searchParams.get("marginFeeAtom")!,
@@ -59,8 +59,8 @@ export function ResultPage() {
       <Typography variant="h2">Transaction Completed</Typography>
       <Box height="2rem" />
       <Typography variant="h4">See Invoice Transaction on Explorer</Typography>
-      {Links[params.txnType].toTxnId({
-        txnId: params.toTxnId,
+      {Links[parsedParams.txnType].toTxnId({
+        txnId: parsedParams.toTxnId,
       })}
       <Box height="4rem" />
       <TableContainer component={Paper}>
@@ -68,55 +68,57 @@ export function ResultPage() {
           <TableBody>
             <TableRow>
               <TableCell>Transaction type</TableCell>
-              <TableCell align="right">{params.txnType}</TableCell>
+              <TableCell align="right">{parsedParams.txnType}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Amount Sent(in 1e-10)</TableCell>
-              <TableCell align="right">{params.fromAmountAtom}</TableCell>
+              <TableCell>Amount Sent (unit: 1e-10)</TableCell>
+              <TableCell align="right">{parsedParams.fromAmountAtom}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Amount Received(in 1e-10)</TableCell>
-              <TableCell align="right">{params.toAmountAtom}</TableCell>
+              <TableCell>Amount Received (unit: 1e-10)</TableCell>
+              <TableCell align="right">{parsedParams.toAmountAtom}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Beneficiary Address</TableCell>
               <TableCell align="right">
-                {Links[params.txnType].to({ addr: params.toAddr })}
+                {Links[parsedParams.txnType].to({ addr: parsedParams.toAddr })}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Transaction Signer</TableCell>
               <TableCell align="right">
-                {Links[params.txnType].from({ addr: params.fromAddr })}
+                {Links[parsedParams.txnType].from({
+                  addr: parsedParams.fromAddr,
+                })}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Signed Transaction ID</TableCell>
               <TableCell align="right">
-                {Links[params.txnType].fromTxnId({
-                  txnId: params.fromTxnId,
+                {Links[parsedParams.txnType].fromTxnId({
+                  txnId: parsedParams.fromTxnId,
                 })}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Invoice Transaction ID</TableCell>
               <TableCell align="right">
-                {Links[params.txnType].toTxnId({
-                  txnId: params.toTxnId,
+                {Links[parsedParams.txnType].toTxnId({
+                  txnId: parsedParams.toTxnId,
                 })}
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>fixedFeeAtom</TableCell>
-              <TableCell align="right">{params.fixedFeeAtom}</TableCell>
+              <TableCell>Sweeping Miner Fee (unit: 1e-10)</TableCell>
+              <TableCell align="right">{parsedParams.fixedFeeAtom}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>marginFeeAtom</TableCell>
-              <TableCell align="right">{params.marginFeeAtom}</TableCell>
+              <TableCell>Transaction Fee (unit: 1e-10)</TableCell>
+              <TableCell align="right">{parsedParams.marginFeeAtom}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>createdTime</TableCell>
-              <TableCell align="right">{params.createdTime}</TableCell>
+              <TableCell>Created in Database</TableCell>
+              <TableCell align="right">{parsedParams.createdTime}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
