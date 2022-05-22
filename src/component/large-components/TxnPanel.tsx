@@ -76,6 +76,14 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   //   }
   //   return false;
   // },
+  const quickCheckAmount = useCallback(
+    (amount: string) => amount.match(AMOUNT_REGEX) === null,
+    []
+  );
+  const validateAmount = useCallback(
+    (amount: string) => quickCheckAmount(amount),
+    [quickCheckAmount]
+  );
 
   const validateForm = useCallback(() => {
     if (process.env.NODE_ENV === "development") {
@@ -90,8 +98,20 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       alert("Invalid address");
       return;
     }
+    if (!validateAmount(amount)) {
+      setActiveStep(0);
+      alert("Invalid amount");
+      return;
+    }
     setActiveStep(1);
-  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY, beneficiary, validateAddress]);
+  }, [
+    DEFAULT_AMOUNT,
+    DEFAULT_BENEFICIARY,
+    amount,
+    beneficiary,
+    validateAddress,
+    validateAmount,
+  ]);
   const connectWallet = useCallback(async () => {
     // only blockchain == near
     if (isMint) {
@@ -186,7 +206,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
             step: 0.000_000_000_1,
             pattern: "[0-9].*",
           }}
-          error={amount.match(AMOUNT_REGEX) === null}
+          error={quickCheckAmount(amount)}
           id="mint_amount"
           label="Amount (NEAR)"
           fullWidth
