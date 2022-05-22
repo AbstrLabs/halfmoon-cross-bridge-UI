@@ -48,7 +48,10 @@ const CONFIG = {
   //   port: "4190",
   //   path: "/algorand-near",
   // },
-  apiServerUrl: "http://localhost:4190/algorand-near",
+  apiServerUrl:
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:4190/algorand-near"
+      : "http://api.halfmooncross/algorand-near",
   acc: {
     algorand_master:
       "JMJLRBZQSTS6ZINTD3LLSXCW46K44EI2YZHYKCPBGZP3FLITIQRGPELOBE",
