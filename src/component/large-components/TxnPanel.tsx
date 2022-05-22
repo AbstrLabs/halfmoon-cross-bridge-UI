@@ -32,11 +32,17 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const DEFAULT_AMOUNT =
     txnType === TxnType.MINT ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
 
-  const [beneficiary, setBeneficiary] = useState(DEFAULT_BENEFICIARY);
-  const [amount, setAmount] = useState(DEFAULT_AMOUNT);
+  const [beneficiary, setBeneficiary] = useState("");
+  const [amount, setAmount] = useState("");
 
   const validateForm = useCallback(() => {
-    alert("Form is valid (fake)");
+    if (process.env.NODE_ENV === "development") {
+      const c = window.confirm("Fill with test values?");
+      if (c) {
+        setBeneficiary(DEFAULT_BENEFICIARY);
+        setAmount(DEFAULT_AMOUNT);
+      }
+    }
     setActiveStep(1);
   }, []);
   const connectWallet = useCallback(async () => {
