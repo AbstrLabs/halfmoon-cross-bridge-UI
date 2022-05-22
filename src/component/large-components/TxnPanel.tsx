@@ -127,6 +127,12 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         />
         <TextField
           helperText={`like ${DEFAULT_AMOUNT}, up to 10 decimals`}
+          inputProps={{
+            inputMode: "numeric",
+            step: 0.000_000_000_1,
+            pattern: "[0-9].*",
+          }}
+          error={amount.match(/^[0-9]*\.?[0-9]{0,10}$/) === null}
           id="mint_amount"
           label="Amount (NEAR)"
           fullWidth
