@@ -77,7 +77,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     stepId: number;
     icon: JSX.Element;
     action: (() => void) | (() => Promise<any>);
-    isCompleted: boolean;
   };
   type TSteps = {
     [key in TTxnStepName]: TStep;
@@ -86,24 +85,22 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const steps: TSteps = useMemo(
     () => ({
       [TTxnStepName.FORM]: {
-        stepId: 1,
+        stepId: 0,
         icon: <></>,
         action: validateForm,
-        isCompleted: false,
       },
       [TTxnStepName.WALLET]: {
-        stepId: 2,
+        stepId: 1,
         icon: <></>,
         action: async () => await connectWallet(),
-        isCompleted: false,
       },
       [TTxnStepName.AUTH]: {
-        stepId: 3,
+        stepId: 2,
         icon: <></>,
         action: async () => await authorizeTxn(),
-        isCompleted: false,
       },
     }),
+
     [
       TTxnStepName.AUTH,
       TTxnStepName.FORM,
@@ -141,7 +138,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       <Box height="60px"></Box>
       <Stepper nonLinear activeStep={activeStep} alternativeLabel>
         {Object.entries(steps).map(([stepName, stepObject]) => (
-          <Step key={stepName} completed={stepObject.isCompleted}>
+          <Step key={stepName} completed={stepObject.stepId < activeStep}>
             <StepButton color="inherit" onClick={stepObject.action}>
               {stepName}
             </StepButton>
