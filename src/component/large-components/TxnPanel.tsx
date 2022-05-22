@@ -11,6 +11,7 @@ import { authorizeBurnTransaction, connectToMyAlgo } from "../utils/algorand";
 import { authorizeMintTransaction, nearWallet } from "../utils/near";
 
 import { TxnType } from "../..";
+import algosdk from "algosdk";
 
 const DEFAULT_MINT_BENEFICIARY =
   "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA";
@@ -43,8 +44,13 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         setAmount(DEFAULT_AMOUNT);
       }
     }
+    if (txnType === TxnType.MINT) {
+      // algorand address
+      algosdk.isValidAddress(beneficiary);
+    }
+
     setActiveStep(1);
-  }, []);
+  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY, beneficiary, txnType]);
   const connectWallet = useCallback(async () => {
     // only blockchain == near
     if (txnType === TxnType.MINT) {
