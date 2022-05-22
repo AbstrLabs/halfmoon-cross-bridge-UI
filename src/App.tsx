@@ -8,22 +8,22 @@ import {
 } from "@mui/material";
 import { grey, orange, yellow } from "@mui/material/colors";
 
-import { BrowserRouter } from "react-router-dom";
-import React, { } from "react";
+import { HashRouter } from "react-router-dom";
+import React from "react";
 import { Router } from "./page/Router";
 import { useTernaryDarkMode } from "usehooks-ts";
 
 function App() {
   /* ======== MUI ======== */
-  const {
-    isDarkMode,
-  } = useTernaryDarkMode()
+  const { isDarkMode } = useTernaryDarkMode();
 
   const theme = React.useMemo(
     () => responsiveFontSizes(genThemeByMode(isDarkMode)),
     // TODO:WAIT: Fluid font sizes
     [isDarkMode]
   );
+
+  console.log("updated on @2022-05-21");
 
   /* ======== REACT ======== */
   return (
@@ -39,10 +39,12 @@ function App() {
           }}
         />
         <AppWarp>
-          <BrowserRouter>
-            {/* <TopSnackbar /> */}
+          {/* <TopSnackbar /> */}
+          {/* <BrowserRouter> */}
+          {/* </BrowserRouter> */}
+          <HashRouter basename={process.env.PUBLIC_URL}>
             <Router />
-          </BrowserRouter>
+          </HashRouter>
         </AppWarp>
       </ThemeProvider>
     </StyledEngineProvider>
@@ -56,15 +58,15 @@ function genThemeByMode(isDarkMode: boolean): any {
       mode: isDarkMode ? "dark" : "light",
       ...(isDarkMode
         ? {
-          primary: { main: yellow["A700"] },
-          secondary: { main: orange["A700"] },
-          background: { default: grey["900"] },
-        }
+            primary: { main: yellow["A700"] },
+            secondary: { main: orange["A700"] },
+            background: { default: grey["900"] },
+          }
         : {
-          primary: { main: yellow["700"] },
-          secondary: { main: orange["700"] },
-          background: { default: grey["100"] },
-        }),
+            primary: { main: yellow["700"] },
+            secondary: { main: orange["700"] },
+            background: { default: grey["100"] },
+          }),
     },
     components: {
       /* This is nor working.

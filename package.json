@@ -1,7 +1,16 @@
 {
-  "name": "algorand-near-bridge-ui",
-  "version": "0.1.0",
-  "private": true,
+  "browserslist": {
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ]
+  },
   "dependencies": {
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
@@ -33,11 +42,9 @@
     "usehooks-ts": "^2.5.3",
     "web-vitals": "^2.1.0"
   },
-  "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject"
+  "devDependencies": {
+    "gh-pages": "^4.0.0",
+    "process": "^0.11.10"
   },
   "eslintConfig": {
     "extends": [
@@ -45,19 +52,16 @@
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "homepage": "https://www.halfmooncross.com",
+  "name": "algorand-near-bridge-ui",
+  "private": true,
+  "scripts": {
+    "build": "react-app-rewired build",
+    "deploy": "gh-pages -d build",
+    "eject": "echo 'forbidden' # react-app-rewired eject",
+    "predeploy": "react-app-rewired build",
+    "start": "react-app-rewired start",
+    "test": "react-app-rewired test"
   },
-  "devDependencies": {
-    "process": "^0.11.10"
-  }
+  "version": "0.1.0"
 }

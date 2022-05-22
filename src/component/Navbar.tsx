@@ -4,11 +4,7 @@ import { Button, ButtonGroup, IconButton } from "@mui/material";
 import { useTernaryDarkMode } from "usehooks-ts";
 
 export function Navbar() {
-  const {
-    ternaryDarkMode,
-    toggleTernaryDarkMode,
-
-  } = useTernaryDarkMode();
+  const { ternaryDarkMode, toggleTernaryDarkMode } = useTernaryDarkMode();
   return (
     <div>
       <IconButton color="primary" onClick={toggleTernaryDarkMode}>
@@ -30,7 +26,7 @@ export function Navbar() {
         )} */}
         {/* // TODO: real Product href */}
         <Button href="/">Home</Button>
-        <Button href="/help">Help</Button>
+        <Button href="/docs">Docs</Button>
         <Button href="/result">Result</Button>
         <Button href="/about">About</Button>
       </ButtonGroup>

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 
+import { DocsPage } from "./DocsPage";
 import { E404Page } from "./E404Page";
 import { Header } from "../component/Header";
 import { HomePage } from "./HomePage";
@@ -37,8 +38,8 @@ export function Router() {
         <Route path="/" element={<HomePage />} />
         <Route path="/process" element={<ProcessPage />} />
         <Route path="/result" element={<ResultPage />} />
-        <Route path="/help" element={<HomePage />} />
-        <Route path="*" element={<E404Page />} />
+        <Route path="/docs" element={<DocsPage />} />
+        <Route path="/*" element={<E404Page />} />
       </Routes>
     </React.Fragment>
   );

@@ -1,5 +1,7 @@
 import * as nearAPI from "near-api-js";
 
+import { checkOptedIn, optInGoNear } from "./algorand";
+
 import { CONFIG } from "../..";
 
 export { nearWallet, authorizeMintTransaction };
@@ -81,23 +83,23 @@ async function authorizeMintTransaction(
   amountStr: string,
   mintReceiver: string
 ) {
-  // let firstTimeCheckOptedIn = true;
-  // while (!(await checkOptedIn(mintReceiver.value))) {
-  //   if (!firstTimeCheckOptedIn) {
-  //     windown.alert(
-  //       "Seems you opted in another account rather than the receiver "
-  //     );
-  //   }
-  //   let optInOption = window.confirm(
-  //     "beneficiary account not opted in to goNEAR, opt in now?"
-  //   );
-  //   if (!optInOption) {
-  //     return;
-  //   }
-  //   const optInTxnId = await optInGoNear(mintReceiver.value);
-  //   window.alert("beneficiary account opted in to goNEAR in txn" + optInTxnId);
-  //   firstTimeCheckOptedIn = false;
-  // }
+  let firstTimeCheckOptedIn = true;
+  while (!(await checkOptedIn(mintReceiver))) {
+    if (!firstTimeCheckOptedIn) {
+      window.alert(
+        "Seems you opted in another account rather than the receiver "
+      );
+    }
+    let optInOption = window.confirm(
+      "beneficiary account not opted in to goNEAR, opt in now?"
+    );
+    if (!optInOption) {
+      return;
+    }
+    const optInTxnId = await optInGoNear(mintReceiver);
+    window.alert("beneficiary account opted in to goNEAR in txn" + optInTxnId);
+    firstTimeCheckOptedIn = false;
+  }
   const cbUrl = new URL("/process", window.location.href);
   cbUrl.searchParams.set("type", "MINT");
   cbUrl.searchParams.set("amount", amountStr);
