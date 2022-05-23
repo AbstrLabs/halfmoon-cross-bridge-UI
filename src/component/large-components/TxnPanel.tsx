@@ -42,42 +42,34 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
 
+  const [stepState, setStepState] = useState({
+    [TTxnStepName.FORM]: {
+      isAmountValid: true,
+      isBeneficiaryValid: true,
+      isComplete: false,
+    },
+    [TTxnStepName.WALLET]: {
+      isComplete: false,
+    },
+    [TTxnStepName.AUTH]: {
+      isComplete: false,
+    },
+  });
   const quickCheckAddress = useCallback(
     (addr: string) =>
-      (isMint && addr.match(ALGORAND_ADDR_REGEX) === null) ||
-      (isBurn && addr.match(NEAR_ADDR_REGEX) === null),
+      (isMint && ALGORAND_ADDR_REGEX.test(addr)) ||
+      (isBurn && NEAR_ADDR_REGEX.test(addr)),
     [isBurn, isMint]
   );
-  // {
-  //   if (isMint) {
-  //     if (addr.match(ALGORAND_ADDR_REGEX) === null) {
-  //       return false;
-  //     }
-  //   }
-  //   if (isBurn) {
-  //     if (addr.match(NEAR_ADDR_REGEX) === null) {
-  //       return false;
-  //     }
-  //     return true; // i don't know how to check
-  //   }
-  //   return false;
-  // }
-
   const validateAddress = useCallback(
-    (addr: string) => (isMint && algosdk.isValidAddress(addr)) || isBurn,
-    [isBurn, isMint]
+    (addr: string) =>
+      quickCheckAddress(addr) &&
+      ((isMint && algosdk.isValidAddress(addr)) || isBurn),
+    [isBurn, isMint, quickCheckAddress]
   );
-  // {
-  //   if (isMint) {
-  //     return algosdk.isValidAddress(addr);
-  //   }
-  //   if (isBurn) {
-  //     return true;
-  //   }
-  //   return false;
-  // },
+
   const quickCheckAmount = useCallback(
-    (amount: string) => amount.match(AMOUNT_REGEX) === null,
+    (amount: string) => AMOUNT_REGEX.test(amount),
     []
   );
   const validateAmount = useCallback(
@@ -93,6 +85,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         setAmount(DEFAULT_AMOUNT);
       }
     }
+
     if (!validateAddress(beneficiary)) {
       setActiveStep(0);
       alert("Invalid address");
@@ -196,8 +189,33 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
           fullWidth
           margin="normal"
           value={beneficiary}
-          onChange={(e) => setBeneficiary(e.target.value)}
-          error={!quickCheckAddress(beneficiary)}
+          onChange={(e) => {
+            const v = e.target.value;
+            setBeneficiary(v);
+            if (quickCheckAddress(v)) {
+              setStepState({
+                ...stepState,
+                [TTxnStepName.FORM]: {
+                  ...stepState[TTxnStepName.FORM],
+                  isBeneficiaryValid: validateAddress(v),
+                },
+              });
+            }
+          }}
+          error={!stepState[TTxnStepName.FORM].isBeneficiaryValid}
+          onBlur={(e) => {
+            const v = e.target.value;
+            if (v === "") {
+              return;
+            }
+            setStepState({
+              ...stepState,
+              [TTxnStepName.FORM]: {
+                ...stepState[TTxnStepName.FORM],
+                isBeneficiaryValid: validateAddress(beneficiary) || v === "",
+              },
+            });
+          }}
         />
         <TextField
           helperText={`like ${DEFAULT_AMOUNT}, up to 10 decimals`}
@@ -206,13 +224,23 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
             step: 0.000_000_000_1,
             pattern: "[0-9].*",
           }}
-          error={quickCheckAmount(amount)}
+          error={!stepState[TTxnStepName.FORM].isAmountValid}
           id="mint_amount"
           label="Amount (NEAR)"
           fullWidth
           margin="normal"
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value;
+            setAmount(v);
+            setStepState({
+              ...stepState,
+              [TTxnStepName.FORM]: {
+                ...stepState[TTxnStepName.FORM],
+                isAmountValid: validateAmount(v),
+              },
+            });
+          }}
         />
       </FormWrap>
       <Box height="60px"></Box>
