@@ -41,7 +41,8 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     ? DEFAULT_MINT_BENEFICIARY
     : DEFAULT_BURN_BENEFICIARY;
   const DEFAULT_AMOUNT = isMint ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
-
+  const SENDING_UNIT = isMint ? "NEAR" : "goNEAR";
+  const RECEIVING_UNIT = isMint ? "goNEAR" : "NEAR";
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
   const [isStepsFinished, setStepsFinished] = useState([false, false, false]);
@@ -209,25 +210,42 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
             setIsBeneficiaryValid(validateAddress(v) || v === "");
           }}
         />
-        <TextField
-          helperText={`like ${DEFAULT_AMOUNT}, up to 10 decimals`}
-          inputProps={{
-            inputMode: "numeric",
-            step: 0.000_000_000_1,
-            pattern: "[0-9].*",
-          }}
-          error={!isAmountValid}
-          id="mint_amount"
-          label="Amount (NEAR)"
-          fullWidth
-          margin="normal"
-          value={amount}
-          onChange={(e) => {
-            const v = e.target.value;
-            setAmount(v);
-            setIsAmountValid(validateAmount(v));
-          }}
-        />
+        <Box display="flex">
+          <TextField
+            helperText={`like ${DEFAULT_AMOUNT}, up to 10 decimals`}
+            inputProps={{
+              inputMode: "numeric",
+              step: 0.000_000_000_1,
+              pattern: "[0-9].*",
+            }}
+            error={!isAmountValid}
+            id="mint_amount"
+            label={`Sending Amount (${SENDING_UNIT})`}
+            fullWidth
+            margin="normal"
+            value={amount}
+            onChange={(e) => {
+              const v = e.target.value;
+              setAmount(v);
+              setIsAmountValid(validateAmount(v));
+            }}
+          />
+          <Box width="2rem" />
+          <TextField
+            helperText={`like ${DEFAULT_AMOUNT}, up to 10 decimals`}
+            inputProps={{
+              inputMode: "numeric",
+              step: 0.000_000_000_1,
+              pattern: "[0-9].*",
+            }}
+            id="mint_amount"
+            label={`Receiving Amount (${RECEIVING_UNIT})`}
+            fullWidth
+            margin="normal"
+            value={(Number(amount) * (isMint ? 1 : 0.998) - 1).toFixed(10)}
+            disabled
+          />
+        </Box>
       </FormWrap>
 
       <Box height="60px"></Box>
