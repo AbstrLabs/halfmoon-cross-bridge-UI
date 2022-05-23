@@ -41,7 +41,13 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
   const [isStepsFinished, setStepsFinished] = useState([false, false, false]);
-
+  const updateStepsFinished = useCallback((pos: 0 | 1 | 2, newVal: boolean) => {
+    setStepsFinished((isStepsFinished) => {
+      const newStepsFinished = [...isStepsFinished];
+      newStepsFinished[pos] = newVal;
+      return newStepsFinished;
+    });
+  }, []);
   // step1
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
@@ -75,51 +81,49 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         setBeneficiary(DEFAULT_BENEFICIARY);
         setAmount(DEFAULT_AMOUNT);
       }
-      setStepsFinished({ ...isStepsFinished, 0: true });
-      // TODO: add a watcher for setActiveStep (use memo)
-      return;
     }
 
     if (!isBeneficiaryValid) {
-      setStepsFinished({ ...isStepsFinished, 0: false });
+      updateStepsFinished(0, false);
       alert("Invalid address");
       return;
     }
     if (!isAmountValid) {
-      setStepsFinished({ ...isStepsFinished, 0: false });
+      updateStepsFinished(0, false);
       alert("Invalid amount");
       return;
     }
-    setStepsFinished({ ...isStepsFinished, 0: true });
+    updateStepsFinished(0, true);
   }, [
     DEFAULT_AMOUNT,
     DEFAULT_BENEFICIARY,
     isAmountValid,
     isBeneficiaryValid,
-    isStepsFinished,
+    updateStepsFinished,
   ]);
   const connectWallet = useCallback(async () => {
     // only blockchain == near
     if (isMint) {
       if (nearWallet.isSignedIn()) {
+        updateStepsFinished(1, true);
         const answer = window.confirm(
           "you've signed in, do you want to sign out?"
         );
         if (answer) {
           nearWallet.signOut();
-          setStepsFinished({ ...isStepsFinished, 1: false });
+          updateStepsFinished(1, false);
         }
       } else {
         nearWallet.requestSignIn("abstrlabs.testnet");
-        setStepsFinished({ ...isStepsFinished, 1: true });
+        updateStepsFinished(1, true);
       }
     }
     if (isBurn) {
       await connectToMyAlgo();
-      setStepsFinished({ ...isStepsFinished, 1: true });
+      updateStepsFinished(1, true);
     }
-    setStepsFinished({ ...isStepsFinished, 1: true });
-  }, [isBurn, isMint, isStepsFinished]);
+    updateStepsFinished(1, true);
+  }, [isBurn, isMint, updateStepsFinished]);
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
       if (isMint) {
@@ -212,7 +216,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
 
       <Stepper
         nonLinear
-        activeStep={isStepsFinished.findIndex((x) => x) + 1}
+        activeStep={isStepsFinished.findIndex((x) => !x)}
         alternativeLabel
       >
         {Object.entries(steps).map(([stepName, stepObject]) => (
@@ -221,7 +225,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
               color="inherit"
               onClick={stepObject.action}
               disabled={
-                stepObject.stepId > isStepsFinished.findIndex((x) => x) + 1
+                stepObject.stepId > isStepsFinished.findIndex((x) => !x)
               }
             >
               {stepName}
