@@ -84,27 +84,44 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         setBeneficiary(DEFAULT_BENEFICIARY);
         setAmount(DEFAULT_AMOUNT);
       }
+      setActiveStep(1);
+      // TODO: add a watcher for setActiveStep (use memo)
+      return;
     }
 
-    if (!validateAddress(beneficiary)) {
+    if (!stepState[TTxnStepName.FORM].isBeneficiaryValid) {
+      setStepState({
+        ...stepState,
+        [TTxnStepName.FORM]: {
+          ...stepState[TTxnStepName.FORM],
+          isComplete: false,
+        },
+      });
       setActiveStep(0);
       alert("Invalid address");
       return;
     }
-    if (!validateAmount(amount)) {
+    if (!stepState[TTxnStepName.FORM].isAmountValid) {
+      setStepState({
+        ...stepState,
+        [TTxnStepName.FORM]: {
+          ...stepState[TTxnStepName.FORM],
+          isComplete: false,
+        },
+      });
       setActiveStep(0);
       alert("Invalid amount");
       return;
     }
+    setStepState({
+      ...stepState,
+      [TTxnStepName.FORM]: {
+        ...stepState[TTxnStepName.FORM],
+        isComplete: true,
+      },
+    });
     setActiveStep(1);
-  }, [
-    DEFAULT_AMOUNT,
-    DEFAULT_BENEFICIARY,
-    amount,
-    beneficiary,
-    validateAddress,
-    validateAmount,
-  ]);
+  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY, TTxnStepName.FORM, stepState]);
   const connectWallet = useCallback(async () => {
     // only blockchain == near
     if (isMint) {
@@ -247,7 +264,11 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       <Stepper nonLinear activeStep={activeStep} alternativeLabel>
         {Object.entries(steps).map(([stepName, stepObject]) => (
           <Step key={stepName} completed={stepObject.stepId < activeStep}>
-            <StepButton color="inherit" onClick={stepObject.action}>
+            <StepButton
+              color="inherit"
+              onClick={stepObject.action}
+              disabled={stepObject.stepId !== activeStep}
+            >
               {stepName}
             </StepButton>
           </Step>
