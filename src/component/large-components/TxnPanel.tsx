@@ -13,6 +13,11 @@ import { authorizeMintTransaction, nearWallet } from "../utils/near";
 import { TxnType } from "../..";
 import algosdk from "algosdk";
 
+enum TTxnStepName {
+  FORM = "Fill up the Form",
+  WALLET = "Connect to Wallet",
+  AUTH = "Authorize Mint Transaction",
+}
 const DEFAULT_MINT_BENEFICIARY =
   "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA";
 const DEFAULT_MINT_AMOUNT = "1.357";
@@ -25,12 +30,6 @@ const ALGORAND_ADDR_REGEX = /^[2-79A-Z]{58}$/;
 const NEAR_ADDR_REGEX = /^[0-9a-z][0-9a-z\-_]{2,64}.(testnet|mainnet)$/;
 
 export function TxnPanel({ txnType }: { txnType: TxnType }) {
-  enum TTxnStepName {
-    FORM = "Fill up the Form",
-    WALLET = "Connect to Wallet",
-    AUTH = "Authorize Mint Transaction",
-  }
-
   const isMint = useMemo(() => txnType === TxnType.MINT, [txnType]);
   const isBurn = useMemo(() => txnType === TxnType.BURN, [txnType]);
 
@@ -41,20 +40,12 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
 
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
+  const [stepsFinished, setStepsFinished] = useState([false, false, false]);
 
-  const [stepState, setStepState] = useState({
-    [TTxnStepName.FORM]: {
-      isAmountValid: true,
-      isBeneficiaryValid: true,
-      isComplete: false,
-    },
-    [TTxnStepName.WALLET]: {
-      isComplete: false,
-    },
-    [TTxnStepName.AUTH]: {
-      isComplete: false,
-    },
-  });
+  // step1
+  const [isAmountValid, setIsAmountValid] = useState(true);
+  const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
+
   const quickCheckAddress = useCallback(
     (addr: string) =>
       (isMint && ALGORAND_ADDR_REGEX.test(addr)) ||
@@ -89,39 +80,21 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       return;
     }
 
-    if (!stepState[TTxnStepName.FORM].isBeneficiaryValid) {
-      setStepState({
-        ...stepState,
-        [TTxnStepName.FORM]: {
-          ...stepState[TTxnStepName.FORM],
-          isComplete: false,
-        },
-      });
+    if (!isBeneficiaryValid) {
+      setStepsFinished([false, false, false]);
       setActiveStep(0);
       alert("Invalid address");
       return;
     }
-    if (!stepState[TTxnStepName.FORM].isAmountValid) {
-      setStepState({
-        ...stepState,
-        [TTxnStepName.FORM]: {
-          ...stepState[TTxnStepName.FORM],
-          isComplete: false,
-        },
-      });
+    if (!isAmountValid) {
+      setStepsFinished([false, false, false]);
       setActiveStep(0);
       alert("Invalid amount");
       return;
     }
-    setStepState({
-      ...stepState,
-      [TTxnStepName.FORM]: {
-        ...stepState[TTxnStepName.FORM],
-        isComplete: true,
-      },
-    });
+    setStepsFinished([true, false, false]);
     setActiveStep(1);
-  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY, TTxnStepName.FORM, stepState]);
+  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY, isAmountValid, isBeneficiaryValid]);
   const connectWallet = useCallback(async () => {
     // only blockchain == near
     if (isMint) {
@@ -184,14 +157,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       },
     }),
 
-    [
-      TTxnStepName.AUTH,
-      TTxnStepName.FORM,
-      TTxnStepName.WALLET,
-      authorizeTxn,
-      connectWallet,
-      validateForm,
-    ]
+    [authorizeTxn, connectWallet, validateForm]
   );
 
   const [activeStep, setActiveStep] = React.useState<TStep["stepId"]>(0);
@@ -210,28 +176,14 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
             const v = e.target.value;
             setBeneficiary(v);
             if (quickCheckAddress(v)) {
-              setStepState({
-                ...stepState,
-                [TTxnStepName.FORM]: {
-                  ...stepState[TTxnStepName.FORM],
-                  isBeneficiaryValid: validateAddress(v),
-                },
-              });
+              setIsBeneficiaryValid(validateAddress(v));
             }
           }}
-          error={!stepState[TTxnStepName.FORM].isBeneficiaryValid}
+          error={!isBeneficiaryValid}
           onBlur={(e) => {
             const v = e.target.value;
-            if (v === "") {
-              return;
-            }
-            setStepState({
-              ...stepState,
-              [TTxnStepName.FORM]: {
-                ...stepState[TTxnStepName.FORM],
-                isBeneficiaryValid: validateAddress(beneficiary) || v === "",
-              },
-            });
+            if (v === "") return;
+            setIsBeneficiaryValid(validateAddress(v) || v === "");
           }}
         />
         <TextField
@@ -241,7 +193,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
             step: 0.000_000_000_1,
             pattern: "[0-9].*",
           }}
-          error={!stepState[TTxnStepName.FORM].isAmountValid}
+          error={!isAmountValid}
           id="mint_amount"
           label="Amount (NEAR)"
           fullWidth
@@ -250,16 +202,11 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
           onChange={(e) => {
             const v = e.target.value;
             setAmount(v);
-            setStepState({
-              ...stepState,
-              [TTxnStepName.FORM]: {
-                ...stepState[TTxnStepName.FORM],
-                isAmountValid: validateAmount(v),
-              },
-            });
+            setIsAmountValid(validateAmount(v));
           }}
         />
       </FormWrap>
+
       <Box height="60px"></Box>
       <Stepper nonLinear activeStep={activeStep} alternativeLabel>
         {Object.entries(steps).map(([stepName, stepObject]) => (
