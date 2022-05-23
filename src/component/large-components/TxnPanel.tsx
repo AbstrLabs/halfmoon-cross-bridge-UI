@@ -1,17 +1,21 @@
 import {
   Box,
+  LinearProgress,
+  Modal,
   Step,
   StepButton,
   Stepper,
   TextField,
+  Typography,
   styled,
 } from "@mui/material";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { authorizeBurnTransaction, connectToMyAlgo } from "../utils/algorand";
 import { authorizeMintTransaction, nearWallet } from "../utils/near";
 
 import { TxnType } from "../..";
 import algosdk from "algosdk";
+import { useCountdown } from "usehooks-ts";
 
 enum TTxnStepName {
   FORM = "Fill up the Form",
@@ -51,7 +55,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   // step1
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
-
+  const [isModalOpen, setModalOpen] = useState(false);
   const quickCheckAddress = useCallback(
     (addr: string) =>
       (isMint && ALGORAND_ADDR_REGEX.test(addr)) ||
@@ -73,6 +77,18 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     (amount: string) => quickCheckAmount(amount),
     [quickCheckAmount]
   );
+
+  const [algoTxnCountdown, { start: startCountdown, reset: resetCountdown }] =
+    useCountdown({
+      seconds: 100,
+      interval: 100,
+    });
+
+  const startAlgoTxnCountdown = useCallback(() => {
+    resetCountdown();
+    setModalOpen(true);
+    startCountdown();
+  }, [resetCountdown, startCountdown]);
 
   const validateForm = useCallback(() => {
     if (process.env.NODE_ENV === "development") {
@@ -131,9 +147,10 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       }
       if (isBurn) {
         await authorizeBurnTransaction(beneficiary, amount);
+        startAlgoTxnCountdown();
       }
     },
-    [amount, beneficiary, isBurn, isMint]
+    [amount, beneficiary, isBurn, isMint, startAlgoTxnCountdown]
   );
 
   type TStep = {
@@ -167,6 +184,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     [authorizeTxn, connectWallet, validateForm]
   );
 
+  useEffect(() => {}, []);
   return (
     <React.Fragment>
       <FormWrap>
@@ -233,6 +251,47 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
           </Step>
         ))}
       </Stepper>
+
+      <Modal
+        open={isModalOpen}
+        onClose={() => {
+          setModalOpen(true);
+        }}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            color: "text.primary",
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: "0px 0px 18px 12px #7f7f7f50",
+            p: 4,
+          }}
+        >
+          <Typography
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+            align="center"
+          >
+            Waiting for Algorand Confirm
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Algorand blockchain needs around 10 seconds to confirm your
+            transaction. Please wait for{" "}
+            {(algoTxnCountdown / 10).toFixed(1) + " "}
+            more second(s).
+          </Typography>
+          <Box height="1rem"></Box>
+          <LinearProgress variant="determinate" value={algoTxnCountdown} />
+        </Box>
+      </Modal>
     </React.Fragment>
   );
 }
