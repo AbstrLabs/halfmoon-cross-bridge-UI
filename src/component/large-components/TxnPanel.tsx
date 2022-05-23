@@ -40,7 +40,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
 
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
-  const [stepsFinished, setStepsFinished] = useState([false, false, false]);
+  const [isStepsFinished, setStepsFinished] = useState([false, false, false]);
 
   // step1
   const [isAmountValid, setIsAmountValid] = useState(true);
@@ -75,26 +75,29 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         setBeneficiary(DEFAULT_BENEFICIARY);
         setAmount(DEFAULT_AMOUNT);
       }
-      setActiveStep(1);
+      setStepsFinished({ ...isStepsFinished, 0: true });
       // TODO: add a watcher for setActiveStep (use memo)
       return;
     }
 
     if (!isBeneficiaryValid) {
-      setStepsFinished([false, false, false]);
-      setActiveStep(0);
+      setStepsFinished({ ...isStepsFinished, 0: false });
       alert("Invalid address");
       return;
     }
     if (!isAmountValid) {
-      setStepsFinished([false, false, false]);
-      setActiveStep(0);
+      setStepsFinished({ ...isStepsFinished, 0: false });
       alert("Invalid amount");
       return;
     }
-    setStepsFinished([true, false, false]);
-    setActiveStep(1);
-  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY, isAmountValid, isBeneficiaryValid]);
+    setStepsFinished({ ...isStepsFinished, 0: true });
+  }, [
+    DEFAULT_AMOUNT,
+    DEFAULT_BENEFICIARY,
+    isAmountValid,
+    isBeneficiaryValid,
+    isStepsFinished,
+  ]);
   const connectWallet = useCallback(async () => {
     // only blockchain == near
     if (isMint) {
@@ -115,8 +118,8 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
 
     if (isBurn) {
     }
-    setActiveStep(2);
-  }, [isBurn, isMint]);
+    setStepsFinished({ ...isStepsFinished, 1: true });
+  }, [isBurn, isMint, isStepsFinished]);
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
       if (isMint) {
@@ -159,8 +162,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
 
     [authorizeTxn, connectWallet, validateForm]
   );
-
-  const [activeStep, setActiveStep] = React.useState<TStep["stepId"]>(0);
 
   return (
     <React.Fragment>
@@ -208,13 +209,20 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       </FormWrap>
 
       <Box height="60px"></Box>
-      <Stepper nonLinear activeStep={activeStep} alternativeLabel>
+
+      <Stepper
+        nonLinear
+        activeStep={isStepsFinished.findIndex((x) => x) + 1}
+        alternativeLabel
+      >
         {Object.entries(steps).map(([stepName, stepObject]) => (
-          <Step key={stepName} completed={stepObject.stepId < activeStep}>
+          <Step key={stepName} completed={isStepsFinished[stepObject.stepId]}>
             <StepButton
               color="inherit"
               onClick={stepObject.action}
-              disabled={stepObject.stepId !== activeStep}
+              disabled={
+                stepObject.stepId > isStepsFinished.findIndex((x) => x) + 1
+              }
             >
               {stepName}
             </StepButton>
