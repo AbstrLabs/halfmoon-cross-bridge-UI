@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import { grey, orange, yellow } from "@mui/material/colors";
 
-import { HashRouter } from "react-router-dom";
 import React from "react";
 import { Router } from "./page/Router";
 import { useTernaryDarkMode } from "usehooks-ts";
@@ -39,12 +38,7 @@ function App() {
           }}
         />
         <AppWarp>
-          {/* <TopSnackbar /> */}
-          {/* <BrowserRouter> */}
-          {/* </BrowserRouter> */}
-          <HashRouter basename={process.env.PUBLIC_URL}>
-            <Router />
-          </HashRouter>
+          <Router />
         </AppWarp>
       </ThemeProvider>
     </StyledEngineProvider>

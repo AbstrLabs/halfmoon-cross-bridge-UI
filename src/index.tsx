@@ -5,6 +5,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 
+export { TxnType, CONFIG, type ApiParam, type StringifiedBridgeTxnObject };
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
@@ -18,12 +20,11 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
-
-export enum TxnType {
+enum TxnType {
   MINT = "MINT",
   BURN = "BURN",
 }
-export interface StringifiedBridgeTxnObject {
+interface StringifiedBridgeTxnObject {
   // from bridge-txn.ts
   dbId: string;
   fixedFeeAtom: string;
@@ -41,16 +42,27 @@ export interface StringifiedBridgeTxnObject {
   txnType: TxnType;
 }
 
-export const CONFIG = {
-  apiServer: {
-    hostname: "http://localhost",
-    port: "4190",
-    mintPath: "/api/mint",
-    burnPath: "/api/burn",
-  },
+const CONFIG = {
+  // apiServer: {
+  //   hostname: "http://localhost",
+  //   port: "4190",
+  //   path: "/algorand-near",
+  // },
+  apiServerUrl:
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:4190/algorand-near"
+      : "http://api.halfmooncross/algorand-near",
   acc: {
     algorand_master:
       "JMJLRBZQSTS6ZINTD3LLSXCW46K44EI2YZHYKCPBGZP3FLITIQRGPELOBE",
     near_master: "abstrlabs.testnet",
   },
 };
+
+interface ApiParam {
+  type: TxnType;
+  from: string;
+  txnId: string;
+  to: string;
+  amount: string;
+}
