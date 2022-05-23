@@ -31,6 +31,7 @@ export function ResultPage() {
     toTxnId: searchParams.get("toTxnId")!,
     txnType: searchParams.get("txnType")!.toUpperCase() as TxnType,
   };
+  // TODO: if any is empty , show another page or redirect to 404.
   let Links: {
     [key in TxnType]: {
       from: ({ addr }: { addr: string }) => JSX.Element;

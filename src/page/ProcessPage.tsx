@@ -75,6 +75,17 @@ export function ProcessPage() {
     callApi(newParam)
       .then(async (res: any) => {
         console.log("res : ", res); // DEV_LOG_TO_REMOVE
+        if (res.status === 400) {
+          window.alert("Invalid transaction");
+          return;
+        }
+        if (res.status === 404) {
+          window.alert("Transaction not found");
+          return;
+        }
+        if (res.status === 406) {
+          window.alert("Double mint detected");
+        }
         if (res.status === 200) {
           const resJson = await res.json();
           const replacingUrl = getResultUrlFromParam(resJson);
