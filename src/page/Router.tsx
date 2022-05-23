@@ -36,11 +36,13 @@ export function Router() {
         <ScrollToTop />
         <Header />
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/process" element={<ProcessPage />} />
-          <Route path="/result" element={<ResultPage />} />
-          <Route path="/docs" element={<DocsPage />} />
-          <Route path="/*" element={<E404Page />} />
+          <Route path="/">
+            <Route index element={<HomePage />} />
+            <Route path="process" element={<ProcessPage />} />
+            <Route path="result" element={<ResultPage />} />
+            <Route path="docs" element={<DocsPage />} />
+            <Route path="*" element={<E404Page />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </React.Fragment>
