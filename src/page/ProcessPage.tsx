@@ -73,13 +73,19 @@ export function ProcessPage() {
       amount: params.amount,
     };
     callApi(newParam)
-      .then((res: any) => {
+      .then(async (res: any) => {
         console.log("res : ", res); // DEV_LOG_TO_REMOVE
-        window.location.replace(getResultUrlFromParam(res.json()));
+        if (res.status === 200) {
+          const resJson = await res.json();
+          const replacingUrl = getResultUrlFromParam(resJson);
+          window.location.replace(replacingUrl);
+          return;
+        }
+        throw new Error(`${res.status} ${res.statusText}`);
       })
       .catch((err: any) => {
-        console.error("API Server not available. Error : ", err); // DEV_LOG_TO_REMOVE
-        alert("wrong api param!");
+        console.error("API server rejected. Error : ", err); // DEV_LOG_TO_REMOVE
+        alert("API server rejected!");
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
