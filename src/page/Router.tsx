@@ -1,4 +1,4 @@
-import { BrowserRouter,Switch, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 
 import { DocsPage } from "./DocsPage";
@@ -35,13 +35,13 @@ export function Router() {
       <BrowserRouter>
         <ScrollToTop />
         <Header />
-        <Switch>
+        <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/process" element={<ProcessPage />} />
           <Route path="/result" element={<ResultPage />} />
           <Route path="/docs" element={<DocsPage />} />
           <Route path="/*" element={<E404Page />} />
-        </Switch>
+        </Routes>
       </BrowserRouter>
     </React.Fragment>
   );
