@@ -107,16 +107,16 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         );
         if (answer) {
           nearWallet.signOut();
+          setStepsFinished({ ...isStepsFinished, 1: false });
         }
       } else {
         nearWallet.requestSignIn("abstrlabs.testnet");
+        setStepsFinished({ ...isStepsFinished, 1: true });
       }
     }
     if (isBurn) {
       await connectToMyAlgo();
-    }
-
-    if (isBurn) {
+      setStepsFinished({ ...isStepsFinished, 1: true });
     }
     setStepsFinished({ ...isStepsFinished, 1: true });
   }, [isBurn, isMint, isStepsFinished]);
