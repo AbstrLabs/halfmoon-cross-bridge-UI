@@ -29,6 +29,7 @@ export function Navbar() {
         <Link to="/"><Button>Home</Button></Link>
         <Link to="/docs"><Button>Docs</Button></Link>
         <Link to="/result"><Button>Result</Button></Link>
+        <Link to="/process"></Link>
       </ButtonGroup>
     </div>
   );
