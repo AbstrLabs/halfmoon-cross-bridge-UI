@@ -10,8 +10,11 @@ import {
   styled,
 } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { authorizeBurnTransaction, connectToMyAlgo } from "../utils/algorand";
-import { authorizeMintTransaction, nearWallet } from "../utils/near";
+import {
+  authorizeBurnTransaction,
+  connectToMyAlgo,
+} from "../../utils/algorand";
+import { authorizeMintTransaction, nearWallet } from "../../utils/near";
 
 import { TxnType } from "../..";
 import algosdk from "algosdk";
@@ -43,7 +46,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const DEFAULT_AMOUNT = isMint ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
   const SENDING_UNIT = isMint ? "NEAR" : "goNEAR";
   const RECEIVING_UNIT = isMint ? "goNEAR" : "NEAR";
-  const FEE = isMint ? "1+0.0% " : "1+0.2% ";
+  const FEE = isMint ? "0.0%+1" : "0.2%+1";
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
   const [isStepsFinished, setStepsFinished] = useState([false, false, false]);
@@ -100,7 +103,8 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         setAmount(DEFAULT_AMOUNT);
       }
     }
-
+    setIsBeneficiaryValid(validateAddress(beneficiary));
+    setIsAmountValid(validateAmount(amount));
     if (!isBeneficiaryValid) {
       updateStepsFinished(0, false);
       alert("Invalid address");
@@ -115,9 +119,13 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   }, [
     DEFAULT_AMOUNT,
     DEFAULT_BENEFICIARY,
+    amount,
+    beneficiary,
     isAmountValid,
     isBeneficiaryValid,
     updateStepsFinished,
+    validateAddress,
+    validateAmount,
   ]);
   const connectWallet = useCallback(async () => {
     // only blockchain == near
@@ -233,7 +241,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
           />
           <Box width="2rem" />
           <TextField
-            helperText={`like ${DEFAULT_AMOUNT}. Fee: ${FEE}`}
+            helperText={`Fee: ${FEE}. Showing all decimals.`}
             inputProps={{
               inputMode: "numeric",
               step: 0.000_000_000_1,

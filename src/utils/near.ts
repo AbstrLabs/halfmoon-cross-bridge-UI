@@ -2,7 +2,7 @@ import * as nearAPI from "near-api-js";
 
 import { checkOptedIn, optInGoNear } from "./algorand";
 
-import { CONFIG } from "../..";
+import { CONFIG } from "..";
 
 export { nearWallet, authorizeMintTransaction };
 // const receiverId = "abstrlabs.testnet";
@@ -91,13 +91,15 @@ async function authorizeMintTransaction(
       );
     }
     let optInOption = window.confirm(
-      "beneficiary account not opted in to goNEAR, opt in now?"
+      "Beneficiary account have not opted in to goNEAR, opt in now?"
     );
     if (!optInOption) {
       return;
     }
     const optInTxnId = await optInGoNear(mintReceiver);
-    window.alert("beneficiary account opted in to goNEAR in txn" + optInTxnId);
+    window.alert(
+      `Beneficiary account opted in to goNEAR successfully.\nTransaction ID ${optInTxnId}.`
+    );
     firstTimeCheckOptedIn = false;
   }
   const cbUrl = new URL("/process", window.location.href);

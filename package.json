@@ -43,7 +43,7 @@
     "web-vitals": "^2.1.0"
   },
   "devDependencies": {
-    "gh-pages": "^4.0.0",
+    "@babel/plugin-transform-typescript": "^7.18.1",
     "process": "^0.11.10"
   },
   "eslintConfig": {
@@ -57,11 +57,10 @@
   "private": true,
   "scripts": {
     "build": "react-app-rewired build",
-    "deploy": "gh-pages -d build",
     "eject": "echo 'forbidden' # react-app-rewired eject",
-    "predeploy": "react-app-rewired build",
     "start": "react-app-rewired start",
-    "test": "react-app-rewired test"
+    "test": "react-app-rewired test",
+    "deploy": "yarn build && echo 'still need to serve with our AWS server, possibly using `afscp:serve'\"'\"''"
   },
   "version": "0.1.0"
 }
