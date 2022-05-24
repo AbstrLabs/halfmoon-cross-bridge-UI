@@ -46,6 +46,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const DEFAULT_AMOUNT = isMint ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
   const SENDING_UNIT = isMint ? "NEAR" : "goNEAR";
   const RECEIVING_UNIT = isMint ? "goNEAR" : "NEAR";
+  const FEE = isMint ? "1+0.0% " : "1+0.2% ";
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
   const [isStepsFinished, setStepsFinished] = useState([false, false, false]);
@@ -240,7 +241,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
           />
           <Box width="2rem" />
           <TextField
-            helperText={`like ${DEFAULT_AMOUNT}, up to 10 decimals`}
+            helperText={`like ${DEFAULT_AMOUNT}. Fee: ${FEE}`}
             inputProps={{
               inputMode: "numeric",
               step: 0.000_000_000_1,
