@@ -1,4 +1,4 @@
-import { CONFIG } from "../..";
+import { CONFIG } from "..";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
 

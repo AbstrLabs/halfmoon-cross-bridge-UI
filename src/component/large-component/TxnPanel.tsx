@@ -10,8 +10,11 @@ import {
   styled,
 } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { authorizeBurnTransaction, connectToMyAlgo } from "../utils/algorand";
-import { authorizeMintTransaction, nearWallet } from "../utils/near";
+import {
+  authorizeBurnTransaction,
+  connectToMyAlgo,
+} from "../../utils/algorand";
+import { authorizeMintTransaction, nearWallet } from "../../utils/near";
 
 import { TxnType } from "../..";
 import algosdk from "algosdk";

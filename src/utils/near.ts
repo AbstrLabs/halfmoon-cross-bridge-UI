@@ -2,7 +2,7 @@ import * as nearAPI from "near-api-js";
 
 import { checkOptedIn, optInGoNear } from "./algorand";
 
-import { CONFIG } from "../..";
+import { CONFIG } from "..";
 
 export { nearWallet, authorizeMintTransaction };
 // const receiverId = "abstrlabs.testnet";

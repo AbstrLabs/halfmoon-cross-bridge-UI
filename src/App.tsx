@@ -22,7 +22,7 @@ function App() {
     [isDarkMode]
   );
 
-  console.log("updated on @2022-05-21");
+  console.log("updated on @2022-05-25"); // to test host
 
   /* ======== REACT ======== */
   return (
