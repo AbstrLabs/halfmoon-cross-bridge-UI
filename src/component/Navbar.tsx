@@ -1,8 +1,8 @@
 import { Brightness4, Brightness7, BrightnessAuto } from "@mui/icons-material";
 import { Button, ButtonGroup, IconButton } from "@mui/material";
 
-import { useTernaryDarkMode } from "usehooks-ts";
 import { Link } from "react-router-dom";
+import { useTernaryDarkMode } from "usehooks-ts";
 
 export function Navbar() {
   const { ternaryDarkMode, toggleTernaryDarkMode } = useTernaryDarkMode();
@@ -26,10 +26,11 @@ export function Navbar() {
           <Button onClick={test}>Test</Button>
         )} */}
         {/* // TODO: real Product href */}
-        <Link to="/"><Button>Home</Button></Link>
-        <Link to="/docs"><Button>Docs</Button></Link>
-        <Link to="/result"><Button>Result</Button></Link>
-        <Link to="/process"></Link>
+        <Button href="/">Home</Button>
+        <Button href="/docs">Docs</Button>
+        <Button href="/result">Result</Button>
+        {/* <Button href="/about">About</Button> */}
+        {/* TODO: add something like help/contact/report here */}
       </ButtonGroup>
     </div>
   );
