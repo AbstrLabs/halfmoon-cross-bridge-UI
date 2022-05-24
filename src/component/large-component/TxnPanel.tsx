@@ -99,7 +99,8 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         setAmount(DEFAULT_AMOUNT);
       }
     }
-
+    setIsBeneficiaryValid(validateAddress(beneficiary));
+    setIsAmountValid(validateAmount(amount));
     if (!isBeneficiaryValid) {
       updateStepsFinished(0, false);
       alert("Invalid address");
@@ -114,9 +115,13 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   }, [
     DEFAULT_AMOUNT,
     DEFAULT_BENEFICIARY,
+    amount,
+    beneficiary,
     isAmountValid,
     isBeneficiaryValid,
     updateStepsFinished,
+    validateAddress,
+    validateAmount,
   ]);
   const connectWallet = useCallback(async () => {
     // only blockchain == near
