@@ -1,4 +1,4 @@
-import { type ApiParam, CONFIG } from "..";
+import { ApiParam, CONFIG } from "./config";
 
 export async function callApi(postParam: ApiParam) {
   // todo: refactor this type after backend refactor

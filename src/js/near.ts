@@ -2,7 +2,7 @@ import * as nearAPI from "near-api-js";
 
 import { checkOptedIn, optInGoNear } from "./algorand";
 
-import { CONFIG } from "..";
+import { CONFIG } from "./config";
 
 export { nearWallet, authorizeMintTransaction };
 // const receiverId = "abstrlabs.testnet";
@@ -15,18 +15,6 @@ const near = new nearAPI.Near({
   nodeUrl: "https://rpc.testnet.near.org",
   walletUrl: "https://wallet.testnet.near.org",
 });
-
-// This is in the official docs but why using await?
-// async function initNear() {
-//   const near = await nearAPI.connect({
-//     headers: {},
-//     keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore(),
-//     networkId: "testnet",
-//     nodeUrl: "https://rpc.testnet.near.org",
-//     walletUrl: "https://wallet.testnet.near.org",
-//   });
-//   return near;
-// }
 
 const nearWallet = new nearAPI.WalletConnection(
   near,

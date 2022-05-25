@@ -21,9 +21,6 @@ function App() {
     // TODO:WAIT: Fluid font sizes
     [isDarkMode]
   );
-
-  console.log("updated on @2022-05-25"); // to test host
-
   /* ======== REACT ======== */
   return (
     <StyledEngineProvider injectFirst>

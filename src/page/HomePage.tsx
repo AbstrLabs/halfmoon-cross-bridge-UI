@@ -3,8 +3,9 @@ import { Download, Upload } from "@mui/icons-material";
 import React, { SyntheticEvent, useCallback, useState } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
-import { TxnPanel } from "../component/large-component/TxnPanel";
-import { TxnType } from "..";
+import { TxnPanel } from "../component/TxnPanel";
+import { TxnType } from "../js/config";
+import PanelContextProvider from "../context/panel"
 
 export function HomePage() {
   const [currentTab, setCurrentTab] = useState<TxnType>(TxnType.MINT);
@@ -21,7 +22,6 @@ export function HomePage() {
         variant="h3"
         component="h1"
         sx={{ fontSize: "1rem", fontWeight: 800 }}
-        margin="2rem auto 4rem"
         align="center"
       >
         Algorand - Near Bridge
@@ -38,10 +38,14 @@ export function HomePage() {
           </TabList>
         </Box>
         <TabPanel value={TxnType.MINT}>
-          <TxnPanel txnType={TxnType.MINT} />
+          <PanelContextProvider value={TxnType.MINT}>
+            <TxnPanel />
+          </PanelContextProvider>
         </TabPanel>
         <TabPanel value={TxnType.BURN}>
-          <TxnPanel txnType={TxnType.BURN} />
+          <PanelContextProvider value={TxnType.MINT}>
+            <TxnPanel />
+          </PanelContextProvider>
         </TabPanel>
       </TabContext>
     </BodyWrap>
