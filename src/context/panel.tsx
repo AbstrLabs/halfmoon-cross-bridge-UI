@@ -37,7 +37,7 @@ type TSteps = {
 };
 
 // create context for panel
-type panelType = {
+export type panelType = {
   isMint: boolean;
   isBurn: boolean;
   DEFAULT_BENEFICIARY: string;
@@ -227,7 +227,7 @@ const PanelContextProvider = ({
     [authorizeTxn, connectWallet, validateForm]
   );
 
-  const value = {
+  const value: panelType = {
     isMint,
     isBurn,
     DEFAULT_BENEFICIARY,

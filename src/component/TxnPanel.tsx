@@ -10,10 +10,10 @@ import {
   styled,
 } from "@mui/material";
 import React, {useContext} from "react";
-import {PanelContext} from "../context/panel"
+import {PanelContext, panelType} from "../context/panel"
 
 export function TxnPanel() {
-  const panel = useContext(PanelContext)
+  const panel = useContext(PanelContext) as panelType;
 
   const SENDING_UNIT = panel.isMint ? "NEAR" : "goNEAR";
   const RECEIVING_UNIT = panel.isMint ? "goNEAR" : "NEAR";
@@ -107,7 +107,7 @@ export function TxnPanel() {
       <Modal
         open={panel.isModalOpen? panel.isModalOpen:false}
         onClose={() => {
-          panel.setModalOpen?.(true);
+          panel.setModalOpen(true);
         }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
