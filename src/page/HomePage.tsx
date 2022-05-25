@@ -43,7 +43,7 @@ export function HomePage() {
           </PanelContextProvider>
         </TabPanel>
         <TabPanel value={TxnType.BURN}>
-          <PanelContextProvider txnType={TxnType.MINT}>
+          <PanelContextProvider txnType={TxnType.BURN}>
             <TxnPanel />
           </PanelContextProvider>
         </TabPanel>
