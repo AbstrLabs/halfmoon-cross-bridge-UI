@@ -88,18 +88,18 @@ export function TxnPanel() {
         alternativeLabel
       >
         {panel.steps ? Object.entries(panel.steps).map(([stepName, stepObject]) => (
-          <Step key={stepName} completed={panel.isStepsFinished?.[stepObject.stepId]}>
+          <Step key={stepName} completed={panel.isStepsFinished?.[stepObject.stepId] && stepObject.status}>
             <StepButton
               color="inherit"
               onClick={stepObject.action}
               disabled={
-                panel.isStepsFinished ? stepObject.stepId > panel.isStepsFinished.findIndex((x) => !x) : false
+                stepObject.stepId != 2 ?
+                (panel.isStepsFinished ? (stepObject.stepId > panel.isStepsFinished.findIndex((x) => !x)) : false)
+                : !stepObject.status
               }
             >
-              {panel.isStepsFinished?  
-                stepObject.stepId >= panel.isStepsFinished.findIndex((x) => !x) ?
-                  stepName: stepObject.finished
-                : ""
+              {panel.isStepsFinished?.[stepObject.stepId] && stepObject.status ?
+                stepObject.finished : stepName
               }
             </StepButton>
           </Step>
