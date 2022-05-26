@@ -34,7 +34,6 @@ async function createNearTxn({
     nearAPI.utils.format.parseNearAmount(amountStr)
   );
 
-  // const walletAcc = nearWallet.account();
   const ak = await nearWalletAccount.findAccessKey(
     nearWallet.getAccountId(),
     []

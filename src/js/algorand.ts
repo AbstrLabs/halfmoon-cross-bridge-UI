@@ -4,7 +4,6 @@ import algosdk from "algosdk";
 
 export {
   myAlgoWallet,
-  connectToMyAlgo,
   optInGoNear,
   checkOptedIn,
   authorizeBurnTransaction,
@@ -14,17 +13,6 @@ const myAlgoWallet = new MyAlgoConnect();
 
 const ALGO_UNIT = 10_000_000_000;
 const GO_NEAR_ASA_ID = 83251085;
-let ALGORAND_ADDRESS: string;
-
-async function connectToMyAlgo() {
-  try {
-    const accounts = await myAlgoWallet.connect();
-    ALGORAND_ADDRESS = accounts[0].address;
-    return ALGORAND_ADDRESS;
-  } catch (err) {
-    console.error(err);
-  }
-}
 
 // const algodClient = new algosdk.Algodv2('', 'https://node.testnet.algoexplorerapi.io', '');
 const algodClient = new algosdk.Algodv2(
@@ -59,8 +47,8 @@ async function signGoNearTransaction(
   }
 }
 
-const requestSignGoNearTxn = async (amountStr: string) => {
-  const from = ALGORAND_ADDRESS;
+const requestSignGoNearTxn = async (fromAdd:string,amountStr: string) => {
+  const from = fromAdd;
   const to = CONFIG.acc.algorand_master;
   const amount = +amountStr * ALGO_UNIT;
   try {
@@ -97,6 +85,7 @@ async function checkOptedIn(addr: string, option = { showAlert: false }) {
 }
 
 const authorizeBurnTransaction = async (
+  burnSender: string,
   burnReceiver: string,
   amount: string
 ) => {
@@ -104,9 +93,9 @@ const authorizeBurnTransaction = async (
   cbUrl.searchParams.set("type", "BURN");
   cbUrl.searchParams.set("amount", amount);
   cbUrl.searchParams.set("to", burnReceiver);
-  cbUrl.searchParams.set("from", ALGORAND_ADDRESS);
+  cbUrl.searchParams.set("from", burnSender);
 
-  let txnId = await requestSignGoNearTxn(amount);
+  let txnId = await requestSignGoNearTxn(burnSender, amount);
   cbUrl.searchParams.set("txnId", txnId);
 
   const callbackUrl = cbUrl.toString();

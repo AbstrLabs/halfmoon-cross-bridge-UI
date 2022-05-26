@@ -22,7 +22,7 @@ export function TxnPanel() {
     <React.Fragment>
       <FormWrap>
         <TextField
-          helperText={`like ${panel.DEFAULT_BENEFICIARY}`}
+          helperText={`e.g. ${panel.DEFAULT_BENEFICIARY}`}
           id="mint_to"
           label="Beneficiary (Algorand public address)"
           fullWidth
@@ -35,7 +35,7 @@ export function TxnPanel() {
               panel.setIsBeneficiaryValid?.(panel.validateAddress?.(v) || v ==="");
             }
           }}
-          error={!panel.isBeneficiaryValid}
+          error={panel.beneficiary.length >0 ?!panel.isBeneficiaryValid : false}
           onBlur={(e) => {
             const v = e.target.value;
             if (v === "") return;
@@ -44,13 +44,13 @@ export function TxnPanel() {
         />
         <Box display="flex">
           <TextField
-            helperText={`like ${panel.DEFAULT_AMOUNT}, up to 10 decimals`}
+            helperText={`e.g. ${panel.DEFAULT_AMOUNT}, up to 10 decimals`}
             inputProps={{
               inputMode: "numeric",
               step: 0.000_000_000_1,
               pattern: "[0-9].*",
             }}
-            error={!panel.isAmountValid}
+            error={panel.amount.length > 0 ? (!panel.isAmountValid) : false}
             id="mint_amount"
             label={`Sending Amount (${SENDING_UNIT})`}
             fullWidth
@@ -96,7 +96,11 @@ export function TxnPanel() {
                 panel.isStepsFinished ? stepObject.stepId > panel.isStepsFinished.findIndex((x) => !x) : false
               }
             >
-              {stepName}
+              {panel.isStepsFinished?  
+                stepObject.stepId >= panel.isStepsFinished.findIndex((x) => !x) ?
+                  stepName: stepObject.finished
+                : ""
+              }
             </StepButton>
           </Step>
         ))

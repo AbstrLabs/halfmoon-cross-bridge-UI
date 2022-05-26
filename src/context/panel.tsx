@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useMemo, useState } from "react";
-import { authorizeBurnTransaction, connectToMyAlgo } from "../js/algorand";
+import { authorizeBurnTransaction, myAlgoWallet } from "../js/algorand";
 import { authorizeMintTransaction, nearWallet } from "../js/near";
 
 import { TxnType } from "../js/config";
@@ -9,9 +9,12 @@ import { useCountdown } from "usehooks-ts";
 type TTxnSteptype = string | number | symbol;
 
 enum TTxnStepName {
-  WALLET = "Connect to Wallet",
-  FORM = "Fill up the Form",
-  AUTH = "Authorize Mint Transaction",
+  WALLET_START = "Connect to Wallet",
+  WALLET_CONNECTED = "Connected ",
+  FORM_START = "Fill up the Form",
+  FORM_FILLED = "Filled",
+  AUTH = "Authorize the Transaction",
+  AUTH_START = "Start the Transaction"
 }
 
 const DEFAULT_MINT_BENEFICIARY =
@@ -30,6 +33,7 @@ type TStep = {
   stepId: number;
   icon: JSX.Element;
   action: (() => void) | (() => Promise<any>);
+  finished: string;
 };
 
 type TSteps = {
@@ -81,7 +85,15 @@ const PanelContextProvider = ({
   const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
 
-  // step function
+  //form input valid
+  const [isAmountValid, setIsAmountValid] = useState(false);
+  const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(false);
+
+  // connect and step function
+  const [connectedNEAR, setNEARAcc] = useState("")
+  const [connectedAlgo,setAlgoAcc] = useState("")
+  const connected = isMint ? connectedNEAR.slice(0,5) + '...' : connectedAlgo.slice(0,5) + '...'
+  
   const [isStepsFinished, setStepsFinished] = useState([false, false, false]);
   const updateStepsFinished = useCallback((pos: 0 | 1 | 2, newVal: boolean) => {
     setStepsFinished((isStepsFinished) => {
@@ -108,8 +120,6 @@ const PanelContextProvider = ({
   }, [resetCountdown, startCountdown]);
 
   // form check
-  const [isAmountValid, setIsAmountValid] = useState(true);
-  const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
   const quickCheckAddress = useCallback(
     (addr: string) =>
       (isMint && ALGORAND_ADDR_REGEX.test(addr)) ||
@@ -133,29 +143,31 @@ const PanelContextProvider = ({
   );
 
   const validateForm = useCallback(() => {
-    if (process.env.NODE_ENV === "development") {
-      const c = window.confirm("Fill with test values?");
-      if (c) {
-        setBeneficiary(DEFAULT_BENEFICIARY);
-        setAmount(DEFAULT_AMOUNT);
-      }
-    }
+    // if (process.env.NODE_ENV === "development") {
+    //   const c = window.confirm("Fill with test values?");
+    //   if (c) {
+    //     setBeneficiary(DEFAULT_BENEFICIARY);
+    //     setAmount(DEFAULT_AMOUNT);
+    //   }
+    // }
     setIsBeneficiaryValid(validateAddress(beneficiary));
     setIsAmountValid(validateAmount(amount));
     if (!isBeneficiaryValid) {
-      updateStepsFinished(0, false);
+      updateStepsFinished(1, false);
       alert("Invalid address");
       return;
     }
     if (!isAmountValid) {
-      updateStepsFinished(0, false);
+      updateStepsFinished(1, false);
       alert("Invalid amount");
       return;
     }
-    updateStepsFinished(0, true);
+    if(isBeneficiaryValid && isAmountValid){
+      updateStepsFinished(1, true);
+    }
   }, [
-    DEFAULT_AMOUNT,
-    DEFAULT_BENEFICIARY,
+    // DEFAULT_AMOUNT,
+    // DEFAULT_BENEFICIARY,
     amount,
     beneficiary,
     isAmountValid,
@@ -170,61 +182,67 @@ const PanelContextProvider = ({
     // only blockchain == near
     if (isMint) {
       if (nearWallet.isSignedIn()) {
-        updateStepsFinished(1, true);
         const answer = window.confirm(
           "you've signed in, do you want to sign out?"
         );
         if (answer) {
           nearWallet.signOut();
-          updateStepsFinished(1, false);
+          updateStepsFinished(0, false);
         }
       } else {
         nearWallet.requestSignIn("abstrlabs.testnet");
-        updateStepsFinished(1, true);
       }
+      setNEARAcc(nearWallet.account().accountId)
+      updateStepsFinished(0, true);
     }
     if (isBurn) {
-      await connectToMyAlgo();
-      updateStepsFinished(1, true);
+      const accounts = await myAlgoWallet.connect();
+      setAlgoAcc(accounts[0].address);
+      updateStepsFinished(0, true);
     }
-    updateStepsFinished(1, true);
+    updateStepsFinished(0, true);
   }, [isBurn, isMint, updateStepsFinished]);
 
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
-      if (isMint) {
-        await authorizeMintTransaction(amount, beneficiary);
-      }
-      if (isBurn) {
-        await authorizeBurnTransaction(beneficiary, amount);
-        startAlgoTxnCountdown();
+      if(isAmountValid && isBeneficiaryValid){
+        if (isMint) {
+          await authorizeMintTransaction(amount, beneficiary);
+        }
+        if (isBurn) {
+          await authorizeBurnTransaction(connectedAlgo, beneficiary, amount);
+          startAlgoTxnCountdown();
+        }
       }
     },
-    [amount, beneficiary, isBurn, isMint, startAlgoTxnCountdown]
+    [amount, beneficiary, isBurn, isMint, startAlgoTxnCountdown,connectedAlgo, isAmountValid, isBeneficiaryValid]
   );
 
   // steps
   const steps: TSteps = useMemo(
     () => ({
-      [TTxnStepName.WALLET]: {
+      [TTxnStepName.WALLET_START]: {
         stepId: 0,
         icon: <></>,
         action: async () => await connectWallet(),
+        finished: TTxnStepName.WALLET_CONNECTED + connected
       },
 
-      [TTxnStepName.FORM]: {
+      [TTxnStepName.FORM_START]: {
         stepId: 1,
         icon: <></>,
         action: validateForm,
+        finished: TTxnStepName.FORM_FILLED
       },
 
       [TTxnStepName.AUTH]: {
         stepId: 2,
         icon: <></>,
         action: async () => await authorizeTxn(),
-      },
+        finished: TTxnStepName.AUTH_START
+      }
     }),
-    [authorizeTxn, connectWallet, validateForm]
+    [authorizeTxn, connectWallet, validateForm, connected]
   );
 
   const value: panelType = {
@@ -247,7 +265,7 @@ const PanelContextProvider = ({
     validateAmount,
     steps,
     isModalOpen,
-    setModalOpen,
+    setModalOpen
   };
 
   return (
