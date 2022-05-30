@@ -9,8 +9,8 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import React, {useContext} from "react";
-import {PanelContext, panelType} from "../context/panel"
+import React, { useContext } from "react";
+import { PanelContext, panelType } from "../context/panel";
 
 export function TxnPanel() {
   const panel = useContext(PanelContext) as panelType;
@@ -32,14 +32,20 @@ export function TxnPanel() {
             const v = e.target.value;
             panel.setBeneficiary?.(v);
             if (panel.quickCheckAddress?.(v)) {
-              panel.setIsBeneficiaryValid?.(panel.validateAddress?.(v) || v ==="");
+              panel.setIsBeneficiaryValid?.(
+                panel.validateAddress?.(v) || v === ""
+              );
             }
           }}
-          error={panel.beneficiary.length >0 ?!panel.isBeneficiaryValid : false}
+          error={
+            panel.beneficiary.length > 0 ? !panel.isBeneficiaryValid : false
+          }
           onBlur={(e) => {
             const v = e.target.value;
             if (v === "") return;
-            panel.setIsBeneficiaryValid?.(panel.validateAddress?.(v) || v === "");
+            panel.setIsBeneficiaryValid?.(
+              panel.validateAddress?.(v) || v === ""
+            );
           }}
         />
         <Box display="flex">
@@ -50,7 +56,7 @@ export function TxnPanel() {
               step: 0.000_000_000_1,
               pattern: "[0-9].*",
             }}
-            error={panel.amount.length > 0 ? (!panel.isAmountValid) : false}
+            error={panel.amount.length > 0 ? !panel.isAmountValid : false}
             id="mint_amount"
             label={`Sending Amount (${SENDING_UNIT})`}
             fullWidth
@@ -74,7 +80,10 @@ export function TxnPanel() {
             label={`Receiving Amount (${RECEIVING_UNIT})`}
             fullWidth
             margin="normal"
-            value={(Number(panel.amount) * (panel.isMint ? 1 : 0.998) - 1).toFixed(10)}
+            value={(
+              Number(panel.amount) * (panel.isMint ? 1 : 0.998) -
+              1
+            ).toFixed(10)}
             disabled
           />
         </Box>
@@ -87,29 +96,39 @@ export function TxnPanel() {
         activeStep={panel.isStepsFinished?.findIndex((x) => !x)}
         alternativeLabel
       >
-        {panel.steps ? Object.entries(panel.steps).map(([stepName, stepObject]) => (
-          <Step key={stepName} completed={panel.isStepsFinished?.[stepObject.stepId] && stepObject.status}>
-            <StepButton
-              color="inherit"
-              onClick={stepObject.action}
-              disabled={
-                stepObject.stepId != 2 ?
-                (panel.isStepsFinished ? (stepObject.stepId > panel.isStepsFinished.findIndex((x) => !x)) : false)
-                : !stepObject.status
-              }
-            >
-              {panel.isStepsFinished?.[stepObject.stepId] && stepObject.status ?
-                stepObject.finished : stepName
-              }
-            </StepButton>
-          </Step>
-        ))
-        :null
-      }
+        {panel.steps
+          ? Object.entries(panel.steps).map(([stepName, stepObject]) => (
+              <Step
+                key={stepName}
+                completed={
+                  panel.isStepsFinished?.[stepObject.stepId] &&
+                  stepObject.status
+                }
+              >
+                <StepButton
+                  color="inherit"
+                  onClick={stepObject.action}
+                  disabled={
+                    stepObject.stepId != 2
+                      ? panel.isStepsFinished
+                        ? stepObject.stepId >
+                          panel.isStepsFinished.findIndex((x) => !x)
+                        : false
+                      : !stepObject.status
+                  }
+                >
+                  {panel.isStepsFinished?.[stepObject.stepId] &&
+                  stepObject.status
+                    ? stepObject.finished
+                    : stepName}
+                </StepButton>
+              </Step>
+            ))
+          : null}
       </Stepper>
 
       <Modal
-        open={panel.isModalOpen? panel.isModalOpen:false}
+        open={panel.isModalOpen ? panel.isModalOpen : false}
         onClose={() => {
           panel.setModalOpen(true);
         }}
@@ -141,11 +160,16 @@ export function TxnPanel() {
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             Algorand blockchain needs around 10 seconds to confirm your
             transaction. Please wait for{" "}
-            {(panel.algoTxnCountdown?panel.algoTxnCountdown / 10 : 1).toFixed(1) + " "}
+            {(panel.algoTxnCountdown ? panel.algoTxnCountdown / 10 : 1).toFixed(
+              1
+            ) + " "}
             more second(s).
           </Typography>
           <Box height="1rem"></Box>
-          <LinearProgress variant="determinate" value={panel.algoTxnCountdown} />
+          <LinearProgress
+            variant="determinate"
+            value={panel.algoTxnCountdown}
+          />
         </Box>
       </Modal>
     </React.Fragment>
