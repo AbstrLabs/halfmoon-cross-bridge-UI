@@ -6,10 +6,10 @@ import { TxnType } from "../js/config";
 import algosdk from "algosdk";
 import { useCountdown } from "usehooks-ts";
 
-enum TTxnStepName {
-  WALLET_CONNECTED = "Connected",
-  FORM_START = "Fill up the Form",
-  AUTH = "Authorize the Transaction",
+enum TxnStepName {
+  CONNECT_WALLET = "CONNECT_WALLET",
+  VALIDATE_FORM = "VALIDATE_FORM",
+  AUTH_TXN = "AUTH_TXN",
 }
 
 const DEFAULT_MINT_BENEFICIARY =
@@ -32,7 +32,7 @@ type TStep = {
 };
 
 type TSteps = {
-  [key in TTxnStepName]: TStep;
+  [key in TxnStepName]: TStep;
 };
 
 // create context for panel
@@ -231,14 +231,14 @@ const PanelContextProvider = ({
   // steps
   const steps: TSteps = useMemo(
     () => ({
-      [TTxnStepName.WALLET_CONNECTED]: {
+      [TxnStepName.CONNECT_WALLET]: {
         stepId: 0,
         icon: <></>,
         action: async () => await connectWallet(),
         status: connectedAcc.length > 0 ? true : false,
       },
 
-      [TTxnStepName.FORM_START]: {
+      [TxnStepName.VALIDATE_FORM]: {
         stepId: 1,
         icon: <></>,
         action: validateForm,
@@ -249,7 +249,7 @@ const PanelContextProvider = ({
           isBeneficiaryValid,
       },
 
-      [TTxnStepName.AUTH]: {
+      [TxnStepName.AUTH_TXN]: {
         stepId: 2,
         icon: <></>,
         action: async () => await authorizeTxn(),
