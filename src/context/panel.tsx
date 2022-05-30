@@ -29,6 +29,11 @@ type TStep = {
   icon: JSX.Element;
   action: (() => void) | (() => Promise<any>);
   status: boolean;
+  title: {
+    default: string;
+    finished: string;
+    // can add a error message here
+  };
 };
 
 type TSteps = {
@@ -87,7 +92,7 @@ const PanelContextProvider = ({
   // connect and step function
   //
   const [nearAcc, setNearAcc] = useState<string>(
-    nearWallet.account().accountId
+    nearWallet.account().accountId ?? ""
   );
   const [algoAcc, setAlgoAcc] = useState<string>("");
   const connectedAcc = useMemo(
@@ -228,6 +233,8 @@ const PanelContextProvider = ({
     ]
   );
 
+  console.log("connectedAcc.length : ", connectedAcc.length); // DEV_LOG_TO_REMOVE
+
   // steps
   const steps: TSteps = useMemo(
     () => ({
@@ -236,8 +243,11 @@ const PanelContextProvider = ({
         icon: <></>,
         action: async () => await connectWallet(),
         status: connectedAcc.length > 0 ? true : false,
+        title: {
+          default: "Connect to Wallet",
+          finished: "Wallet Connected",
+        },
       },
-
       [TxnStepName.VALIDATE_FORM]: {
         stepId: 1,
         icon: <></>,
@@ -247,6 +257,10 @@ const PanelContextProvider = ({
           beneficiary.length > 0 &&
           isAmountValid &&
           isBeneficiaryValid,
+        title: {
+          default: "Fill up the Form",
+          finished: "Form Validated",
+        },
       },
 
       [TxnStepName.AUTH_TXN]: {
@@ -259,6 +273,10 @@ const PanelContextProvider = ({
           beneficiary.length > 0 &&
           isAmountValid &&
           isBeneficiaryValid,
+        title: {
+          default: "Start the Transaction",
+          finished: "Transaction Authorized",
+        },
       },
     }),
     [

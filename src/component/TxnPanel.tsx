@@ -109,7 +109,7 @@ export function TxnPanel() {
                   color="inherit"
                   onClick={stepObject.action}
                   disabled={
-                    stepObject.stepId != 2
+                    stepObject.stepId !== 2
                       ? panel.isStepsFinished
                         ? stepObject.stepId >
                           panel.isStepsFinished.findIndex((x) => !x)
@@ -117,10 +117,10 @@ export function TxnPanel() {
                       : !stepObject.status
                   }
                 >
-                  {panel.isStepsFinished?.[stepObject.stepId] &&
-                  stepObject.status
-                    ? stepObject.finished
-                    : stepName}
+                  {/* button title */}
+                  {panel.isStepsFinished[stepObject.stepId]
+                    ? stepObject.title.finished
+                    : stepObject.title.default}
                 </StepButton>
               </Step>
             ))
