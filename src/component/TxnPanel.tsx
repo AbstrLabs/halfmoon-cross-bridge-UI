@@ -1,3 +1,8 @@
+// TODO: BAN-70
+// TODO steps for Stepper should not index a function (for readability and performance).
+// TODO Instead, create a Record<string,callable> to store the relation of step and function.
+// TODO The stepper can use the Record<,> directly, instead of using `.action`
+
 import {
   Box,
   LinearProgress,

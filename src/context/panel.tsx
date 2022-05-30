@@ -1,3 +1,5 @@
+// TODO(BAN-69): Purpose of this file is to split TxnPanel to a From and a Stepper, but not finished
+
 import React, { createContext, useCallback, useMemo, useState } from "react";
 import { authorizeBurnTransaction, myAlgoWallet } from "../js/algorand";
 import { authorizeMintTransaction, nearWallet } from "../js/near";
