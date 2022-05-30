@@ -28,7 +28,6 @@ type TStep = {
   stepId: number;
   icon: JSX.Element;
   action: (() => void) | (() => Promise<any>);
-  status: boolean;
   title: {
     default: string;
     finished: string;
@@ -62,6 +61,8 @@ export type panelType = {
   steps: TSteps;
   isModalOpen: boolean;
   setModalOpen: React.Dispatch<boolean>;
+  connectedAcc: string;
+  updateStepsFinished: (pos: 0 | 1 | 2, newVal: boolean) => void;
 };
 
 export const PanelContext = createContext<Partial<panelType>>({});
@@ -242,7 +243,6 @@ const PanelContextProvider = ({
         stepId: 0,
         icon: <></>,
         action: async () => await connectWallet(),
-        status: connectedAcc.length > 0 ? true : false,
         title: {
           default: "Connect to Wallet",
           finished: "Wallet Connected",
@@ -252,11 +252,6 @@ const PanelContextProvider = ({
         stepId: 1,
         icon: <></>,
         action: validateForm,
-        status:
-          amount.length > 0 &&
-          beneficiary.length > 0 &&
-          isAmountValid &&
-          isBeneficiaryValid,
         title: {
           default: "Fill up the Form",
           finished: "Form Validated",
@@ -267,28 +262,13 @@ const PanelContextProvider = ({
         stepId: 2,
         icon: <></>,
         action: async () => await authorizeTxn(),
-        status:
-          connectedAcc.length > 0 &&
-          amount.length > 0 &&
-          beneficiary.length > 0 &&
-          isAmountValid &&
-          isBeneficiaryValid,
         title: {
           default: "Start the Transaction",
           finished: "Transaction Authorized",
         },
       },
     }),
-    [
-      connectedAcc,
-      validateForm,
-      amount.length,
-      beneficiary.length,
-      isAmountValid,
-      isBeneficiaryValid,
-      connectWallet,
-      authorizeTxn,
-    ]
+    [validateForm, connectWallet, authorizeTxn]
   );
 
   const value: panelType = {
@@ -312,6 +292,8 @@ const PanelContextProvider = ({
     steps,
     isModalOpen,
     setModalOpen,
+    connectedAcc,
+    updateStepsFinished,
   };
 
   return (

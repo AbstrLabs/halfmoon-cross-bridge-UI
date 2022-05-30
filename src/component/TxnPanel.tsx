@@ -9,11 +9,31 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { PanelContext, panelType } from "../context/panel";
 
 export function TxnPanel() {
   const panel = useContext(PanelContext) as panelType;
+
+  // render page
+  // STEP0: connect to wallet
+  useEffect(() => {
+    if (panel.connectedAcc.length > 0) {
+      panel.updateStepsFinished(1, true);
+    } else {
+      panel.updateStepsFinished(1, false);
+    }
+  }, [panel]);
+  // STEP1: controlled by page state event
+  // STEP2: Authorize transaction
+  useEffect(() => {
+    if (panel.isAmountValid && panel.isBeneficiaryValid) {
+      panel.updateStepsFinished(2, true);
+    } else {
+      panel.updateStepsFinished(2, false);
+    }
+    // TOOD: fix logic, this is same as sum of checking step 0 and 1
+  }, [panel]);
 
   const SENDING_UNIT = panel.isMint ? "NEAR" : "goNEAR";
   const RECEIVING_UNIT = panel.isMint ? "goNEAR" : "NEAR";
@@ -100,18 +120,15 @@ export function TxnPanel() {
           ? Object.entries(panel.steps).map(([stepName, stepObject]) => (
               <Step
                 key={stepName}
-                completed={
-                  panel.isStepsFinished?.[stepObject.stepId] &&
-                  stepObject.status
-                }
+                completed={panel.isStepsFinished?.[stepObject.stepId]}
               >
                 <StepButton
                   color="inherit"
                   onClick={stepObject.action}
                   disabled={
                     stepObject.stepId !==
-                      panel.isStepsFinished.findIndex((x) => !x) &&
-                    !stepObject.status
+                    panel.isStepsFinished.findIndex((x) => !x)
+                    //TODO: This is same as "Linear", we want non-linear because we want user to be able to disconnect wallet, validate form again etc.
                   }
                 >
                   {/* button title */}
