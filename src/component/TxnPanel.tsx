@@ -109,10 +109,9 @@ export function TxnPanel() {
                   color="inherit"
                   onClick={stepObject.action}
                   disabled={
-                    stepObject.stepId !== 2
-                      ? stepObject.stepId >
-                        panel.isStepsFinished.findIndex((x) => !x)
-                      : !stepObject.status
+                    stepObject.stepId !==
+                      panel.isStepsFinished.findIndex((x) => !x) &&
+                    !stepObject.status
                   }
                 >
                   {/* button title */}
