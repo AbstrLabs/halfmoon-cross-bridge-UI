@@ -110,10 +110,8 @@ export function TxnPanel() {
                   onClick={stepObject.action}
                   disabled={
                     stepObject.stepId !== 2
-                      ? panel.isStepsFinished
-                        ? stepObject.stepId >
-                          panel.isStepsFinished.findIndex((x) => !x)
-                        : false
+                      ? stepObject.stepId >
+                        panel.isStepsFinished.findIndex((x) => !x)
                       : !stepObject.status
                   }
                 >
