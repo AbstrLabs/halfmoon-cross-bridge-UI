@@ -10,11 +10,11 @@ type TTxnSteptype = string | number | symbol;
 
 enum TTxnStepName {
   WALLET_START = "Connect to Wallet",
-  WALLET_CONNECTED = "Connected ",
+  WALLET_CONNECTED = "Connected",
   FORM_START = "Fill up the Form",
   FORM_FILLED = "Filled",
   AUTH = "Authorize the Transaction",
-  AUTH_START = "Start the Transaction"
+  AUTH_START = "Start the Transaction",
 }
 
 const DEFAULT_MINT_BENEFICIARY =
@@ -91,10 +91,16 @@ const PanelContextProvider = ({
   const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(false);
 
   // connect and step function
-  const [connectedNEAR, setNEARAcc] = useState(nearWallet.account().accountId)
-  const [connectedAlgo,setAlgoAcc] = useState("")
-  const connected = isMint ? connectedNEAR.slice(0,5) + '...' : connectedAlgo.slice(0,5) + '...'
-  
+  //
+  const [nearAcc, setNearAcc] = useState<string>(
+    nearWallet.account().accountId
+  );
+  const [algoAcc, setAlgoAcc] = useState<string>("");
+  const connectedAcc = useMemo(
+    () => (isMint ? nearAcc : algoAcc),
+    [algoAcc, isMint, nearAcc]
+  );
+
   const [isStepsFinished, setStepsFinished] = useState([false, false, false]);
   const updateStepsFinished = useCallback((pos: 0 | 1 | 2, newVal: boolean) => {
     setStepsFinished((isStepsFinished) => {
@@ -163,7 +169,7 @@ const PanelContextProvider = ({
       alert("Invalid amount");
       return;
     }
-    if(isBeneficiaryValid && isAmountValid){
+    if (isBeneficiaryValid && isAmountValid) {
       updateStepsFinished(1, true);
     }
   }, [
@@ -193,7 +199,7 @@ const PanelContextProvider = ({
       } else {
         nearWallet.requestSignIn("abstrlabs.testnet");
       }
-      setNEARAcc(nearWallet.account().accountId)
+      setNearAcc(nearWallet.account().accountId);
       updateStepsFinished(0, true);
     }
     if (isBurn) {
@@ -206,17 +212,26 @@ const PanelContextProvider = ({
 
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
-      if(isAmountValid && isBeneficiaryValid){
+      if (isAmountValid && isBeneficiaryValid) {
         if (isMint) {
           await authorizeMintTransaction(amount, beneficiary);
         }
         if (isBurn) {
-          await authorizeBurnTransaction(connectedAlgo, beneficiary, amount);
+          await authorizeBurnTransaction(algoAcc, beneficiary, amount);
           startAlgoTxnCountdown();
         }
       }
     },
-    [amount, beneficiary, isBurn, isMint, startAlgoTxnCountdown,connectedAlgo, isAmountValid, isBeneficiaryValid]
+    [
+      amount,
+      beneficiary,
+      isBurn,
+      isMint,
+      startAlgoTxnCountdown,
+      algoAcc,
+      isAmountValid,
+      isBeneficiaryValid,
+    ]
   );
 
   // steps
@@ -226,27 +241,45 @@ const PanelContextProvider = ({
         stepId: 0,
         icon: <></>,
         action: async () => await connectWallet(),
-        status: connected.length > 0? true: false,
-        finished: TTxnStepName.WALLET_CONNECTED + connected
+        status: connectedAcc.length > 0 ? true : false,
+        finished: TTxnStepName.WALLET_CONNECTED + connectedAcc,
       },
 
       [TTxnStepName.FORM_START]: {
         stepId: 1,
         icon: <></>,
         action: validateForm,
-        status: amount.length > 0 && beneficiary.length > 0 && isAmountValid && isBeneficiaryValid,
-        finished: TTxnStepName.FORM_FILLED
+        status:
+          amount.length > 0 &&
+          beneficiary.length > 0 &&
+          isAmountValid &&
+          isBeneficiaryValid,
+        finished: TTxnStepName.FORM_FILLED,
       },
 
       [TTxnStepName.AUTH]: {
         stepId: 2,
         icon: <></>,
         action: async () => await authorizeTxn(),
-        status: connected.length > 0 && amount.length > 0 && beneficiary.length > 0 && isAmountValid && isBeneficiaryValid,
-        finished: TTxnStepName.AUTH_START
-      }
+        status:
+          connectedAcc.length > 0 &&
+          amount.length > 0 &&
+          beneficiary.length > 0 &&
+          isAmountValid &&
+          isBeneficiaryValid,
+        finished: TTxnStepName.AUTH_START,
+      },
     }),
-    [authorizeTxn, connectWallet, validateForm, connected]
+    [
+      connectedAcc,
+      validateForm,
+      amount.length,
+      beneficiary.length,
+      isAmountValid,
+      isBeneficiaryValid,
+      connectWallet,
+      authorizeTxn,
+    ]
   );
 
   const value: panelType = {
@@ -269,7 +302,7 @@ const PanelContextProvider = ({
     validateAmount,
     steps,
     isModalOpen,
-    setModalOpen
+    setModalOpen,
   };
 
   return (
