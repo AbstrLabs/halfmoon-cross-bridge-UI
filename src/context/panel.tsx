@@ -6,15 +6,10 @@ import { TxnType } from "../js/config";
 import algosdk from "algosdk";
 import { useCountdown } from "usehooks-ts";
 
-type TTxnSteptype = string | number | symbol;
-
 enum TTxnStepName {
-  WALLET_START = "Connect to Wallet",
   WALLET_CONNECTED = "Connected",
   FORM_START = "Fill up the Form",
-  FORM_FILLED = "Filled",
   AUTH = "Authorize the Transaction",
-  AUTH_START = "Start the Transaction",
 }
 
 const DEFAULT_MINT_BENEFICIARY =
@@ -34,11 +29,10 @@ type TStep = {
   icon: JSX.Element;
   action: (() => void) | (() => Promise<any>);
   status: boolean;
-  finished: string;
 };
 
 type TSteps = {
-  [key in TTxnSteptype]: TStep;
+  [key in TTxnStepName]: TStep;
 };
 
 // create context for panel
@@ -237,12 +231,11 @@ const PanelContextProvider = ({
   // steps
   const steps: TSteps = useMemo(
     () => ({
-      [TTxnStepName.WALLET_START]: {
+      [TTxnStepName.WALLET_CONNECTED]: {
         stepId: 0,
         icon: <></>,
         action: async () => await connectWallet(),
         status: connectedAcc.length > 0 ? true : false,
-        finished: TTxnStepName.WALLET_CONNECTED + connectedAcc,
       },
 
       [TTxnStepName.FORM_START]: {
@@ -254,7 +247,6 @@ const PanelContextProvider = ({
           beneficiary.length > 0 &&
           isAmountValid &&
           isBeneficiaryValid,
-        finished: TTxnStepName.FORM_FILLED,
       },
 
       [TTxnStepName.AUTH]: {
@@ -267,7 +259,6 @@ const PanelContextProvider = ({
           beneficiary.length > 0 &&
           isAmountValid &&
           isBeneficiaryValid,
-        finished: TTxnStepName.AUTH_START,
       },
     }),
     [
