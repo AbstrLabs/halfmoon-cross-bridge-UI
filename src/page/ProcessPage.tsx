@@ -74,7 +74,6 @@ export function ProcessPage() {
     };
     callApi(newParam)
       .then(async (res: any) => {
-        console.log("res : ", res); // DEV_LOG_TO_REMOVE
         if (res.status === 400) {
           window.alert("Invalid transaction");
           return;

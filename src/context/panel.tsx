@@ -235,8 +235,6 @@ const PanelContextProvider = ({
     ]
   );
 
-  console.log("connectedAcc.length : ", connectedAcc.length); // DEV_LOG_TO_REMOVE
-
   // steps
   const steps: TSteps = useMemo(
     () => ({

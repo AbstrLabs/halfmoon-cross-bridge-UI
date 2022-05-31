@@ -121,7 +121,6 @@ const authorizeBurnTransaction = async (
   cbUrl.searchParams.set("txnId", txnId);
 
   const callbackUrl = cbUrl.toString();
-  console.log("callbackUrl : ", callbackUrl); // DEV_LOG_TO_REMOVE
 
   setTimeout(() => {
     window.location.assign(callbackUrl);
