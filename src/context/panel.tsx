@@ -6,7 +6,7 @@ import { authorizeMintTransaction, nearWallet } from "../js/near";
 
 import { TxnType } from "../js/config";
 import algosdk from "algosdk";
-import { useCountdown, useEffectOnce } from "usehooks-ts";
+import { useCountdown } from "usehooks-ts";
 
 enum TxnStepName {
   CONNECT_WALLET = "CONNECT_WALLET",
@@ -85,12 +85,15 @@ const PanelContextProvider = ({
   const DEFAULT_AMOUNT = isMint ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
 
   //form input
-  const [beneficiary, setBeneficiary] = useState("");
-  const [amount, setAmount] = useState("");
+  const isDev = process.env.NODE_ENV === "development";
+  const [beneficiary, setBeneficiary] = useState(
+    isDev ? DEFAULT_BENEFICIARY : ""
+  );
+  const [amount, setAmount] = useState(isDev ? DEFAULT_AMOUNT : "");
 
   //form input valid
-  const [isAmountValid, setIsAmountValid] = useState(false);
-  const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(false);
+  const [isAmountValid, setIsAmountValid] = useState(true);
+  const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
 
   // connect and step function
   //
@@ -150,12 +153,6 @@ const PanelContextProvider = ({
     (amount: string) => quickCheckAmount(amount),
     [quickCheckAmount]
   );
-  useEffectOnce(() => {
-    if (process.env.NODE_ENV === "development") {
-      setBeneficiary(DEFAULT_BENEFICIARY);
-      setAmount(DEFAULT_AMOUNT);
-    }
-  });
   const validateForm = useCallback(() => {
     // const c = window.confirm("Fill with test values?");
     // if (c) {
@@ -179,8 +176,6 @@ const PanelContextProvider = ({
       updateStepsFinished(1, true);
     }
   }, [
-    // DEFAULT_AMOUNT,
-    // DEFAULT_BENEFICIARY,
     amount,
     beneficiary,
     isAmountValid,

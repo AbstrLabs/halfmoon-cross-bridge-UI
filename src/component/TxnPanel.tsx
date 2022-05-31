@@ -64,9 +64,7 @@ export function TxnPanel() {
               );
             }
           }}
-          error={
-            panel.beneficiary.length > 0 ? !panel.isBeneficiaryValid : false
-          }
+          error={!panel.isBeneficiaryValid}
           onBlur={(e) => {
             const v = e.target.value;
             if (v === "") return;
@@ -83,7 +81,7 @@ export function TxnPanel() {
               step: 0.000_000_000_1,
               pattern: "[0-9].*",
             }}
-            error={panel.amount.length > 0 ? !panel.isAmountValid : false}
+            error={!panel.isAmountValid}
             id="mint_amount"
             label={`Sending Amount (${SENDING_UNIT})`}
             fullWidth
