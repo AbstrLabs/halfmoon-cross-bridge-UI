@@ -125,5 +125,5 @@ const authorizeBurnTransaction = async (
 
   setTimeout(() => {
     window.location.assign(callbackUrl);
-  }, 9900);
+  }, 14900);
 };

@@ -121,7 +121,7 @@ const PanelContextProvider = ({
   //countdown
   const [algoTxnCountdown, { start: startCountdown, reset: resetCountdown }] =
     useCountdown({
-      seconds: 100,
+      seconds: 150,
       interval: 100,
     });
 
