@@ -36,14 +36,18 @@ async function signGoNearTransaction(
 ) {
   if (from === undefined) {
     window.alert("No account, please log in again and enable browser pop-up");
-    await myAlgoWallet.connect();
+    connectedAccounts = await connectAlgoWallet();
     return;
   }
-  if (connectedAccounts.map((acc) => acc.address).indexOf(from) === -1) {
+  if (
+    connectedAccounts === undefined ||
+    connectedAccounts.length === 0 ||
+    connectedAccounts.map((acc) => acc.address).indexOf(from) === -1
+  ) {
     window.alert(
       "Account not logged in, please log in and enable browser pop-up"
     );
-    await myAlgoWallet.connect();
+    connectedAccounts = await connectAlgoWallet();
     return;
   }
 

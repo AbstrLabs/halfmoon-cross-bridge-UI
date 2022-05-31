@@ -77,10 +77,11 @@ async function authorizeMintTransaction(
         "Seems you opted in another account rather than the receiver "
       );
     }
-    let optInOption = window.confirm(
+    let isOptInConfirmed = window.confirm(
       "Beneficiary account have not opted in to goNEAR, opt in now?"
     );
-    if (!optInOption) {
+    if (!isOptInConfirmed) {
+      window.alert("transaction cancelled");
       return;
     }
     const optInTxnId = await optInGoNear(mintReceiver);
