@@ -1,12 +1,6 @@
 // TODO(BAN-69): Purpose of this file is to split TxnPanel to a From and a Stepper, but not finished
 
-import React, {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useMemo, useState } from "react";
 import { authorizeBurnTransaction, myAlgoWallet } from "../js/algorand";
 import { authorizeMintTransaction, nearWallet } from "../js/near";
 
@@ -156,12 +150,12 @@ const PanelContextProvider = ({
     (amount: string) => quickCheckAmount(amount),
     [quickCheckAmount]
   );
-  useEffect(() => {
+  /*!!!   useEffect(() => {
     if (process.env.NODE_ENV === "development") {
       setBeneficiary(DEFAULT_BENEFICIARY);
       setAmount(DEFAULT_AMOUNT);
     }
-  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY]);
+  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY]); */
   const validateForm = useCallback(() => {
     // const c = window.confirm("Fill with test values?");
     // if (c) {

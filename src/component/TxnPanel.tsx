@@ -28,7 +28,8 @@ export function TxnPanel() {
     } else {
       panel.updateStepsFinished(0, false);
     }
-  }, [panel]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [panel.connectedAcc, panel.updateStepsFinished]);
   // STEP1: controlled by page state event
   // STEP2: Authorize transaction
   useEffect(() => {
@@ -38,7 +39,8 @@ export function TxnPanel() {
     panel.updateStepsFinished(2, false);
     // }
     // TOOD: fix logic, this is same as sum of checking step 0 and 1
-  }, [panel]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [panel.updateStepsFinished]);
 
   const SENDING_UNIT = panel.isMint ? "NEAR" : "goNEAR";
   const RECEIVING_UNIT = panel.isMint ? "goNEAR" : "NEAR";
