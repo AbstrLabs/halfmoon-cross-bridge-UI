@@ -22,6 +22,7 @@ export function HomePage() {
         variant="h3"
         component="h1"
         sx={{ fontSize: "1rem", fontWeight: 800 }}
+        marginY="2rem"
         align="center"
       >
         Algorand - Near Bridge
