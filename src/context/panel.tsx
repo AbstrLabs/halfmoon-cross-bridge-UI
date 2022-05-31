@@ -1,7 +1,7 @@
 // TODO(BAN-69): Purpose of this file is to split TxnPanel to a From and a Stepper, but not finished
 
 import React, { createContext, useCallback, useMemo, useState } from "react";
-import { authorizeBurnTransaction, myAlgoWallet } from "../js/algorand";
+import { authorizeBurnTransaction, connectAlgoWallet } from "../js/algorand";
 import { authorizeMintTransaction, nearWallet } from "../js/near";
 
 import { TxnType } from "../js/config";
@@ -204,7 +204,7 @@ const PanelContextProvider = ({
       updateStepsFinished(0, true);
     }
     if (isBurn) {
-      const accounts = await myAlgoWallet.connect();
+      const accounts = await connectAlgoWallet();
       setAlgoAcc(accounts[0].address);
       updateStepsFinished(0, true);
     }

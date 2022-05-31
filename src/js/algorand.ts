@@ -7,10 +7,11 @@ export {
   optInGoNear,
   checkOptedIn,
   authorizeBurnTransaction,
+  connectAlgoWallet,
 };
 
 const myAlgoWallet = new MyAlgoConnect();
-
+let connectedAccounts: Awaited<ReturnType<typeof myAlgoWallet.connect>>;
 const ALGO_UNIT = 10_000_000_000;
 const GO_NEAR_ASA_ID = 83251085;
 
@@ -21,6 +22,10 @@ const algodClient = new algosdk.Algodv2(
   ""
 );
 
+async function connectAlgoWallet() {
+  connectedAccounts = await myAlgoWallet.connect();
+  return connectedAccounts;
+}
 /*Warning: Browser will block pop-up if user doesn't trigger myAlgoWallet.connect() with a button interation */
 
 /* Algorand wallet transfer function */
@@ -34,6 +39,14 @@ async function signGoNearTransaction(
     await myAlgoWallet.connect();
     return;
   }
+  if (connectedAccounts.map((acc) => acc.address).indexOf(from) === -1) {
+    window.alert(
+      "Account not logged in, please log in and enable browser pop-up"
+    );
+    await myAlgoWallet.connect();
+    return;
+  }
+
   try {
     const suggestedParams = await algodClient.getTransactionParams().do();
     const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
@@ -51,7 +64,7 @@ async function signGoNearTransaction(
   }
 }
 
-const requestSignGoNearTxn = async (fromAddr:string,amountStr: string) => {
+const requestSignGoNearTxn = async (fromAddr: string, amountStr: string) => {
   const from = fromAddr;
   const to = CONFIG.acc.algorand_master;
   const amount = +amountStr * ALGO_UNIT;
