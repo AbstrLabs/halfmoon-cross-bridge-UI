@@ -29,7 +29,11 @@ async function signGoNearTransaction(
   to: string,
   amountAlgo: number
 ) {
-  await myAlgoWallet.connect();
+  if (from === undefined) {
+    window.alert("No account, please log in again and enable browser pop-up");
+    await myAlgoWallet.connect();
+    return;
+  }
   try {
     const suggestedParams = await algodClient.getTransactionParams().do();
     const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
@@ -47,8 +51,8 @@ async function signGoNearTransaction(
   }
 }
 
-const requestSignGoNearTxn = async (fromAdd:string,amountStr: string) => {
-  const from = fromAdd;
+const requestSignGoNearTxn = async (fromAddr:string,amountStr: string) => {
+  const from = fromAddr;
   const to = CONFIG.acc.algorand_master;
   const amount = +amountStr * ALGO_UNIT;
   try {
@@ -68,6 +72,7 @@ const optInGoNear = async (addr: string) => {
 async function checkOptedIn(addr: string, option = { showAlert: false }) {
   if (addr === undefined) {
     window.alert("checking opted-in for empty addr");
+    return;
   }
   let accountInfo = await algodClient.accountInformation(addr).do();
   for (let assetInfo of accountInfo["assets"]) {
