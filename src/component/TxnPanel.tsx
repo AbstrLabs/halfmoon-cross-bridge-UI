@@ -93,19 +93,23 @@ export function TxnPanel() {
           />
           <Box width="2rem" />
           <TextField
-            helperText={`Fee: ${FEE}. Showing all decimals.`}
-            inputProps={{
-              inputMode: "numeric",
-              step: 0.000_000_000_1,
-              pattern: "[0-9].*",
-            }}
             label={`Receiving Amount (${RECEIVING_UNIT})`}
+            helperText={`Fee: ${FEE}. Showing all decimals.`}
             fullWidth
             margin="normal"
-            value={(
-              Number(panel.amount) * (panel.isMint ? 1 : 0.998) -
-              1
-            ).toFixed(10)}
+            value={
+              panel.amount
+                ? (
+                    Number(panel.amount) * (panel.isMint ? 1 : 0.998) -
+                    1
+                  ).toFixed(10)
+                : ""
+            }
+            error={
+              panel.amount
+                ? Number(panel.amount) * (panel.isMint ? 1 : 0.998) <= 1
+                : false
+            }
             disabled
           />
         </Box>
