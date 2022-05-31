@@ -24,19 +24,19 @@ export function TxnPanel() {
   // STEP0: connect to wallet
   useEffect(() => {
     if (panel.connectedAcc.length > 0) {
-      panel.updateStepsFinished(1, true);
+      panel.updateStepsFinished(0, true);
     } else {
-      panel.updateStepsFinished(1, false);
+      panel.updateStepsFinished(0, false);
     }
   }, [panel]);
   // STEP1: controlled by page state event
   // STEP2: Authorize transaction
   useEffect(() => {
-    if (panel.isAmountValid && panel.isBeneficiaryValid) {
-      panel.updateStepsFinished(2, true);
-    } else {
-      panel.updateStepsFinished(2, false);
-    }
+    // if (panel.isAmountValid && panel.isBeneficiaryValid) {
+    // panel.updateStepsFinished(2, true);
+    // } else {
+    panel.updateStepsFinished(2, false);
+    // }
     // TOOD: fix logic, this is same as sum of checking step 0 and 1
   }, [panel]);
 
