@@ -50,7 +50,6 @@ export function TxnPanel() {
       <FormWrap>
         <TextField
           helperText={`e.g. ${panel.DEFAULT_BENEFICIARY}`}
-          id="mint_to"
           label="Beneficiary (Algorand public address)"
           fullWidth
           margin="normal"
@@ -82,7 +81,6 @@ export function TxnPanel() {
               pattern: "[0-9].*",
             }}
             error={!panel.isAmountValid}
-            id="mint_amount"
             label={`Sending Amount (${SENDING_UNIT})`}
             fullWidth
             margin="normal"
@@ -101,7 +99,6 @@ export function TxnPanel() {
               step: 0.000_000_000_1,
               pattern: "[0-9].*",
             }}
-            id="mint_amount"
             label={`Receiving Amount (${RECEIVING_UNIT})`}
             fullWidth
             margin="normal"
@@ -121,29 +118,26 @@ export function TxnPanel() {
         activeStep={panel.isStepsFinished?.findIndex((x) => !x)}
         alternativeLabel
       >
-        {panel.steps
-          ? Object.entries(panel.steps).map(([stepName, stepObject]) => (
-              <Step
-                key={stepName}
-                completed={panel.isStepsFinished?.[stepObject.stepId]}
-              >
-                <StepButton
-                  color="inherit"
-                  onClick={stepObject.action}
-                  disabled={
-                    stepObject.stepId !==
-                    panel.isStepsFinished.findIndex((x) => !x)
-                    //TODO: This is same as "Linear", we want non-linear because we want user to be able to disconnect wallet, validate form again etc.
-                  }
-                >
-                  {/* button title */}
-                  {panel.isStepsFinished[stepObject.stepId]
-                    ? stepObject.title.finished
-                    : stepObject.title.default}
-                </StepButton>
-              </Step>
-            ))
-          : null}
+        {Object.entries(panel.steps).map(([stepName, stepObject]) => (
+          <Step
+            key={stepName}
+            completed={panel.isStepsFinished?.[stepObject.stepId]}
+          >
+            <StepButton
+              color="inherit"
+              onClick={stepObject.action}
+              disabled={
+                stepObject.stepId !== panel.isStepsFinished.findIndex((x) => !x)
+                //TODO: This is same as "Linear", we want non-linear because we want user to be able to disconnect wallet, validate form again etc.
+              }
+            >
+              {/* button title */}
+              {panel.isStepsFinished[stepObject.stepId]
+                ? stepObject.title.finished
+                : stepObject.title.default}
+            </StepButton>
+          </Step>
+        ))}
       </Stepper>
 
       <Modal
@@ -168,15 +162,10 @@ export function TxnPanel() {
             p: 4,
           }}
         >
-          <Typography
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-            align="center"
-          >
+          <Typography variant="h6" component="h2" align="center">
             Waiting for Algorand Confirm
           </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          <Typography sx={{ mt: 2 }}>
             Algorand blockchain needs around 10 seconds to confirm your
             transaction. Please wait for{" "}
             {(panel.algoTxnCountdown ? panel.algoTxnCountdown / 10 : 1).toFixed(
