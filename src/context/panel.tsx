@@ -6,7 +6,7 @@ import { authorizeMintTransaction, nearWallet } from "../js/near";
 
 import { TxnType } from "../js/config";
 import algosdk from "algosdk";
-import { useCountdown } from "usehooks-ts";
+import { useCountdown, useEffectOnce } from "usehooks-ts";
 
 enum TxnStepName {
   CONNECT_WALLET = "CONNECT_WALLET",
@@ -150,12 +150,12 @@ const PanelContextProvider = ({
     (amount: string) => quickCheckAmount(amount),
     [quickCheckAmount]
   );
-  /*!!!   useEffect(() => {
+  useEffectOnce(() => {
     if (process.env.NODE_ENV === "development") {
       setBeneficiary(DEFAULT_BENEFICIARY);
       setAmount(DEFAULT_AMOUNT);
     }
-  }, [DEFAULT_AMOUNT, DEFAULT_BENEFICIARY]); */
+  });
   const validateForm = useCallback(() => {
     // const c = window.confirm("Fill with test values?");
     // if (c) {
