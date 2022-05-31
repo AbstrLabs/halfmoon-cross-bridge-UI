@@ -20,14 +20,6 @@ export function Router() {
     return null;
   }
 
-  useEffect(() => {
-    return () => {};
-    /* this is a lifecycle */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  /* ======== test ======== */
-  // console.log("currentUrl : ", currentUrl);
-
   /* ======== test end ======== */
 
   return (

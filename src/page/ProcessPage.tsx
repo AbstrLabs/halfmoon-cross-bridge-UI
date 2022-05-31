@@ -15,8 +15,8 @@ import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
 import { callApi } from "../js/api-call";
-import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useEffectOnce } from "usehooks-ts";
 
 export function ProcessPage() {
   let [searchParams] = useSearchParams();
@@ -64,7 +64,7 @@ export function ProcessPage() {
     return url.toString();
   }
 
-  useEffect(() => {
+  useEffectOnce(() => {
     const newParam: ApiParam = {
       type: params.type,
       from: params.from,
@@ -99,7 +99,7 @@ export function ProcessPage() {
         alert("API server rejected!");
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   return (
     <Box textAlign="center">
