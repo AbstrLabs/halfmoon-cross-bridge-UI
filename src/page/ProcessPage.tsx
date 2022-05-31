@@ -85,6 +85,7 @@ export function ProcessPage() {
         }
         if (res.status === 406) {
           window.alert("Double mint detected");
+          return;
         }
         if (res.status === 200) {
           const resJson = await res.json();
@@ -95,10 +96,9 @@ export function ProcessPage() {
         throw new Error(`${res.status} ${res.statusText}`);
       })
       .catch((err: any) => {
-        console.error("API server rejected. Error : ", err); // DEV_LOG_TO_REMOVE
+        console.error("API server rejected. Error : ", err.message); // DEV_LOG_TO_REMOVE
         alert("API server rejected!");
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   });
 
   return (
