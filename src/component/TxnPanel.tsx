@@ -99,10 +99,9 @@ export function TxnPanel() {
             margin="normal"
             value={
               panel.amount
-                ? (
-                    Number(panel.amount) * (panel.isMint ? 1 : 0.998) -
-                    1
-                  ).toFixed(10)
+                ? (Number(panel.amount) * (panel.isMint ? 1 : 0.998) - 1)
+                    .toFixed(11)
+                    .slice(0, -1)
                 : ""
             }
             error={
