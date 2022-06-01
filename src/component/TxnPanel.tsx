@@ -172,9 +172,7 @@ export function TxnPanel() {
           <Typography sx={{ mt: 2 }}>
             Algorand blockchain needs around 15 seconds to confirm your
             transaction. Please wait for{" "}
-            {(panel.algoTxnCountdown ? panel.algoTxnCountdown / 10 : 1).toFixed(
-              1
-            ) + " "}
+            {(panel.algoTxnCountdown / 10).toFixed(1) + " "}
             more second(s).
           </Typography>
           <Box height="1rem"></Box>
