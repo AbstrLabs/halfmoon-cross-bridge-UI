@@ -2,7 +2,6 @@ import { ApiParam, CONFIG } from "./config";
 
 export async function callApi(postParam: ApiParam) {
   // todo: refactor this type after backend refactor
-  console.log("postParam : ", postParam); // DEV_LOG_TO_REMOVE
 
   const resp = await fetch(CONFIG.apiServerUrl, {
     method: "POST",

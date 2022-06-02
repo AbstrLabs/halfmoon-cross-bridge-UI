@@ -1,27 +1,24 @@
+// TODO(BAN-69): Purpose of this file is to split TxnPanel to a From and a Stepper, but not finished
+
 import React, { createContext, useCallback, useMemo, useState } from "react";
-import { authorizeBurnTransaction, myAlgoWallet } from "../js/algorand";
+import { authorizeBurnTransaction, connectAlgoWallet } from "../js/algorand";
 import { authorizeMintTransaction, nearWallet } from "../js/near";
 
 import { TxnType } from "../js/config";
 import algosdk from "algosdk";
 import { useCountdown } from "usehooks-ts";
 
-type TTxnSteptype = string | number | symbol;
-
-enum TTxnStepName {
-  WALLET_START = "Connect to Wallet",
-  WALLET_CONNECTED = "Connected ",
-  FORM_START = "Fill up the Form",
-  FORM_FILLED = "Filled",
-  AUTH = "Authorize the Transaction",
-  AUTH_START = "Start the Transaction"
+enum TxnStepName {
+  CONNECT_WALLET = "CONNECT_WALLET",
+  VALIDATE_FORM = "VALIDATE_FORM",
+  AUTH_TXN = "AUTH_TXN",
 }
 
 const DEFAULT_MINT_BENEFICIARY =
   "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA";
-const DEFAULT_MINT_AMOUNT = "1.357";
+const DEFAULT_MINT_AMOUNT = "1.3579";
 const DEFAULT_BURN_BENEFICIARY = "abstrlabs-test.testnet";
-const DEFAULT_BURN_AMOUNT = "1.234";
+const DEFAULT_BURN_AMOUNT = "1.2345";
 
 // from backend
 const AMOUNT_REGEX = /^[0-9]*\.?[0-9]{0,10}$/;
@@ -33,12 +30,15 @@ type TStep = {
   stepId: number;
   icon: JSX.Element;
   action: (() => void) | (() => Promise<any>);
-  status: boolean;
-  finished: string;
+  title: {
+    default: string;
+    finished: string;
+    // can add a error message here
+  };
 };
 
 type TSteps = {
-  [key in TTxnSteptype]: TStep;
+  [key in TxnStepName]: TStep;
 };
 
 // create context for panel
@@ -63,6 +63,8 @@ export type panelType = {
   steps: TSteps;
   isModalOpen: boolean;
   setModalOpen: React.Dispatch<boolean>;
+  connectedAcc: string;
+  updateStepsFinished: (pos: 0 | 1 | 2, newVal: boolean) => void;
 };
 
 export const PanelContext = createContext<Partial<panelType>>({});
@@ -83,18 +85,27 @@ const PanelContextProvider = ({
   const DEFAULT_AMOUNT = isMint ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
 
   //form input
-  const [beneficiary, setBeneficiary] = useState("");
-  const [amount, setAmount] = useState("");
+  const isDev = process.env.NODE_ENV === "development";
+  const [beneficiary, setBeneficiary] = useState(
+    isDev ? DEFAULT_BENEFICIARY : ""
+  );
+  const [amount, setAmount] = useState(isDev ? DEFAULT_AMOUNT : "");
 
   //form input valid
-  const [isAmountValid, setIsAmountValid] = useState(false);
-  const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(false);
+  const [isAmountValid, setIsAmountValid] = useState(true);
+  const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
 
   // connect and step function
-  const [connectedNEAR, setNEARAcc] = useState(nearWallet.account().accountId)
-  const [connectedAlgo,setAlgoAcc] = useState("")
-  const connected = isMint ? connectedNEAR.slice(0,5) + '...' : connectedAlgo.slice(0,5) + '...'
-  
+  //
+  const [nearAcc, setNearAcc] = useState<string>(
+    nearWallet.account().accountId ?? ""
+  );
+  const [algoAcc, setAlgoAcc] = useState<string>("");
+  const connectedAcc = useMemo(
+    () => (isMint ? nearAcc : algoAcc),
+    [algoAcc, isMint, nearAcc]
+  );
+
   const [isStepsFinished, setStepsFinished] = useState([false, false, false]);
   const updateStepsFinished = useCallback((pos: 0 | 1 | 2, newVal: boolean) => {
     setStepsFinished((isStepsFinished) => {
@@ -110,7 +121,7 @@ const PanelContextProvider = ({
   //countdown
   const [algoTxnCountdown, { start: startCountdown, reset: resetCountdown }] =
     useCountdown({
-      seconds: 100,
+      seconds: 150,
       interval: 100,
     });
 
@@ -142,14 +153,12 @@ const PanelContextProvider = ({
     (amount: string) => quickCheckAmount(amount),
     [quickCheckAmount]
   );
-
   const validateForm = useCallback(() => {
-    // if (process.env.NODE_ENV === "development") {
-    //   const c = window.confirm("Fill with test values?");
-    //   if (c) {
-    //     setBeneficiary(DEFAULT_BENEFICIARY);
-    //     setAmount(DEFAULT_AMOUNT);
-    //   }
+    // const c = window.confirm("Fill with test values?");
+    // if (c) {
+    // new Promise((resolve) => {
+    //   resolve(0);
+    // });
     // }
     setIsBeneficiaryValid(validateAddress(beneficiary));
     setIsAmountValid(validateAmount(amount));
@@ -163,12 +172,10 @@ const PanelContextProvider = ({
       alert("Invalid amount");
       return;
     }
-    if(isBeneficiaryValid && isAmountValid){
+    if (isBeneficiaryValid && isAmountValid) {
       updateStepsFinished(1, true);
     }
   }, [
-    // DEFAULT_AMOUNT,
-    // DEFAULT_BENEFICIARY,
     amount,
     beneficiary,
     isAmountValid,
@@ -193,11 +200,11 @@ const PanelContextProvider = ({
       } else {
         nearWallet.requestSignIn("abstrlabs.testnet");
       }
-      setNEARAcc(nearWallet.account().accountId)
+      setNearAcc(nearWallet.account().accountId);
       updateStepsFinished(0, true);
     }
     if (isBurn) {
-      const accounts = await myAlgoWallet.connect();
+      const accounts = await connectAlgoWallet();
       setAlgoAcc(accounts[0].address);
       updateStepsFinished(0, true);
     }
@@ -206,47 +213,61 @@ const PanelContextProvider = ({
 
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
-      if(isAmountValid && isBeneficiaryValid){
+      if (isAmountValid && isBeneficiaryValid) {
         if (isMint) {
           await authorizeMintTransaction(amount, beneficiary);
         }
         if (isBurn) {
-          await authorizeBurnTransaction(connectedAlgo, beneficiary, amount);
+          await authorizeBurnTransaction(algoAcc, beneficiary, amount);
           startAlgoTxnCountdown();
         }
       }
     },
-    [amount, beneficiary, isBurn, isMint, startAlgoTxnCountdown,connectedAlgo, isAmountValid, isBeneficiaryValid]
+    [
+      amount,
+      beneficiary,
+      isBurn,
+      isMint,
+      startAlgoTxnCountdown,
+      algoAcc,
+      isAmountValid,
+      isBeneficiaryValid,
+    ]
   );
 
   // steps
   const steps: TSteps = useMemo(
     () => ({
-      [TTxnStepName.WALLET_START]: {
+      [TxnStepName.CONNECT_WALLET]: {
         stepId: 0,
         icon: <></>,
         action: async () => await connectWallet(),
-        status: connected.length > 0? true: false,
-        finished: TTxnStepName.WALLET_CONNECTED + connected
+        title: {
+          default: "Connect to Wallet",
+          finished: "Wallet Connected",
+        },
       },
-
-      [TTxnStepName.FORM_START]: {
+      [TxnStepName.VALIDATE_FORM]: {
         stepId: 1,
         icon: <></>,
         action: validateForm,
-        status: amount.length > 0 && beneficiary.length > 0 && isAmountValid && isBeneficiaryValid,
-        finished: TTxnStepName.FORM_FILLED
+        title: {
+          default: "Fill up the Form",
+          finished: "Form Validated",
+        },
       },
 
-      [TTxnStepName.AUTH]: {
+      [TxnStepName.AUTH_TXN]: {
         stepId: 2,
         icon: <></>,
         action: async () => await authorizeTxn(),
-        status: connected.length > 0 && amount.length > 0 && beneficiary.length > 0 && isAmountValid && isBeneficiaryValid,
-        finished: TTxnStepName.AUTH_START
-      }
+        title: {
+          default: "Start the Transaction",
+          finished: "Transaction Authorized",
+        },
+      },
     }),
-    [authorizeTxn, connectWallet, validateForm, connected]
+    [validateForm, connectWallet, authorizeTxn]
   );
 
   const value: panelType = {
@@ -269,7 +290,9 @@ const PanelContextProvider = ({
     validateAmount,
     steps,
     isModalOpen,
-    setModalOpen
+    setModalOpen,
+    connectedAcc,
+    updateStepsFinished,
   };
 
   return (

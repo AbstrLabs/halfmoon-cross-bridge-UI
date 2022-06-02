@@ -7,10 +7,11 @@ export {
   optInGoNear,
   checkOptedIn,
   authorizeBurnTransaction,
+  connectAlgoWallet,
 };
 
 const myAlgoWallet = new MyAlgoConnect();
-
+let connectedAccounts: Awaited<ReturnType<typeof myAlgoWallet.connect>>;
 const ALGO_UNIT = 10_000_000_000;
 const GO_NEAR_ASA_ID = 83251085;
 
@@ -21,6 +22,10 @@ const algodClient = new algosdk.Algodv2(
   ""
 );
 
+async function connectAlgoWallet() {
+  connectedAccounts = await myAlgoWallet.connect();
+  return connectedAccounts;
+}
 /*Warning: Browser will block pop-up if user doesn't trigger myAlgoWallet.connect() with a button interation */
 
 /* Algorand wallet transfer function */
@@ -29,7 +34,23 @@ async function signGoNearTransaction(
   to: string,
   amountAlgo: number
 ) {
-  await myAlgoWallet.connect();
+  if (from === undefined) {
+    window.alert("No account, please log in again and enable browser pop-up");
+    connectedAccounts = await connectAlgoWallet();
+    return;
+  }
+  if (
+    connectedAccounts === undefined ||
+    connectedAccounts.length === 0 ||
+    connectedAccounts.map((acc) => acc.address).indexOf(from) === -1
+  ) {
+    window.alert(
+      "Account not logged in, please log in and enable browser pop-up"
+    );
+    connectedAccounts = await connectAlgoWallet();
+    return;
+  }
+
   try {
     const suggestedParams = await algodClient.getTransactionParams().do();
     const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
@@ -47,8 +68,8 @@ async function signGoNearTransaction(
   }
 }
 
-const requestSignGoNearTxn = async (fromAdd:string,amountStr: string) => {
-  const from = fromAdd;
+const requestSignGoNearTxn = async (fromAddr: string, amountStr: string) => {
+  const from = fromAddr;
   const to = CONFIG.acc.algorand_master;
   const amount = +amountStr * ALGO_UNIT;
   try {
@@ -68,6 +89,7 @@ const optInGoNear = async (addr: string) => {
 async function checkOptedIn(addr: string, option = { showAlert: false }) {
   if (addr === undefined) {
     window.alert("checking opted-in for empty addr");
+    return;
   }
   let accountInfo = await algodClient.accountInformation(addr).do();
   for (let assetInfo of accountInfo["assets"]) {
@@ -99,9 +121,8 @@ const authorizeBurnTransaction = async (
   cbUrl.searchParams.set("txnId", txnId);
 
   const callbackUrl = cbUrl.toString();
-  console.log("callbackUrl : ", callbackUrl); // DEV_LOG_TO_REMOVE
 
   setTimeout(() => {
     window.location.assign(callbackUrl);
-  }, 10000);
+  }, 14900);
 };

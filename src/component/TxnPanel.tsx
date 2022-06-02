@@ -1,3 +1,8 @@
+// TODO: BAN-70
+// TODO steps for Stepper should not index a function (for readability and performance).
+// TODO Instead, create a Record<string,callable> to store the relation of step and function.
+// TODO The stepper can use the Record<,> directly, instead of using `.action`
+
 import {
   Box,
   LinearProgress,
@@ -9,11 +14,33 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import React, {useContext} from "react";
-import {PanelContext, panelType} from "../context/panel"
+import React, { useContext, useEffect } from "react";
+import { PanelContext, panelType } from "../context/panel";
 
 export function TxnPanel() {
   const panel = useContext(PanelContext) as panelType;
+
+  // render page
+  // STEP0: connect to wallet
+  useEffect(() => {
+    if (panel.connectedAcc.length > 0) {
+      panel.updateStepsFinished(0, true);
+    } else {
+      panel.updateStepsFinished(0, false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [panel.connectedAcc, panel.updateStepsFinished]);
+  // STEP1: controlled by page state event
+  // STEP2: Authorize transaction
+  useEffect(() => {
+    // if (panel.isAmountValid && panel.isBeneficiaryValid) {
+    // panel.updateStepsFinished(2, true);
+    // } else {
+    panel.updateStepsFinished(2, false);
+    // }
+    // TOOD: fix logic, this is same as sum of checking step 0 and 1
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [panel.updateStepsFinished]);
 
   const SENDING_UNIT = panel.isMint ? "NEAR" : "goNEAR";
   const RECEIVING_UNIT = panel.isMint ? "goNEAR" : "NEAR";
@@ -23,7 +50,6 @@ export function TxnPanel() {
       <FormWrap>
         <TextField
           helperText={`e.g. ${panel.DEFAULT_BENEFICIARY}`}
-          id="mint_to"
           label="Beneficiary (Algorand public address)"
           fullWidth
           margin="normal"
@@ -32,14 +58,18 @@ export function TxnPanel() {
             const v = e.target.value;
             panel.setBeneficiary?.(v);
             if (panel.quickCheckAddress?.(v)) {
-              panel.setIsBeneficiaryValid?.(panel.validateAddress?.(v) || v ==="");
+              panel.setIsBeneficiaryValid?.(
+                panel.validateAddress?.(v) || v === ""
+              );
             }
           }}
-          error={panel.beneficiary.length >0 ?!panel.isBeneficiaryValid : false}
+          error={!panel.isBeneficiaryValid}
           onBlur={(e) => {
             const v = e.target.value;
             if (v === "") return;
-            panel.setIsBeneficiaryValid?.(panel.validateAddress?.(v) || v === "");
+            panel.setIsBeneficiaryValid?.(
+              panel.validateAddress?.(v) || v === ""
+            );
           }}
         />
         <Box display="flex">
@@ -50,8 +80,7 @@ export function TxnPanel() {
               step: 0.000_000_000_1,
               pattern: "[0-9].*",
             }}
-            error={panel.amount.length > 0 ? (!panel.isAmountValid) : false}
-            id="mint_amount"
+            error={!panel.isAmountValid}
             label={`Sending Amount (${SENDING_UNIT})`}
             fullWidth
             margin="normal"
@@ -64,17 +93,22 @@ export function TxnPanel() {
           />
           <Box width="2rem" />
           <TextField
-            helperText={`Fee: ${FEE}. Showing all decimals.`}
-            inputProps={{
-              inputMode: "numeric",
-              step: 0.000_000_000_1,
-              pattern: "[0-9].*",
-            }}
-            id="mint_amount"
             label={`Receiving Amount (${RECEIVING_UNIT})`}
+            helperText={`Fee: ${FEE}. Showing all decimals.`}
             fullWidth
             margin="normal"
-            value={(Number(panel.amount) * (panel.isMint ? 1 : 0.998) - 1).toFixed(10)}
+            value={
+              panel.amount
+                ? (Number(panel.amount) * (panel.isMint ? 1 : 0.998) - 1)
+                    .toFixed(11)
+                    .slice(0, -1)
+                : ""
+            }
+            error={
+              panel.amount
+                ? Number(panel.amount) * (panel.isMint ? 1 : 0.998) <= 1
+                : false
+            }
             disabled
           />
         </Box>
@@ -87,29 +121,30 @@ export function TxnPanel() {
         activeStep={panel.isStepsFinished?.findIndex((x) => !x)}
         alternativeLabel
       >
-        {panel.steps ? Object.entries(panel.steps).map(([stepName, stepObject]) => (
-          <Step key={stepName} completed={panel.isStepsFinished?.[stepObject.stepId] && stepObject.status}>
+        {Object.entries(panel.steps).map(([stepName, stepObject]) => (
+          <Step
+            key={stepName}
+            completed={panel.isStepsFinished?.[stepObject.stepId]}
+          >
             <StepButton
               color="inherit"
               onClick={stepObject.action}
               disabled={
-                stepObject.stepId != 2 ?
-                (panel.isStepsFinished ? (stepObject.stepId > panel.isStepsFinished.findIndex((x) => !x)) : false)
-                : !stepObject.status
+                stepObject.stepId !== panel.isStepsFinished.findIndex((x) => !x)
+                //TODO: This is same as "Linear", we want non-linear because we want user to be able to disconnect wallet, validate form again etc.
               }
             >
-              {panel.isStepsFinished?.[stepObject.stepId] && stepObject.status ?
-                stepObject.finished : stepName
-              }
+              {/* button title */}
+              {panel.isStepsFinished[stepObject.stepId]
+                ? stepObject.title.finished
+                : stepObject.title.default}
             </StepButton>
           </Step>
-        ))
-        :null
-      }
+        ))}
       </Stepper>
 
       <Modal
-        open={panel.isModalOpen? panel.isModalOpen:false}
+        open={panel.isModalOpen ? panel.isModalOpen : false}
         onClose={() => {
           panel.setModalOpen(true);
         }}
@@ -130,22 +165,20 @@ export function TxnPanel() {
             p: 4,
           }}
         >
-          <Typography
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-            align="center"
-          >
+          <Typography variant="h6" component="h2" align="center">
             Waiting for Algorand Confirm
           </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Algorand blockchain needs around 10 seconds to confirm your
+          <Typography sx={{ mt: 2 }}>
+            Algorand blockchain needs around 15 seconds to confirm your
             transaction. Please wait for{" "}
-            {(panel.algoTxnCountdown?panel.algoTxnCountdown / 10 : 1).toFixed(1) + " "}
+            {(panel.algoTxnCountdown / 10).toFixed(1) + " "}
             more second(s).
           </Typography>
           <Box height="1rem"></Box>
-          <LinearProgress variant="determinate" value={panel.algoTxnCountdown} />
+          <LinearProgress
+            variant="determinate"
+            value={panel.algoTxnCountdown}
+          />
         </Box>
       </Modal>
     </React.Fragment>

@@ -2,15 +2,8 @@ import { Box, styled } from "@mui/material";
 
 import { Logo } from "./Logo";
 import { Navbar } from "./Navbar";
-import { useEffect } from "react";
 
 export function Header() {
-  useEffect(() => {
-    return () => {};
-    /* this is a lifecycle */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <HeaderWrap>
       <Logo />

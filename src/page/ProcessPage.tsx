@@ -15,8 +15,8 @@ import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
 import { callApi } from "../js/api-call";
-import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useEffectOnce } from "usehooks-ts";
 
 export function ProcessPage() {
   let [searchParams] = useSearchParams();
@@ -64,7 +64,7 @@ export function ProcessPage() {
     return url.toString();
   }
 
-  useEffect(() => {
+  useEffectOnce(() => {
     const newParam: ApiParam = {
       type: params.type,
       from: params.from,
@@ -74,7 +74,6 @@ export function ProcessPage() {
     };
     callApi(newParam)
       .then(async (res: any) => {
-        console.log("res : ", res); // DEV_LOG_TO_REMOVE
         if (res.status === 400) {
           window.alert("Invalid transaction");
           return;
@@ -85,6 +84,7 @@ export function ProcessPage() {
         }
         if (res.status === 406) {
           window.alert("Double mint detected");
+          return;
         }
         if (res.status === 200) {
           const resJson = await res.json();
@@ -95,11 +95,10 @@ export function ProcessPage() {
         throw new Error(`${res.status} ${res.statusText}`);
       })
       .catch((err: any) => {
-        console.error("API server rejected. Error : ", err); // DEV_LOG_TO_REMOVE
+        console.error("API server rejected. Error : ", err.message); // DEV_LOG_TO_REMOVE
         alert("API server rejected!");
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   return (
     <Box textAlign="center">

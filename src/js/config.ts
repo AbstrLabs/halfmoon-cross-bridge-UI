@@ -29,8 +29,9 @@ export const CONFIG = {
   // },
   apiServerUrl:
     process.env.NODE_ENV === "development"
-      ? "http://localhost:4190/algorand-near"
-      : "http://api.halfmooncross/algorand-near",
+      // ? "http://localhost:4190/algorand-near"
+      ? "https://api.halfmooncross.com/algorand-near"
+      : "https://api.halfmooncross.com/algorand-near",
   acc: {
     algorand_master:
       "JMJLRBZQSTS6ZINTD3LLSXCW46K44EI2YZHYKCPBGZP3FLITIQRGPELOBE",
