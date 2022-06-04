@@ -1,76 +1,59 @@
-import { Box } from "@mui/system";
+import ReactMarkdown from "react-markdown";
 
 export function DocsPage() {
-  return (
-    <Box textAlign="center">
-      <Box height="20px" />
-      <div
-        style={{
-          display: "flex",
-          flex: "0 1 100%",
-          justifyContent: "space-evenly",
-        }}
-      >
-        <div /* comment="mint-instruction" */ style={{ width: "70%" }}>
-          <h2>mint</h2>
-          <ul style={{ textAlign: "start", border: "1px solid teal" }}>
-            <li>converts NEAR to goNEAR</li>
-            <li>
-              API Endpoint: <code>/api/mint</code>
-            </li>
-            <li>
-              API Method: <code>POST</code>
-            </li>
-            <li>
-              API Call Body:
-              <ul>
-                <li>
-                  <code>mint_from</code>: NEAR will be paid from this account
-                </li>
-                <li>
-                  <code>mint_to</code>: goNEAR will be received on this account
-                </li>
-                <li>
-                  <code>mint_amount</code>: amount of NEAR paid, including fee
-                </li>
-                <li>
-                  <code>mint_txnId</code>: Transaction ID on NEAR (tx_hash)
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-        <div /* comment="burn-instruction" */ style={{ width: "70%" }}>
-          <h2>burn</h2>
-          <ul style={{ textAlign: "start", border: "1px solid teal" }}>
-            <li>converts NEAR to goNEAR</li>
-            <li>
-              API Endpoint: <code>/api/burn</code>
-            </li>
-            <li>
-              API Method: <code>POST</code>
-            </li>
-            <li>
-              API Call Body:
-              <ul>
-                <li>
-                  <code>burn_from</code>: goNEAR will be paid from this account
-                </li>
-                <li>
-                  <code>burn_to</code>: NEAR will be received on this account
-                </li>
-                <li>
-                  <code>burn_amount</code>: amount of goNEAR paid, including fee
-                </li>
-                <li>
-                  <code>burn_txnId</code>: Transaction ID on Algorand (txnId)
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <Box height="20px" />
-    </Box>
-  );
+  return <ReactMarkdown>{MARKDOWN_STR}</ReactMarkdown>;
 }
+
+const MARKDOWN_STR = `
+## Introduction to Algorand-NEAR-bridge Milestone 1
+
+Based our estimation of the project time, we rescheduled the first milestone of Algorand-NEAR unidirectional bridge to be released with a centralized backend.
+
+In this milestone, we will:
+
+- Finish the economical model of the bridge
+- Structural design and implementation of the bridge.
+- Assess the target audience, goal, use cases of the expandable backend API.
+
+We will deliver:
+
+- A simple frontend (this repo) hosted with Amazon EC2 as the user interface.
+- A backend (private for security reason) deployed on Amazon EC2 to handle the API calls.
+- A demo video of the bridge in action.
+
+## How to use our frontend
+
+- Visit [Half Moon Cross](https://halfmooncross.com/)
+- Select mint/burn function. (Mint = stake NEAR and get goNEAR; Burn = send goNEAR and get back the NEAR)
+- Connect to the according wallet (NEAR wallet for Mint; My Algo wallet for Burn)
+- Fill up the form (the frontend has a simple validate function)
+- Authorize the transaction on the frontend.
+
+## How to use our backend
+
+- [Our API server](https://api.halfmooncross.com/) accepts the following API calls:
+- POST method on endpoint [Algorand-NEAR](https://api.halfmooncross.com/algorand-near) with the \`ApiParam\` with Typescript interface definition:
+
+  \`\`\`Typescript
+  interface ApiParam {
+    type: TxnType;
+    from: string;
+    txnId: string;
+    to: string;
+    amount: string;
+  }
+
+  // where TxnType is defined as
+
+  enum TxnType {
+  MINT = "MINT",
+  BURN = "BURN",
+  }
+  \`\`\`
+
+- GET method on the same endpoint. (upcoming)
+
+## Further Missions
+
+- A test toolkit to test the bridge.
+`;
