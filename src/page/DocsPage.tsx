@@ -1,10 +1,13 @@
 import { Divider, Link, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import React from "react";
 import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export function DocsPage() {
   return (
-    <Box lineHeight="200%" my="2rem">
+    <Box lineHeight="1.6" my="2rem">
       <ReactMarkdown
         components={{
           h1: ({ node, ...props }) => <Typography variant="h3" {...props} />,
@@ -13,16 +16,41 @@ export function DocsPage() {
             <Divider sx={{ marginY: 1 }} {...props} />
           ),
           a: ({ node, ...props }) => <Link {...props} />,
-          code: ({ node, ...props }) => (
-            <div style={{ lineHeight: "normal" }}>
-              <code {...props} />
-            </div>
-          ),
+          code: ({ node, inline, className, children, ...props }) => {
+            return !inline ? (
+              <SyntaxHighlighterWithA11yDarkStyleForTs
+                children={children}
+                props={props}
+              />
+            ) : (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            );
+          },
         }}
       >
         {MARKDOWN_STR}
       </ReactMarkdown>
     </Box>
+  );
+}
+
+function SyntaxHighlighterWithA11yDarkStyleForTs({
+  children,
+  props,
+}: {
+  children: React.ReactNode;
+  props: any;
+}) {
+  return (
+    <SyntaxHighlighter
+      style={a11yDark}
+      children={String(children).replace(/\n$/, "")}
+      language={"typescript"}
+      PreTag="div"
+      {...props}
+    />
   );
 }
 
