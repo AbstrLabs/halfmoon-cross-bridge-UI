@@ -5,7 +5,7 @@
 
 ## How to use
 
-- This repo is hosted on [Half Moon Cross](http://www.halfmooncross.com/)
+- This repo is hosted on [Half Moon Cross](https://halfmooncross.com/)
 - Host on localhost with `yarn install && yarn start` (for dev)
 
 ## Contributing
@@ -35,7 +35,35 @@ We will deliver:
 
 ## How to use our frontend
 
+- Visit [Half Moon Cross](https://halfmooncross.com/)
+- Select mint/burn function. (Mint = stake NEAR and get goNEAR; Burn = send goNEAR and get back the NEAR)
+- Connect to the according wallet (NEAR wallet for Mint; My Algo wallet for Burn)
+- Fill up the form (the frontend has a simple validate function)
+- Authorize the transaction on the frontend.
+
 ## How to use our backend
+
+- [Our API server](https://api.halfmooncross.com/) accepts the following API calls:
+- POST method on endpoint [Algorand-NEAR](https://api.halfmooncross.com/algorand-near) with the `ApiParam` with Typescript interface definition:
+
+  ```Typescript
+  interface ApiParam {
+    type: TxnType;
+    from: string;
+    txnId: string;
+    to: string;
+    amount: string;
+  }
+
+  // where TxnType is defined as
+
+  enum TxnType {
+  MINT = "MINT",
+  BURN = "BURN",
+  }
+  ```
+
+- GET method on the same endpoint. (upcoming)
 
 ## Further Missions
 
