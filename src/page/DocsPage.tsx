@@ -1,11 +1,36 @@
+import { Divider, Link, Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import ReactMarkdown from "react-markdown";
 
 export function DocsPage() {
-  return <ReactMarkdown>{MARKDOWN_STR}</ReactMarkdown>;
+  return (
+    <Box lineHeight="200%" my="2rem">
+      <ReactMarkdown
+        components={{
+          h1: ({ node, ...props }) => <Typography variant="h3" {...props} />,
+          h2: ({ node, ...props }) => <Typography variant="h4" {...props} />,
+          hr: ({ node, ...props }) => (
+            <Divider sx={{ marginY: 1 }} {...props} />
+          ),
+          a: ({ node, ...props }) => <Link {...props} />,
+          code: ({ node, ...props }) => (
+            <div style={{ lineHeight: "normal" }}>
+              <code {...props} />
+            </div>
+          ),
+        }}
+      >
+        {MARKDOWN_STR}
+      </ReactMarkdown>
+    </Box>
+  );
 }
 
 const MARKDOWN_STR = `
-## Introduction to Algorand-NEAR-bridge Milestone 1
+# Introduction to Algorand-NEAR-bridge Milestone 1
+
+---
+---
 
 Based our estimation of the project time, we rescheduled the first milestone of Algorand-NEAR unidirectional bridge to be released with a centralized backend.
 
@@ -23,6 +48,8 @@ We will deliver:
 
 ## How to use our frontend
 
+---
+
 - Visit [Half Moon Cross](https://halfmooncross.com/)
 - Select mint/burn function. (Mint = stake NEAR and get goNEAR; Burn = send goNEAR and get back the NEAR)
 - Connect to the according wallet (NEAR wallet for Mint; My Algo wallet for Burn)
@@ -30,6 +57,8 @@ We will deliver:
 - Authorize the transaction on the frontend.
 
 ## How to use our backend
+
+---
 
 - [Our API server](https://api.halfmooncross.com/) accepts the following API calls:
 - POST method on endpoint [Algorand-NEAR](https://api.halfmooncross.com/algorand-near) with the \`ApiParam\` with Typescript interface definition:
@@ -54,6 +83,8 @@ We will deliver:
 - GET method on the same endpoint. (upcoming)
 
 ## Further Missions
+
+---
 
 - A test toolkit to test the bridge.
 `;
