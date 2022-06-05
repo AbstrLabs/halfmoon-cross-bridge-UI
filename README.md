@@ -5,9 +5,66 @@
 
 ## How to use
 
-- This repo is hosted on [Half Moon Cross](http://www.halfmooncross.com/)
-- Host on localhost with `yarn install && yarn start`
+- This repo is hosted on [Half Moon Cross](https://halfmooncross.com/)
+- Host on localhost with `yarn install && yarn start` (for dev)
 
 ## Contributing
 
 - Feel free to [open issues](https://github.com/AbstrLabs/algorand-near-bridge-UI/issues/new/choose) or [make pull requests](https://github.com/AbstrLabs/algorand-near-bridge-UI/compare).
+- To reach us personally, contact [lion@abstrlabs.com](mailto:lion@abstrlabs.com)
+
+## Part below is hosted in Docs page
+
+But we edit it here.
+
+## Introduction to Algorand-NEAR-bridge Milestone 1
+
+Based our estimation of the project time, we rescheduled the first milestone of Algorand-NEAR unidirectional bridge to be released with a centralized backend.
+
+In this milestone, we will:
+
+- Finish the economical model of the bridge
+- Structural design and implementation of the bridge.
+- Assess the target audience, goal, use cases of the expandable backend API.
+
+We will deliver:
+
+- A simple frontend (this repo) hosted with Amazon EC2 as the user interface.
+- A backend (private for security reason) deployed on Amazon EC2 to handle the API calls.
+- A demo video of the bridge in action.
+
+## How to use our frontend
+
+- Visit [Half Moon Cross](https://halfmooncross.com/)
+- Select mint/burn function. (Mint = stake NEAR and get goNEAR; Burn = send goNEAR and get back the NEAR)
+- Connect to the according wallet (NEAR wallet for Mint; My Algo wallet for Burn)
+- Fill up the form (the frontend has a simple validate function)
+- Authorize the transaction on the frontend.
+
+## How to use our backend
+
+- [Our API server](https://api.halfmooncross.com/) accepts the following API calls:
+- POST method on endpoint [Algorand-NEAR](https://api.halfmooncross.com/algorand-near) with the `ApiParam` with Typescript interface definition:
+
+  ```Typescript
+  interface ApiParam {
+    type: TxnType;
+    from: string;
+    txnId: string;
+    to: string;
+    amount: string;
+  }
+
+  // where TxnType is defined as
+
+  enum TxnType {
+  MINT = "MINT",
+  BURN = "BURN",
+  }
+  ```
+
+- GET method on the same endpoint. (upcoming)
+
+## Further Missions
+
+- A test toolkit to test the bridge.
