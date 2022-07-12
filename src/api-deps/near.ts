@@ -1,4 +1,5 @@
 import * as nearAPI from "near-api-js";
+import { TokenId } from "../util/shared-types/token";
 
 import { checkOptedIn, optInGoNear } from "./algorand";
 
@@ -91,10 +92,11 @@ async function authorizeMintTransaction(
     firstTimeCheckOptedIn = false;
   }
   const cbUrl = new URL("/process", window.location.href);
-  cbUrl.searchParams.set("type", "MINT");
+  cbUrl.searchParams.set("from_token", TokenId.NEAR);
+  cbUrl.searchParams.set("from_addr", nearWallet.getAccountId().toString());
+  cbUrl.searchParams.set("to_token", TokenId.goNEAR);
+  cbUrl.searchParams.set("to_addr", mintReceiver);
   cbUrl.searchParams.set("amount", amountStr);
-  cbUrl.searchParams.set("to", mintReceiver);
-  cbUrl.searchParams.set("from", nearWallet.getAccountId().toString());
   const callbackUrl = cbUrl.toString();
   await requestSignNearTxn(amountStr, callbackUrl);
   return;

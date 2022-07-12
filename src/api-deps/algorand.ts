@@ -1,6 +1,7 @@
 import { CONFIG } from "./config";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
+import { TokenId } from "../util/shared-types/token";
 
 export {
   myAlgoWallet,
@@ -112,10 +113,11 @@ const authorizeBurnTransaction = async (
   amount: string
 ) => {
   const cbUrl = new URL("/process", window.location.href);
-  cbUrl.searchParams.set("type", "BURN");
+  cbUrl.searchParams.set("from_token", TokenId.goNEAR);
+  cbUrl.searchParams.set("from_addr", burnSender);
+  cbUrl.searchParams.set("to_token", TokenId.NEAR);
+  cbUrl.searchParams.set("to_addr", burnReceiver);
   cbUrl.searchParams.set("amount", amount);
-  cbUrl.searchParams.set("to", burnReceiver);
-  cbUrl.searchParams.set("from", burnSender);
 
   let txnId = await requestSignGoNearTxn(burnSender, amount);
   cbUrl.searchParams.set("txnId", txnId);
