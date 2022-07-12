@@ -3,24 +3,6 @@ export enum TxnType {
   BURN = "BURN",
 }
 
-export interface StringifiedBridgeTxnObject {
-  // from bridge-txn.ts
-  dbId: string;
-  fixedFeeAtom: string;
-  marginFeeAtom: string;
-  createdTime: string;
-  fromAddr: string;
-  fromAmountAtom: string;
-  // fromBlockchain: BlockchainName;
-  fromTxnId: string;
-  toAddr: string;
-  toAmountAtom: string;
-  // toBlockchain: BlockchainName;
-  toTxnId: string;
-  // txnStatus: BridgeTxnStatus;
-  txnType: TxnType;
-}
-
 export const CONFIG = {
   // apiServer: {
   //   hostname: "http://localhost",

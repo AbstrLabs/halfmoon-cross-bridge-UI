@@ -1,4 +1,4 @@
-import { StringifiedBridgeTxnObject, TxnType } from "../api-deps/config";
+import { TxnType } from "../api-deps/config";
 import {
   Paper,
   Table,
@@ -19,6 +19,7 @@ import { useSearchParams } from "react-router-dom";
 import { useEffectOnce } from "usehooks-ts";
 import { ApiCallParam } from "../util/shared-types/api";
 import { TokenId } from "../util/shared-types/token";
+import { BridgeTxnSafeObj } from "../util/shared-types/txn";
 
 type LinkFromAddr = ({ addr }: { addr: string }) => JSX.Element;
 type LinkFromTxnHash = ({ txnId }: { txnId: string }) => JSX.Element;
@@ -59,19 +60,20 @@ export function ProcessPage() {
     },
   };
 
-  function getResultUrlFromParam(bridgeTxnObject: StringifiedBridgeTxnObject) {
+  function parseResultUrlFromParam(bridgeTxnObject: BridgeTxnSafeObj) {
     const url = new URL("/result", window.location.href);
-    url.searchParams.set("dbId", bridgeTxnObject.dbId);
+    url.searchParams.set("dbId", bridgeTxnObject.dbId as string);
     url.searchParams.set("fixedFeeAtom", bridgeTxnObject.fixedFeeAtom);
     url.searchParams.set("marginFeeAtom", bridgeTxnObject.marginFeeAtom);
     url.searchParams.set("createdTime", bridgeTxnObject.createdTime);
     url.searchParams.set("fromAddr", bridgeTxnObject.fromAddr);
     url.searchParams.set("fromAmountAtom", bridgeTxnObject.fromAmountAtom);
+    url.searchParams.set("fromTokenId", bridgeTxnObject.fromTokenId);
     url.searchParams.set("fromTxnId", bridgeTxnObject.fromTxnId);
     url.searchParams.set("toAddr", bridgeTxnObject.toAddr);
     url.searchParams.set("toAmountAtom", bridgeTxnObject.toAmountAtom);
-    url.searchParams.set("toTxnId", bridgeTxnObject.toTxnId);
-    url.searchParams.set("txnType", bridgeTxnObject.txnType);
+    url.searchParams.set("toTokenId", bridgeTxnObject.toTokenId);
+    url.searchParams.set("toTxnId", bridgeTxnObject.toTxnId!);
     return url.toString();
   }
 
@@ -100,7 +102,7 @@ export function ProcessPage() {
         }
         if (res.status === 200) {
           const resJson = await res.json();
-          const replacingUrl = getResultUrlFromParam(resJson);
+          const replacingUrl = parseResultUrlFromParam(resJson);
           window.location.replace(replacingUrl);
           return;
         }
