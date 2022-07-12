@@ -14,5 +14,10 @@ export async function postTxn(postParam: ApiCallParam) {
     },
   });
   // TODO: check if status 200, err handling here
-  return resp; // will have a BridgeTxnObj
+  return resp; // will have a {uid, BridgeTxnStatus} json in body
+}
+
+export async function getTxn(uid: string) {
+  const resp = await fetch(`${CONFIG.apiServerUrl}/?uid=${uid}`);
+  return resp; // will have a BridgeTxnObj in body
 }
