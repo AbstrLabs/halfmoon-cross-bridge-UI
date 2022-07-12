@@ -29,8 +29,8 @@ export const CONFIG = {
   // },
   apiServerUrl:
     process.env.NODE_ENV === "development"
-      // ? "http://localhost:4190/algorand-near"
-      ? "https://api.halfmooncross.com/algorand-near"
+      ? // ? "http://localhost:4190/algorand-near"
+        "https://api.halfmooncross.com/algorand-near"
       : "https://api.halfmooncross.com/algorand-near",
   acc: {
     algorand_master:
@@ -38,13 +38,3 @@ export const CONFIG = {
     near_master: "abstrlabs.testnet",
   },
 };
-
-export interface ApiParam {
-  type: TxnType;
-  from: string;
-  txnId: string;
-  to: string;
-  amount: string;
-}
-
-  

@@ -1,6 +1,7 @@
-import { ApiParam, CONFIG } from "./config";
+import { ApiCallParam } from "../util/shared-types/api";
+import { CONFIG } from "./config";
 
-export async function postTxn(postParam: ApiParam) {
+export async function postTxn(postParam: ApiCallParam) {
   // todo: refactor this type after backend refactor
 
   const resp = await fetch(CONFIG.apiServerUrl, {
