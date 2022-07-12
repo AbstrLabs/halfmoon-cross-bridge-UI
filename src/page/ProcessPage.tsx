@@ -19,8 +19,10 @@ import { useEffectOnce } from "usehooks-ts";
 import { ApiCallParam } from "../util/shared-types/api";
 import { TokenId } from "../util/shared-types/token";
 import { BridgeTxnSafeObj } from "../util/shared-types/txn";
+import { useState } from "react";
 
 export function ProcessPage() {
+  const [uid, setUid] = useState<string>("");
   let [searchParams] = useSearchParams();
   const params: ApiCallParam = {
     from_token: searchParams.get("from_token") as TokenId,
@@ -96,6 +98,8 @@ export function ProcessPage() {
 
     postTxn(newParam)
       .then(async (res: any) => {
+        console.log("res : ", res); // DEV_LOG_TO_REMOVE
+
         if (res.status === 400) {
           window.alert("Invalid transaction");
           return;
@@ -110,8 +114,9 @@ export function ProcessPage() {
         }
         if (res.status === 200) {
           const resJson = await res.json();
-          const replacingUrl = parseResultUrlFromParam(resJson);
-          window.location.replace(replacingUrl);
+          setUid(resJson.uid);
+          // const replacingUrl = parseResultUrlFromParam(resJson);
+          // window.location.replace(replacingUrl);
           return;
         }
         throw new Error(`${res.status} ${res.statusText}`);
