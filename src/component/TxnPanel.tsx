@@ -50,7 +50,11 @@ export function TxnPanel() {
       <FormWrap>
         <TextField
           helperText={`e.g. ${panel.DEFAULT_BENEFICIARY}`}
-          label="Beneficiary (Algorand public address)"
+          label={
+            panel.isMint
+              ? "Beneficiary (Algorand public address)"
+              : "Beneficiary (NEAR public address)"
+          }
           fullWidth
           margin="normal"
           value={panel.beneficiary}
