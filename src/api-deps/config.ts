@@ -14,6 +14,7 @@ export const CONFIG = {
       ? "http://localhost:4190/algorand-near"
       : // "https://api.halfmooncross.com/algorand-near"
         "https://api.halfmooncross.com/algorand-near",
+  apiVersion: "0.1.4",
   acc: {
     algorand_master:
       "JMJLRBZQSTS6ZINTD3LLSXCW46K44EI2YZHYKCPBGZP3FLITIQRGPELOBE",
