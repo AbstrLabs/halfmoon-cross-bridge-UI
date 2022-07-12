@@ -23,6 +23,7 @@ import { useState } from "react";
 
 export function ProcessPage() {
   const [uid, setUid] = useState<string>("");
+  const [txnStatus, setTxnStatus] = useState("");
   let [searchParams] = useSearchParams();
   const params: ApiCallParam = {
     from_token: searchParams.get("from_token") as TokenId,
@@ -94,7 +95,6 @@ export function ProcessPage() {
       amount: params.amount,
       txn_id: params.txn_id,
     };
-    console.log("newParam : ", newParam); // DEV_LOG_TO_REMOVE
 
     postTxn(newParam)
       .then(async (res: any) => {
@@ -115,6 +115,7 @@ export function ProcessPage() {
         if (res.status === 200) {
           const resJson = await res.json();
           setUid(resJson.uid);
+          setTxnStatus(resJson.BridgeTxnStatus);
           // const replacingUrl = parseResultUrlFromParam(resJson);
           // window.location.replace(replacingUrl);
           return;
@@ -144,12 +145,20 @@ export function ProcessPage() {
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>From Address</TableCell>
-              {Links[params.from_token].acc({ addr: params.from_addr })}
+              <TableCell>Transaction Status</TableCell>
+              <TableCell align="right">{txnStatus}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Beneficiary Address</TableCell>
-              {Links[params.to_token].acc({ addr: params.to_addr })}
+              <TableCell align="right">
+                {Links[params.to_token].acc({ addr: params.to_addr })}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Transaction Signer</TableCell>
+              <TableCell align="right">
+                {Links[params.from_token].acc({ addr: params.from_addr })}
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>NEAR Amount</TableCell>
