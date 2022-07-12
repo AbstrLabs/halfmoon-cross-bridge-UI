@@ -98,7 +98,7 @@ export function ProcessPage() {
           return;
         }
         if (res.status === 406) {
-          window.alert("Double mint detected");
+          window.alert("406, should be Double mint detected");
           return;
         }
         if (res.status === 200) {
