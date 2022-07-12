@@ -1,4 +1,3 @@
-import { TxnType } from "../api-deps/config";
 import {
   Paper,
   Table,
@@ -26,11 +25,17 @@ export function ProcessPage() {
   const params: ApiCallParam = {
     from_token: searchParams.get("from_token") as TokenId,
     to_token: searchParams.get("to_token") as TokenId,
-    txn_id: (searchParams.get("type") === TxnType.MINT
-      ? searchParams.get("transactionHashes")
-      : searchParams.get("txnId"))!,
-    to_addr: searchParams.get("to")!,
-    from_addr: searchParams.get("from")!,
+    txn_id:
+      // TODO: err handling
+      searchParams.get("from_token") === TokenId.NEAR &&
+      searchParams.get("to_token") === TokenId.goNEAR
+        ? searchParams.get("transactionHashes")!
+        : searchParams.get("from_token") === TokenId.goNEAR &&
+          searchParams.get("to_token") === TokenId.NEAR
+        ? searchParams.get("txnId")!
+        : "",
+    to_addr: searchParams.get("to_addr")!,
+    from_addr: searchParams.get("from_addr")!,
     amount: searchParams.get("amount")!,
   };
 
@@ -87,6 +92,8 @@ export function ProcessPage() {
       amount: params.amount,
       txn_id: params.txn_id,
     };
+    console.log("newParam : ", newParam); // DEV_LOG_TO_REMOVE
+
     postTxn(newParam)
       .then(async (res: any) => {
         if (res.status === 400) {
