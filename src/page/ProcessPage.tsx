@@ -21,9 +21,6 @@ import { ApiCallParam } from "../util/shared-types/api";
 import { TokenId } from "../util/shared-types/token";
 import { BridgeTxnSafeObj } from "../util/shared-types/txn";
 
-type LinkFromAddr = ({ addr }: { addr: string }) => JSX.Element;
-type LinkFromTxnHash = ({ txnId }: { txnId: string }) => JSX.Element;
-
 export function ProcessPage() {
   let [searchParams] = useSearchParams();
   const params: ApiCallParam = {
@@ -37,6 +34,9 @@ export function ProcessPage() {
     amount: searchParams.get("amount")!,
   };
 
+  // TODO: LINK-COMP: refactor type TokenLinks, Links, LinkFromAddr, LinkFromTxnHash
+  type LinkFromAddr = ({ addr }: { addr: string }) => JSX.Element;
+  type LinkFromTxnHash = ({ txnId }: { txnId: string }) => JSX.Element;
   type TokenLinks = {
     acc: LinkFromAddr;
     txn: LinkFromTxnHash;
@@ -74,6 +74,7 @@ export function ProcessPage() {
     url.searchParams.set("toAmountAtom", bridgeTxnObject.toAmountAtom);
     url.searchParams.set("toTokenId", bridgeTxnObject.toTokenId);
     url.searchParams.set("toTxnId", bridgeTxnObject.toTxnId!);
+    url.searchParams.set("txnStatus", bridgeTxnObject.txnStatus);
     return url.toString();
   }
 
