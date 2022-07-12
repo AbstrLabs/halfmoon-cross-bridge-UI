@@ -18,7 +18,7 @@ import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionL
 import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
-import { callApi } from "../api-deps/api-call";
+import { postTxn } from "../api-deps/api-call";
 import { useSearchParams } from "react-router-dom";
 import { useEffectOnce } from "usehooks-ts";
 
@@ -76,7 +76,7 @@ export function ProcessPage() {
       txnId: params.txnId,
       amount: params.amount,
     };
-    callApi(newParam)
+    postTxn(newParam)
       .then(async (res: any) => {
         if (res.status === 400) {
           window.alert("Invalid transaction");
