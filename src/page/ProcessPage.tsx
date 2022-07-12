@@ -13,7 +13,7 @@ import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionL
 import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
-import { postTxn } from "../api-deps/api-call";
+import { getTxn, postTxn } from "../api-deps/api-call";
 import { useSearchParams } from "react-router-dom";
 import { useEffectOnce } from "usehooks-ts";
 import { ApiCallParam } from "../util/shared-types/api";
@@ -21,8 +21,9 @@ import { TokenId } from "../util/shared-types/token";
 import { BridgeTxnSafeObj } from "../util/shared-types/txn";
 import { useState } from "react";
 
+const GET_INTERVAL_MS = 3000;
+
 export function ProcessPage() {
-  const [uid, setUid] = useState<string>("");
   const [txnStatus, setTxnStatus] = useState("");
   let [searchParams] = useSearchParams();
   const params: ApiCallParam = {
@@ -86,6 +87,35 @@ export function ProcessPage() {
     return url.toString();
   }
 
+  async function watchTxnStatus(uid: string) {
+    let finished = false;
+    let txnJson;
+    while (!finished) {
+      const txnRes = await getTxn(uid);
+      if (txnRes.status === 200) {
+        txnJson = await txnRes.json();
+        setTxnStatus(txnJson.txnStatus);
+        if (txnJson.txnStatus === "DONE_OUTGOING") {
+          finished = true;
+        } else if ((txnJson.txnStatus as string).startsWith("ERR_")) {
+          finished = true;
+          alert(
+            `Transaction error: ${txnJson.txnStatus} on Transaction [UID:${uid}]. Please contact support providing this UID.`
+          );
+        }
+      } else {
+        // this should only happen if user try to fetch with a wrong uid, but uid is not accessible by user.
+        alert(
+          `Error: API server returned ${txnRes.status}: ${txnRes.statusText}`
+        );
+      }
+      await new Promise((resolve) => setTimeout(resolve, GET_INTERVAL_MS));
+    }
+    const replacingUrl = parseResultUrlFromParam(txnJson);
+    window.location.replace(replacingUrl);
+    return;
+  }
+
   useEffectOnce(() => {
     const newParam: ApiCallParam = {
       from_addr: params.from_addr,
@@ -98,8 +128,6 @@ export function ProcessPage() {
 
     postTxn(newParam)
       .then(async (res: any) => {
-        console.log("res : ", res); // DEV_LOG_TO_REMOVE
-
         if (res.status === 400) {
           window.alert("Invalid transaction");
           return;
@@ -114,16 +142,14 @@ export function ProcessPage() {
         }
         if (res.status === 200) {
           const resJson = await res.json();
-          setUid(resJson.uid);
           setTxnStatus(resJson.BridgeTxnStatus);
-          // const replacingUrl = parseResultUrlFromParam(resJson);
-          // window.location.replace(replacingUrl);
+          watchTxnStatus(resJson.uid);
           return;
         }
         throw new Error(`${res.status} ${res.statusText}`);
       })
       .catch((err: any) => {
-        console.error("API server rejected. Error : ", err.message); // DEV_LOG_TO_REMOVE
+        console.error("API server rejected. Error : ", err.message);
         alert("API server rejected!");
       });
   });
