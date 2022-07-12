@@ -1,4 +1,8 @@
-import { ApiParam, StringifiedBridgeTxnObject, TxnType } from "../js/config";
+import {
+  ApiParam,
+  StringifiedBridgeTxnObject,
+  TxnType,
+} from "../api-deps/config";
 import {
   Paper,
   Table,
@@ -14,7 +18,7 @@ import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionL
 import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
-import { callApi } from "../js/api-call";
+import { callApi } from "../api-deps/api-call";
 import { useSearchParams } from "react-router-dom";
 import { useEffectOnce } from "usehooks-ts";
 

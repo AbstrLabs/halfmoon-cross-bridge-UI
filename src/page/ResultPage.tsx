@@ -13,7 +13,7 @@ import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionL
 import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
-import { TxnType } from "../js/config";
+import { TxnType } from "../api-deps/config";
 import { useSearchParams } from "react-router-dom";
 
 export function ResultPage() {
