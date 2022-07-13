@@ -5,7 +5,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 import PanelContextProvider from "../context/panel";
 import { TxnPanel } from "../component/TxnPanel";
-import { TxnType } from "../js/config";
+import { TxnType } from "../api-deps/config";
 
 export function HomePage() {
   const [currentTab, setCurrentTab] = useState<TxnType>(TxnType.MINT);

@@ -44,6 +44,7 @@ We will deliver:
 ## How to use our backend
 
 - [Our API server](https://api.halfmooncross.com/) accepts the following API calls:
+- OUTDATED DOCS BELOW!
 - POST method on endpoint [Algorand-NEAR](https://api.halfmooncross.com/algorand-near) with the `ApiParam` with Typescript interface definition:
 
   ```Typescript

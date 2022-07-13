@@ -13,44 +13,54 @@ import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionL
 import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
-import { TxnType } from "../js/config";
 import { useSearchParams } from "react-router-dom";
+import {
+  BridgeTxnSafeObj,
+  BridgeTxnStatusEnum,
+} from "../util/shared-types/txn";
+import { TokenId } from "../util/shared-types/token";
 
 export function ResultPage() {
   let [searchParams] = useSearchParams();
-  const parsedParams = {
+  const parsedParams: BridgeTxnSafeObj = {
     dbId: searchParams.get("dbId")!,
     fixedFeeAtom: searchParams.get("fixedFeeAtom")!,
     marginFeeAtom: searchParams.get("marginFeeAtom")!,
-    createdTime: new Date(+searchParams.get("createdTime")!).toLocaleString(),
+    createdTime: new Date(+searchParams.get("createdTime")!).toLocaleString(), // this passes type check but is not by design
     fromAddr: searchParams.get("fromAddr")!,
     fromAmountAtom: searchParams.get("fromAmountAtom")!,
+    fromTokenId: searchParams.get("fromTokenId") as TokenId,
     fromTxnId: searchParams.get("fromTxnId")!,
     toAddr: searchParams.get("toAddr")!,
     toAmountAtom: searchParams.get("toAmountAtom")!,
+    toTokenId: searchParams.get("toTokenId") as TokenId,
     toTxnId: searchParams.get("toTxnId")!,
-    txnType: searchParams.get("txnType")!.toUpperCase() as TxnType,
+    txnStatus: searchParams.get("txnStatus")! as BridgeTxnStatusEnum,
   };
   // TODO: if any is empty , show another page or redirect to 404.
-  let Links: {
-    [key in TxnType]: {
-      from: ({ addr }: { addr: string }) => JSX.Element;
-      to: ({ addr }: { addr: string }) => JSX.Element;
-      fromTxnId: ({ txnId }: { txnId: string }) => JSX.Element;
-      toTxnId: ({ txnId }: { txnId: string }) => JSX.Element;
-    };
-  } = {
-    MINT: {
-      from: NearAddressLink,
-      to: AlgorandAddressLink,
-      fromTxnId: NearTransactionLink,
-      toTxnId: AlgorandTransactionLink,
+  // TODO: LINK-COMP: refactor type TokenLinks, Links, LinkFromAddr, LinkFromTxnHash
+  type LinkFromAddr = ({ addr }: { addr: string }) => JSX.Element;
+  type LinkFromTxnHash = ({ txnId }: { txnId: string }) => JSX.Element;
+  type TokenLinks = {
+    acc: LinkFromAddr;
+    txn: LinkFromTxnHash;
+  };
+  let Links: Record<TokenId, TokenLinks> = {
+    [TokenId.NEAR]: {
+      acc: NearAddressLink,
+      txn: NearTransactionLink,
     },
-    BURN: {
-      from: AlgorandAddressLink,
-      to: NearAddressLink,
-      fromTxnId: AlgorandTransactionLink,
-      toTxnId: NearTransactionLink,
+    [TokenId.goNEAR]: {
+      acc: AlgorandAddressLink,
+      txn: AlgorandTransactionLink,
+    },
+    [TokenId.wALGO]: {
+      acc: NearAddressLink,
+      txn: NearTransactionLink,
+    },
+    [TokenId.ALGO]: {
+      acc: AlgorandAddressLink,
+      txn: AlgorandTransactionLink,
     },
   };
 
@@ -60,16 +70,21 @@ export function ResultPage() {
       <Typography variant="h2">Transaction Completed</Typography>
       <Box height="2rem" />
       <Typography variant="h4">See Invoice Transaction on Explorer</Typography>
-      {Links[parsedParams.txnType].toTxnId({
-        txnId: parsedParams.toTxnId,
-      })}
+      {/* TODO: TO-HASH : make this a component */}
+      {parsedParams.toTxnId === null || parsedParams.toTxnId === undefined
+        ? "loading..."
+        : Links[parsedParams.toTokenId].txn({
+            txnId: parsedParams.toTxnId,
+          })}
       <Box height="4rem" />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableBody>
             <TableRow>
               <TableCell>Transaction type</TableCell>
-              <TableCell align="right">{parsedParams.txnType}</TableCell>
+              <TableCell align="right">
+                {parsedParams.fromTokenId} ➡️ {parsedParams.toTokenId}
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Amount Sent (unit: 1e-10)</TableCell>
@@ -82,13 +97,15 @@ export function ResultPage() {
             <TableRow>
               <TableCell>Beneficiary Address</TableCell>
               <TableCell align="right">
-                {Links[parsedParams.txnType].to({ addr: parsedParams.toAddr })}
+                {Links[parsedParams.toTokenId].acc({
+                  addr: parsedParams.toAddr,
+                })}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Transaction Signer</TableCell>
               <TableCell align="right">
-                {Links[parsedParams.txnType].from({
+                {Links[parsedParams.fromTokenId].acc({
                   addr: parsedParams.fromAddr,
                 })}
               </TableCell>
@@ -96,7 +113,7 @@ export function ResultPage() {
             <TableRow>
               <TableCell>Signed Transaction ID</TableCell>
               <TableCell align="right">
-                {Links[parsedParams.txnType].fromTxnId({
+                {Links[parsedParams.fromTokenId].txn({
                   txnId: parsedParams.fromTxnId,
                 })}
               </TableCell>
@@ -104,9 +121,13 @@ export function ResultPage() {
             <TableRow>
               <TableCell>Invoice Transaction ID</TableCell>
               <TableCell align="right">
-                {Links[parsedParams.txnType].toTxnId({
-                  txnId: parsedParams.toTxnId,
-                })}
+                {/* TODO: TO-HASH : make this a component */}
+                {parsedParams.toTxnId === null ||
+                parsedParams.toTxnId === undefined
+                  ? "loading..."
+                  : Links[parsedParams.toTokenId].txn({
+                      txnId: parsedParams.toTxnId,
+                    })}
               </TableCell>
             </TableRow>
             <TableRow>

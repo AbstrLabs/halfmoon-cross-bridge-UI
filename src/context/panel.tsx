@@ -1,10 +1,13 @@
 // TODO(BAN-69): Purpose of this file is to split TxnPanel to a From and a Stepper, but not finished
 
 import React, { createContext, useCallback, useMemo, useState } from "react";
-import { authorizeBurnTransaction, connectAlgoWallet } from "../js/algorand";
-import { authorizeMintTransaction, nearWallet } from "../js/near";
+import {
+  authorizeBurnTransaction,
+  connectAlgoWallet,
+} from "../api-deps/algorand";
+import { authorizeMintTransaction, nearWallet } from "../api-deps/near";
 
-import { TxnType } from "../js/config";
+import { TxnType } from "../api-deps/config";
 import algosdk from "algosdk";
 import { useCountdown } from "usehooks-ts";
 
