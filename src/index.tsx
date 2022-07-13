@@ -22,7 +22,9 @@ async function checkApiVersion() {
 
 checkApiVersion()
   .then(() => {
-    console.log(`API version check passed. Current at ${CONFIG.apiVersion}`);
+    console.log(
+      `API version check passed. Current version: ${CONFIG.apiVersion}`
+    );
   })
   .catch((err) => {
     console.error(err);
