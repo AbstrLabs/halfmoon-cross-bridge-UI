@@ -20,9 +20,13 @@ async function checkApiVersion() {
   }
 }
 
-checkApiVersion().catch((err) => {
-  console.error(err);
-  window.alert(`Failed to check API version. Error: ${err.message}`);
-});
+checkApiVersion()
+  .then(() => {
+    console.log(`API version check passed. Current at ${CONFIG.apiVersion}`);
+  })
+  .catch((err) => {
+    console.error(err);
+    window.alert(`Failed to check API version. Error: ${err.message}`);
+  });
 
 root.render(<App />);
