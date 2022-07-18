@@ -44,27 +44,9 @@ We will deliver:
 ## How to use our backend
 
 - [Our API server](https://api.halfmooncross.com/) accepts the following API calls:
-- OUTDATED DOCS BELOW!
-- POST method on endpoint [Algorand-NEAR](https://api.halfmooncross.com/algorand-near) with the `ApiParam` with Typescript interface definition:
-
-  ```Typescript
-  interface ApiParam {
-    type: TxnType;
-    from: string;
-    txnId: string;
-    to: string;
-    amount: string;
-  }
-
-  // where TxnType is defined as
-
-  enum TxnType {
-  MINT = "MINT",
-  BURN = "BURN",
-  }
-  ```
-
-- GET method on the same endpoint. (upcoming)
+- Use POST method to create a bridge transaction (like stake NEAR to get goNEAR) and get a unique ID `uid`.
+- Use GET method with `uid` to get the latest transaction status.
+- See the example in
 
 ## Further Missions
 

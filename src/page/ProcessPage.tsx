@@ -13,7 +13,7 @@ import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionL
 import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
-import { getTxn, postTxn } from "../api-deps/api-call";
+import { getTxn, postTxn } from "../api-deps/call-server";
 import { useSearchParams } from "react-router-dom";
 import { useEffectOnce } from "usehooks-ts";
 import { ApiCallParam } from "../util/shared-types/api";
