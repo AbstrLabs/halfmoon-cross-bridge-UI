@@ -1,4 +1,5 @@
-// TODO(BAN-69): Purpose of this file is to split TxnPanel to a From and a Stepper, but not finished
+// TODO(BAN-69): Purpose of this file is to split TxnPanel to a Form and a Stepper, but not finished
+// Needs more refactor. Passing too many unnecessary props.
 
 import React, { createContext, useCallback, useMemo, useState } from "react";
 import {

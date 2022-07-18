@@ -1,3 +1,7 @@
+/**
+ * This file wraps up Algorand transactions we need.
+ */
+
 import { CONFIG } from "./config";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
