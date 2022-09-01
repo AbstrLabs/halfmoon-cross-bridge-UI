@@ -22,6 +22,7 @@ const myAlgoWallet = new MyAlgoConnect();
 let connectedAccounts: Awaited<ReturnType<typeof myAlgoWallet.connect>>;
 const ALGO_UNIT = 10_000_000_000;
 const GO_NEAR_ASA_ID = 83251085;
+let algoAccount: string;
 
 const algodClient = new algosdk.Algodv2(
   { "X-API-Key": "WLJDqY55G5560kyCJVp647ERNZ5kJkdZ8OUdGNnV" },
@@ -32,10 +33,12 @@ const algodClient = new algosdk.Algodv2(
 
 async function connectAlgoWallet() {
   connectedAccounts = await myAlgoWallet.connect();
+  algoAccount = connectedAccounts[0].address;
   return connectedAccounts;
 }
 
 async function disconnectAlgoWallet() {
+  algoAccount = "";
   connectedAccounts = [];
 }
 
@@ -80,11 +83,19 @@ async function signGoNearTransaction(
 }
 
 const requestSignGoNearTxn = async (fromAddr: string, amountStr: string) => {
-  const from = fromAddr;
+  if (algoAccount === "") {
+    window.alert("No account, please log in again and enable browser pop-up");
+    await connectAlgoWallet();
+  }
+
+  console.warn(
+    'not using fromAddr passed in "requestSignGoNearTxn()"',
+    fromAddr
+  );
   const to = CONFIG.acc.algorand_master;
   const amount = +amountStr * ALGO_UNIT;
   try {
-    const response = await signGoNearTransaction(from, to, amount);
+    const response = await signGoNearTransaction(algoAccount, to, amount);
     // TODO: Err handling: no goNEAR in acc.
     return response.txId;
   } catch (err) {
@@ -118,10 +129,10 @@ async function checkOptedIn(addr: string, option = { showAlert: false }) {
 }
 
 const authorizeBurnTransaction = async (
-  burnSender: string,
   burnReceiver: string,
   amount: string
 ) => {
+  const burnSender: string = algoAccount;
   const cbUrl = new URL("/process", window.location.href);
   cbUrl.searchParams.set("from_token", TokenId.goNEAR);
   cbUrl.searchParams.set("from_addr", burnSender);

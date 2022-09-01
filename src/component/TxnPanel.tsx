@@ -70,7 +70,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
 
   // connect and step function
-  const [algoAcc, setAlgoAcc] = useState<string>("");
 
   // modal control
   const [isModalOpen, setModalOpen] = useState(false);
@@ -121,15 +120,13 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   }, []);
 
   const connectAlgoWalletWrap = useCallback(async () => {
-    const accounts = await connectAlgoWallet();
-    setAlgoAcc(accounts[0].address);
+    await connectAlgoWallet();
   }, []);
 
   const disconnectWallet = useCallback(async () => {
     if (isMint) disconnectNearWallet();
     if (isBurn) {
       disconnectAlgoWallet();
-      setAlgoAcc("");
     }
   }, [isBurn, isMint, disconnectNearWallet]);
   const authorizeTxn = useCallback(
@@ -139,19 +136,11 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
           await authorizeMintTransaction(amount, beneficiary);
         }
         if (isBurn) {
-          await authorizeBurnTransaction(algoAcc, beneficiary, amount);
+          await authorizeBurnTransaction(beneficiary, amount);
         }
       }
     },
-    [
-      amount,
-      beneficiary,
-      isBurn,
-      isMint,
-      algoAcc,
-      isAmountValid,
-      isBeneficiaryValid,
-    ]
+    [amount, beneficiary, isBurn, isMint, isAmountValid, isBeneficiaryValid]
   );
 
   return (
