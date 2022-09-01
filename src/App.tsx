@@ -90,6 +90,7 @@ function genThemeByMode(isDarkMode: boolean): any {
 /* ======== STYLED ======== */
 const AppWarp = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#080808" : "#fff",
+  backgroundImage: `url("${process.env.PUBLIC_URL}/svg/bcg-shapes.svg")`,
   minHeight: "100vh",
   maxWidth: "100vw",
   display: "flex",

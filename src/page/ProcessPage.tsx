@@ -113,7 +113,6 @@ export function ProcessPage() {
     }
     const replacingUrl = parseResultUrlFromParam(txnJson);
     window.location.replace(replacingUrl);
-    return;
   }
 
   useEffectOnce(() => {
