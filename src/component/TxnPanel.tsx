@@ -3,6 +3,7 @@
 // TODO Instead, create a Record<string,callable> to store the relation of step and function.
 // TODO The stepper can use the Record<,> directly, instead of using `.action`
 
+import { Fingerprint } from "@mui/icons-material";
 import {
   Box,
   Modal,
@@ -237,7 +238,12 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       <Button color="inherit" onClick={validateForm}>
         Validate Form
       </Button>
-      <Button color="inherit" onClick={authorizeTxn}>
+      <Button
+        color="inherit"
+        onClick={authorizeTxn}
+        variant="outlined"
+        startIcon={<Fingerprint />}
+      >
         Authorize Transaction
       </Button>
       <Modal
