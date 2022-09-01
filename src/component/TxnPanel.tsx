@@ -50,7 +50,8 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const DEFAULT_AMOUNT = isMint ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
   const SENDING_UNIT = isMint ? "NEAR" : "goNEAR";
   const RECEIVING_UNIT = isMint ? "goNEAR" : "NEAR";
-  const FEE = isMint ? "0.0%+1" : "0.2%+1";
+  const FEE_TEXT = isMint ? "0.0%+1" : "0.2%+1";
+  const USER_RECEIVING_PROPORTION = isMint ? 1 : 0.998;
 
   //form input
   const [beneficiary, setBeneficiary] = useState(
@@ -203,17 +204,19 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
           <Box width="2rem" />
           <TextField
             label={`Receiving Amount (${RECEIVING_UNIT})`}
-            helperText={`Fee: ${FEE}. Showing all decimals.`}
+            helperText={`Fee: ${FEE_TEXT}. Showing all decimals.`}
             fullWidth
             margin="normal"
             value={
               amount
-                ? (Number(amount) * (isMint ? 1 : 0.998) - 1)
+                ? (Number(amount) * USER_RECEIVING_PROPORTION - 1)
                     .toFixed(11)
                     .slice(0, -1)
                 : ""
             }
-            error={amount ? Number(amount) * (isMint ? 1 : 0.998) <= 1 : false}
+            error={
+              amount ? Number(amount) * USER_RECEIVING_PROPORTION <= 1 : false
+            }
             disabled
           />
         </Box>
