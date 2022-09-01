@@ -161,12 +161,6 @@ const PanelContextProvider = ({
     [quickCheckAmount]
   );
   const validateForm = useCallback(() => {
-    // const c = window.confirm("Fill with test values?");
-    // if (c) {
-    // new Promise((resolve) => {
-    //   resolve(0);
-    // });
-    // }
     setIsBeneficiaryValid(validateAddress(beneficiary));
     setIsAmountValid(validateAmount(amount));
     if (!isBeneficiaryValid) {
@@ -191,32 +185,39 @@ const PanelContextProvider = ({
     validateAddress,
     validateAmount,
   ]);
+  const signOutNearWallet = useCallback(() => {
+    nearWallet.signOut();
+  }, []);
+
+  const connectNearWalletWrap = useCallback(async () => {
+    if (nearWallet.isSignedIn()) {
+      const answer = window.alert("you've signed in.");
+    } else {
+      nearWallet.requestSignIn("abstrlabs.testnet");
+    }
+    setNearAcc(nearWallet.account().accountId);
+    updateStepsFinished(0, true);
+  }, [updateStepsFinished]);
+
+  const connectAlgoWalletWrap = useCallback(async () => {
+    const accounts = await connectAlgoWallet();
+    setAlgoAcc(accounts[0].address);
+    updateStepsFinished(0, true);
+  }, [updateStepsFinished]);
 
   // connect wallet
   const connectWallet = useCallback(async () => {
     // only blockchain == near
-    if (isMint) {
-      if (nearWallet.isSignedIn()) {
-        const answer = window.confirm(
-          "you've signed in, do you want to sign out?"
-        );
-        if (answer) {
-          nearWallet.signOut();
-          updateStepsFinished(0, false);
-        }
-      } else {
-        nearWallet.requestSignIn("abstrlabs.testnet");
-      }
-      setNearAcc(nearWallet.account().accountId);
-      updateStepsFinished(0, true);
-    }
-    if (isBurn) {
-      const accounts = await connectAlgoWallet();
-      setAlgoAcc(accounts[0].address);
-      updateStepsFinished(0, true);
-    }
+    if (isMint) connectNearWalletWrap();
+    if (isBurn) connectAlgoWalletWrap();
     updateStepsFinished(0, true);
-  }, [isBurn, isMint, updateStepsFinished]);
+  }, [
+    connectAlgoWalletWrap,
+    connectNearWalletWrap,
+    isBurn,
+    isMint,
+    updateStepsFinished,
+  ]);
 
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
