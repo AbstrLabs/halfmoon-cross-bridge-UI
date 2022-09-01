@@ -20,7 +20,11 @@ import {
   disconnectAlgoWallet,
 } from "../api-deps/algorand";
 import { TxnType } from "../api-deps/config";
-import { nearWallet, authorizeMintTransaction } from "../api-deps/near";
+import {
+  nearWallet,
+  authorizeMintTransaction,
+  connectNearWallet,
+} from "../api-deps/near";
 
 const DEFAULT_MINT_BENEFICIARY =
   "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA";
@@ -116,13 +120,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     nearWallet.signOut();
   }, []);
 
-  const connectNearWalletWrap = useCallback(async () => {
-    if (nearWallet.isSignedIn()) {
-      window.alert("you've signed in.");
-    } else {
-      nearWallet.requestSignIn("abstrlabs.testnet");
-    }
-  }, []);
   const connectAlgoWalletWrap = useCallback(async () => {
     const accounts = await connectAlgoWallet();
     setAlgoAcc(accounts[0].address);
@@ -225,7 +222,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       </FormWrap>
       <Box height="60px"></Box>
 
-      <Button color="inherit" onClick={connectNearWalletWrap}>
+      <Button color="inherit" onClick={connectNearWallet}>
         Connect NEAR Wallet (mint)
       </Button>
       <Button color="inherit" onClick={connectAlgoWalletWrap}>
