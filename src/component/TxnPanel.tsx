@@ -5,7 +5,6 @@
 
 import {
   Box,
-  LinearProgress,
   Modal,
   TextField,
   Typography,
@@ -14,7 +13,6 @@ import {
 } from "@mui/material";
 import algosdk from "algosdk";
 import React, { useCallback, useMemo, useState } from "react";
-import { useCountdown } from "usehooks-ts";
 import {
   connectAlgoWallet,
   authorizeBurnTransaction,
@@ -69,19 +67,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
 
   // modal control
   const [isModalOpen, setModalOpen] = useState(false);
-
-  //countdown
-  const [algoTxnCountdown, { start: startCountdown, reset: resetCountdown }] =
-    useCountdown({
-      seconds: 150,
-      interval: 100,
-    });
-
-  const startAlgoTxnCountdown = useCallback(() => {
-    resetCountdown();
-    setModalOpen(true);
-    startCountdown();
-  }, [resetCountdown, startCountdown]);
 
   // form check
   const quickCheckAddress = useCallback(
@@ -155,7 +140,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         }
         if (isBurn) {
           await authorizeBurnTransaction(algoAcc, beneficiary, amount);
-          startAlgoTxnCountdown();
         }
       }
     },
@@ -164,7 +148,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       beneficiary,
       isBurn,
       isMint,
-      startAlgoTxnCountdown,
       algoAcc,
       isAmountValid,
       isBeneficiaryValid,
@@ -252,7 +235,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         Authorize Transaction
       </Button>
       <Modal
-        open={isModalOpen ? isModalOpen : false}
+        open={isModalOpen}
         onClose={() => {
           setModalOpen(true);
         }}
@@ -274,16 +257,10 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
           }}
         >
           <Typography variant="h6" component="h2" align="center">
-            Waiting for Algorand Confirm
+            SAMPLE MODAL TITLE
           </Typography>
-          <Typography sx={{ mt: 2 }}>
-            Algorand blockchain needs around 15 seconds to confirm your
-            transaction. Please wait for{" "}
-            {(algoTxnCountdown / 10).toFixed(1) + " "}
-            more second(s).
-          </Typography>
+          <Typography sx={{ mt: 2 }}>SAMPLE MODAL TEXT</Typography>
           <Box height="1rem"></Box>
-          <LinearProgress variant="determinate" value={algoTxnCountdown} />
         </Box>
       </Modal>
     </React.Fragment>
