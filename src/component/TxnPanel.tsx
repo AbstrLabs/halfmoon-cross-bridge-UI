@@ -115,24 +115,6 @@ export function TxnPanel() {
       <Button color="inherit" onClick={panel.authorizeTxn}>
         Authorize Transaction
       </Button>
-      <Box sx={{ border: "solid red 1px" }}>
-        <Typography>"deprecating"</Typography>
-        {Object.entries(panel.steps).map(([stepName, stepObject]) => (
-          <Button
-            color="inherit"
-            onClick={stepObject.action}
-            disabled={
-              stepObject.stepId !== panel.isStepsFinished.findIndex((x) => !x)
-              //TODO: This is same as "Linear", we want non-linear because we want user to be able to disconnect wallet, validate form again etc.
-            }
-          >
-            {/* button title */}
-            {panel.isStepsFinished[stepObject.stepId]
-              ? stepObject.title.finished
-              : stepObject.title.default}
-          </Button>
-        ))}
-      </Box>
       <Modal
         open={panel.isModalOpen ? panel.isModalOpen : false}
         onClose={() => {

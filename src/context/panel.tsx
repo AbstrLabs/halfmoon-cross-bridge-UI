@@ -58,7 +58,6 @@ export type panelType = {
   algoTxnCountdown: number;
   quickCheckAddress: (addr: string) => boolean;
   validateAddress: (addr: string) => boolean;
-  isStepsFinished: Array<boolean>;
   isBeneficiaryValid: boolean;
   setIsBeneficiaryValid: React.Dispatch<boolean>;
   isAmountValid: boolean;
@@ -111,8 +110,6 @@ const PanelContextProvider = ({
     () => (isMint ? nearAcc : algoAcc),
     [algoAcc, isMint, nearAcc]
   );
-
-  const [isStepsFinished, _] = useState([false, false, false]);
 
   // modal control
   const [isModalOpen, setModalOpen] = useState(false);
@@ -266,7 +263,6 @@ const PanelContextProvider = ({
     algoTxnCountdown,
     quickCheckAddress,
     validateAddress,
-    isStepsFinished,
     isBeneficiaryValid,
     setIsBeneficiaryValid,
     isAmountValid,
