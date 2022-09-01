@@ -68,7 +68,6 @@ export type panelType = {
   isModalOpen: boolean;
   setModalOpen: React.Dispatch<boolean>;
   connectedAcc: string;
-  updateStepsFinished: (pos: 0 | 1 | 2, newVal: boolean) => void;
   connectWallet: () => Promise<void>;
   validateForm: () => void;
   authorizeTxn: () => Promise<void>;
@@ -113,14 +112,7 @@ const PanelContextProvider = ({
     [algoAcc, isMint, nearAcc]
   );
 
-  const [isStepsFinished, setStepsFinished] = useState([false, false, false]);
-  const updateStepsFinished = useCallback((pos: 0 | 1 | 2, newVal: boolean) => {
-    setStepsFinished((isStepsFinished) => {
-      const newStepsFinished = [...isStepsFinished];
-      newStepsFinished[pos] = newVal;
-      return newStepsFinished;
-    });
-  }, []);
+  const [isStepsFinished, _] = useState([false, false, false]);
 
   // modal control
   const [isModalOpen, setModalOpen] = useState(false);
@@ -164,24 +156,18 @@ const PanelContextProvider = ({
     setIsBeneficiaryValid(validateAddress(beneficiary));
     setIsAmountValid(validateAmount(amount));
     if (!isBeneficiaryValid) {
-      updateStepsFinished(1, false);
       alert("Invalid address");
       return;
     }
     if (!isAmountValid) {
-      updateStepsFinished(1, false);
       alert("Invalid amount");
       return;
-    }
-    if (isBeneficiaryValid && isAmountValid) {
-      updateStepsFinished(1, true);
     }
   }, [
     amount,
     beneficiary,
     isAmountValid,
     isBeneficiaryValid,
-    updateStepsFinished,
     validateAddress,
     validateAmount,
   ]);
@@ -191,33 +177,23 @@ const PanelContextProvider = ({
 
   const connectNearWalletWrap = useCallback(async () => {
     if (nearWallet.isSignedIn()) {
-      const answer = window.alert("you've signed in.");
+      window.alert("you've signed in.");
     } else {
       nearWallet.requestSignIn("abstrlabs.testnet");
     }
     setNearAcc(nearWallet.account().accountId);
-    updateStepsFinished(0, true);
-  }, [updateStepsFinished]);
-
+  }, []);
   const connectAlgoWalletWrap = useCallback(async () => {
     const accounts = await connectAlgoWallet();
     setAlgoAcc(accounts[0].address);
-    updateStepsFinished(0, true);
-  }, [updateStepsFinished]);
+  }, []);
 
   // connect wallet
   const connectWallet = useCallback(async () => {
     // only blockchain == near
     if (isMint) connectNearWalletWrap();
     if (isBurn) connectAlgoWalletWrap();
-    updateStepsFinished(0, true);
-  }, [
-    connectAlgoWalletWrap,
-    connectNearWalletWrap,
-    isBurn,
-    isMint,
-    updateStepsFinished,
-  ]);
+  }, [connectAlgoWalletWrap, connectNearWalletWrap, isBurn, isMint]);
 
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
@@ -300,7 +276,6 @@ const PanelContextProvider = ({
     isModalOpen,
     setModalOpen,
     connectedAcc,
-    updateStepsFinished,
     connectWallet,
     validateForm,
     authorizeTxn,

@@ -20,25 +20,9 @@ export function TxnPanel() {
 
   // render page
   // STEP0: connect to wallet
-  useEffect(() => {
-    if (panel.connectedAcc.length > 0) {
-      panel.updateStepsFinished(0, true);
-    } else {
-      panel.updateStepsFinished(0, false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [panel.connectedAcc, panel.updateStepsFinished]);
+
   // STEP1: controlled by page state event
   // STEP2: Authorize transaction
-  useEffect(() => {
-    // if (panel.isAmountValid && panel.isBeneficiaryValid) {
-    // panel.updateStepsFinished(2, true);
-    // } else {
-    panel.updateStepsFinished(2, false);
-    // }
-    // TOOD: fix logic, this is same as sum of checking step 0 and 1
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [panel.updateStepsFinished]);
 
   const SENDING_UNIT = panel.isMint ? "NEAR" : "goNEAR";
   const RECEIVING_UNIT = panel.isMint ? "goNEAR" : "NEAR";
