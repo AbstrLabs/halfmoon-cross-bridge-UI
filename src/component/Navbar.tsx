@@ -16,14 +16,12 @@ export function Navbar() {
           <BrightnessAuto />
         )}
       </IconButton>
+      {/* CHANGE NavButtonGroup to NavTab : https://mui.com/material-ui/react-tabs/#nav-tabs */}
       <ButtonGroup
         variant="contained"
         color="primary"
         aria-label="primary button group"
       >
-        {/* {process.env.NODE_ENV === "development" && (
-          <Button onClick={test}>Test</Button>
-        )} */}
         {/* // TODO: real Product href */}
         <Button href="/">Home</Button>
         <Button href="/docs">Docs</Button>

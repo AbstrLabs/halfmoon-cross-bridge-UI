@@ -22,5 +22,5 @@ const HeaderWrap = styled("div")(({ theme }) => ({
   padding: "10px 2rem",
   borderBottom: `1px solid ${theme.palette.divider}`,
   width: "100%",
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: "rgba(0, 0, 0, 0)",
 }));

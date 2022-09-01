@@ -8,7 +8,7 @@ import { checkOptedIn, optInGoNear } from "./algorand";
 
 import { CONFIG } from "./config";
 
-export { nearWallet, authorizeMintTransaction };
+export { nearWallet, authorizeMintTransaction, connectNearWallet };
 
 const near = new nearAPI.Near({
   headers: {},
@@ -100,5 +100,12 @@ async function authorizeMintTransaction(
   cbUrl.searchParams.set("amount", amountStr);
   const callbackUrl = cbUrl.toString();
   await requestSignNearTxn(amountStr, callbackUrl);
-  return;
+}
+
+function connectNearWallet() {
+  if (nearWallet.isSignedIn()) {
+    window.alert("you've signed in.");
+  } else {
+    nearWallet.requestSignIn("abstrlabs.testnet");
+  }
 }

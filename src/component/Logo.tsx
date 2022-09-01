@@ -1,7 +1,8 @@
-import { styled, useTheme } from "@mui/material";
+import { styled } from "@mui/material";
 
 import { Link } from "react-router-dom";
 import { Variant } from "@mui/material/styles/createTypography";
+import { useTernaryDarkMode } from "usehooks-ts";
 
 interface LogoProps {
   style?: React.CSSProperties;
@@ -9,16 +10,29 @@ interface LogoProps {
 }
 
 export function Logo(
-  { style, variant = "h2", ...props }: LogoProps = { variant: "h2" }
+  { style, ...props }: LogoProps = { variant: "h2" }
 ): JSX.Element {
-  const theme = useTheme();
-  const variantFontSize = {
-    fontSize: theme.typography[variant].fontSize,
-  };
+  const { isDarkMode } = useTernaryDarkMode();
 
   return (
     <StyledLink to="/">
-      <div style={{ ...variantFontSize, ...style }}>🌓 </div>
+      {isDarkMode ? (
+        <img
+          style={{ ...style }}
+          alt="logo-dark"
+          src={process.env.PUBLIC_URL + "/svg/logo-dark.svg"}
+          title="halfmooncross.com"
+          {...props}
+        />
+      ) : (
+        <img
+          style={{ ...style }}
+          alt="logo-light"
+          src={process.env.PUBLIC_URL + "/svg/logo-light.svg"}
+          title="halfmooncross.com"
+          {...props}
+        />
+      )}
     </StyledLink>
   );
 }

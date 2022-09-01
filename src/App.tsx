@@ -49,7 +49,7 @@ function genThemeByMode(isDarkMode: boolean): any {
       mode: isDarkMode ? "dark" : "light",
       ...(isDarkMode
         ? {
-            primary: { main: yellow["A700"] },
+            primary: { main: "#8DFFBA" },
             secondary: { main: orange["A700"] },
             background: { default: grey["900"] },
           }

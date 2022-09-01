@@ -3,20 +3,42 @@
 // TODO Instead, create a Record<string,callable> to store the relation of step and function.
 // TODO The stepper can use the Record<,> directly, instead of using `.action`
 
+import { Fingerprint } from "@mui/icons-material";
 import {
   Box,
-  LinearProgress,
   Modal,
   TextField,
   Typography,
   styled,
   Button,
 } from "@mui/material";
-import React, { useContext, useEffect } from "react";
-import { PanelContext, panelType } from "../context/panel";
+import algosdk from "algosdk";
+import React, { useCallback, useMemo, useState } from "react";
+import {
+  connectAlgoWallet,
+  authorizeBurnTransaction,
+  disconnectAlgoWallet,
+} from "../api-deps/algorand";
+import { TxnType } from "../api-deps/config";
+import {
+  nearWallet,
+  authorizeMintTransaction,
+  connectNearWallet,
+} from "../api-deps/near";
 
-export function TxnPanel() {
-  const panel = useContext(PanelContext) as panelType;
+const DEFAULT_MINT_BENEFICIARY =
+  "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA";
+const DEFAULT_MINT_AMOUNT = "1.3579";
+const DEFAULT_BURN_BENEFICIARY = "abstrlabs-test.testnet";
+const DEFAULT_BURN_AMOUNT = "1.2345";
+
+// from backend
+const AMOUNT_REGEX = /^[0-9]*\.?[0-9]{0,10}$/;
+const ALGORAND_ADDR_REGEX = /^[2-79A-Z]{58}$/;
+const NEAR_ADDR_REGEX = /^[0-9a-z][0-9a-z\-_]{2,64}.(testnet|mainnet)$/;
+
+export function TxnPanel({ txnType }: { txnType: TxnType }) {
+  // const panel = useContext(PanelContext) as PanelCtxInterface;
 
   // render page
   // STEP0: connect to wallet
@@ -24,101 +46,193 @@ export function TxnPanel() {
   // STEP1: controlled by page state event
   // STEP2: Authorize transaction
 
-  const SENDING_UNIT = panel.isMint ? "NEAR" : "goNEAR";
-  const RECEIVING_UNIT = panel.isMint ? "goNEAR" : "NEAR";
-  const FEE = panel.isMint ? "0.0%+1" : "0.2%+1";
+  const isDev = process.env.NODE_ENV === "development";
+
+  const isMint = useMemo(() => txnType === TxnType.MINT, [txnType]);
+  const isBurn = useMemo(() => txnType === TxnType.BURN, [txnType]);
+  const DEFAULT_BENEFICIARY = isMint
+    ? DEFAULT_MINT_BENEFICIARY
+    : DEFAULT_BURN_BENEFICIARY;
+  const DEFAULT_AMOUNT = isMint ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
+  const SENDING_UNIT = isMint ? "NEAR" : "goNEAR";
+  const RECEIVING_UNIT = isMint ? "goNEAR" : "NEAR";
+  const FEE_TEXT = isMint ? "0.0%+1" : "0.2%+1";
+  const USER_RECEIVING_PROPORTION = isMint ? 1 : 0.998;
+
+  //form input
+  const [beneficiary, setBeneficiary] = useState(
+    isDev ? DEFAULT_BENEFICIARY : ""
+  );
+  const [amount, setAmount] = useState(isDev ? DEFAULT_AMOUNT : "");
+
+  //form input valid
+  const [isAmountValid, setIsAmountValid] = useState(true);
+  const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
+
+  // connect and step function
+
+  // modal control
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  // form check
+  const quickCheckAddress = useCallback(
+    (addr: string) =>
+      (isMint && ALGORAND_ADDR_REGEX.test(addr)) ||
+      (isBurn && NEAR_ADDR_REGEX.test(addr)),
+    [isBurn, isMint]
+  );
+  const validateAddress = useCallback(
+    (addr: string) =>
+      quickCheckAddress(addr) &&
+      ((isMint && algosdk.isValidAddress(addr)) || isBurn),
+    [isBurn, isMint, quickCheckAddress]
+  );
+
+  const quickCheckAmount = useCallback(
+    (amount: string) => AMOUNT_REGEX.test(amount),
+    []
+  );
+  const validateAmount = useCallback(
+    (amount: string) => quickCheckAmount(amount),
+    [quickCheckAmount]
+  );
+  const validateForm = useCallback(() => {
+    setIsBeneficiaryValid(validateAddress(beneficiary));
+    setIsAmountValid(validateAmount(amount));
+    if (!isBeneficiaryValid) {
+      alert("Invalid address");
+      return;
+    }
+    if (!isAmountValid) {
+      alert("Invalid amount");
+    }
+  }, [
+    amount,
+    beneficiary,
+    isAmountValid,
+    isBeneficiaryValid,
+    validateAddress,
+    validateAmount,
+  ]);
+
+  const disconnectNearWallet = useCallback(() => {
+    nearWallet.signOut();
+  }, []);
+
+  const disconnectWallet = useCallback(async () => {
+    if (isMint) disconnectNearWallet();
+    if (isBurn) {
+      disconnectAlgoWallet();
+    }
+  }, [isBurn, isMint, disconnectNearWallet]);
+
+  const authorizeTxn = useCallback(
+    async (/* amount: string, beneficiary: string */) => {
+      if (isAmountValid && isBeneficiaryValid) {
+        if (isMint) {
+          await authorizeMintTransaction(amount, beneficiary);
+        }
+        if (isBurn) {
+          await authorizeBurnTransaction(beneficiary, amount);
+        }
+      }
+    },
+    [amount, beneficiary, isBurn, isMint, isAmountValid, isBeneficiaryValid]
+  );
+
   return (
     <React.Fragment>
       <FormWrap>
         <TextField
-          helperText={`e.g. ${panel.DEFAULT_BENEFICIARY}`}
+          helperText={`e.g. ${DEFAULT_BENEFICIARY}`}
           label={
-            panel.isMint
+            isMint
               ? "Beneficiary (Algorand public address)"
               : "Beneficiary (NEAR public address)"
           }
           fullWidth
           margin="normal"
-          value={panel.beneficiary}
+          value={beneficiary}
           onChange={(e) => {
             const v = e.target.value;
-            panel.setBeneficiary?.(v);
-            if (panel.quickCheckAddress?.(v)) {
-              panel.setIsBeneficiaryValid?.(
-                panel.validateAddress?.(v) || v === ""
-              );
+            setBeneficiary?.(v);
+            if (quickCheckAddress?.(v)) {
+              setIsBeneficiaryValid?.(validateAddress?.(v) || v === "");
             }
           }}
-          error={!panel.isBeneficiaryValid}
+          error={!isBeneficiaryValid}
           onBlur={(e) => {
             const v = e.target.value;
             if (v === "") return;
-            panel.setIsBeneficiaryValid?.(
-              panel.validateAddress?.(v) || v === ""
-            );
+            setIsBeneficiaryValid?.(validateAddress?.(v) || v === "");
           }}
         />
         <Box display="flex">
           <TextField
-            helperText={`e.g. ${panel.DEFAULT_AMOUNT}, up to 10 decimals`}
+            helperText={`e.g. ${DEFAULT_AMOUNT}, up to 10 decimals`}
             inputProps={{
               inputMode: "numeric",
               step: 0.000_000_000_1,
               pattern: "[0-9].*",
             }}
-            error={!panel.isAmountValid}
+            error={!isAmountValid}
             label={`Sending Amount (${SENDING_UNIT})`}
             fullWidth
             margin="normal"
-            value={panel.amount}
+            value={amount}
             onChange={(e) => {
               const v = e.target.value;
-              panel.setAmount?.(v);
-              panel.setIsAmountValid?.(panel.validateAmount?.(v) || v === "");
+              setAmount?.(v);
+              setIsAmountValid?.(validateAmount?.(v) || v === "");
             }}
           />
           <Box width="2rem" />
           <TextField
             label={`Receiving Amount (${RECEIVING_UNIT})`}
-            helperText={`Fee: ${FEE}. Showing all decimals.`}
+            helperText={`Fee: ${FEE_TEXT}. Showing all decimals.`}
             fullWidth
             margin="normal"
             value={
-              panel.amount
-                ? (Number(panel.amount) * (panel.isMint ? 1 : 0.998) - 1)
+              amount
+                ? (Number(amount) * USER_RECEIVING_PROPORTION - 1)
                     .toFixed(11)
                     .slice(0, -1)
                 : ""
             }
             error={
-              panel.amount
-                ? Number(panel.amount) * (panel.isMint ? 1 : 0.998) <= 1
-                : false
+              amount ? Number(amount) * USER_RECEIVING_PROPORTION <= 1 : false
             }
             disabled
           />
         </Box>
       </FormWrap>
       <Box height="60px"></Box>
-      (panel.isMint?
-      <Button color="inherit" onClick={panel.connectWallet}>
-        Connect Wallet
+
+      <Button color="inherit" onClick={connectNearWallet}>
+        Connect NEAR Wallet (mint)
       </Button>
-      :
-      <Button color="inherit" onClick={panel.connectWallet}>
-        Connect Wallet
+      <Button color="inherit" onClick={connectAlgoWallet}>
+        Connect Algo Wallet (burn)
       </Button>
-      )
-      <Button color="inherit" onClick={panel.validateForm}>
+
+      <Button color="inherit" onClick={disconnectWallet}>
+        Sign Out From Wallet
+      </Button>
+      <Button color="inherit" onClick={validateForm}>
         Validate Form
       </Button>
-      <Button color="inherit" onClick={panel.authorizeTxn}>
+      <Button
+        color="inherit"
+        onClick={authorizeTxn}
+        variant="outlined"
+        startIcon={<Fingerprint />}
+      >
         Authorize Transaction
       </Button>
       <Modal
-        open={panel.isModalOpen ? panel.isModalOpen : false}
+        open={isModalOpen}
         onClose={() => {
-          panel.setModalOpen(true);
+          setModalOpen(true);
         }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -138,19 +252,10 @@ export function TxnPanel() {
           }}
         >
           <Typography variant="h6" component="h2" align="center">
-            Waiting for Algorand Confirm
+            SAMPLE MODAL TITLE
           </Typography>
-          <Typography sx={{ mt: 2 }}>
-            Algorand blockchain needs around 15 seconds to confirm your
-            transaction. Please wait for{" "}
-            {(panel.algoTxnCountdown / 10).toFixed(1) + " "}
-            more second(s).
-          </Typography>
+          <Typography sx={{ mt: 2 }}>SAMPLE MODAL TEXT</Typography>
           <Box height="1rem"></Box>
-          <LinearProgress
-            variant="determinate"
-            value={panel.algoTxnCountdown}
-          />
         </Box>
       </Modal>
     </React.Fragment>
