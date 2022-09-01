@@ -115,19 +115,22 @@ export function TxnPanel() {
           />
         </Box>
       </FormWrap>
-
       <Box height="60px"></Box>
-
+      (panel.isMint?
       <Button color="inherit" onClick={panel.connectWallet}>
         Connect Wallet
       </Button>
+      :
+      <Button color="inherit" onClick={panel.connectWallet}>
+        Connect Wallet
+      </Button>
+      )
       <Button color="inherit" onClick={panel.validateForm}>
         Validate Form
       </Button>
       <Button color="inherit" onClick={panel.authorizeTxn}>
         Authorize Transaction
       </Button>
-
       <Box sx={{ border: "solid red 1px" }}>
         <Typography>"deprecating"</Typography>
         {Object.entries(panel.steps).map(([stepName, stepObject]) => (
@@ -146,7 +149,6 @@ export function TxnPanel() {
           </Button>
         ))}
       </Box>
-
       <Modal
         open={panel.isModalOpen ? panel.isModalOpen : false}
         onClose={() => {
