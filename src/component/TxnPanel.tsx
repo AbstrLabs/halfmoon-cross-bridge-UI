@@ -127,13 +127,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     setAlgoAcc(accounts[0].address);
   }, []);
 
-  // connect wallet
-  const connectWallet = useCallback(async () => {
-    // only blockchain == near
-    if (isMint) connectNearWalletWrap();
-    if (isBurn) connectAlgoWalletWrap();
-  }, [connectAlgoWalletWrap, connectNearWalletWrap, isBurn, isMint]);
-
   const disconnectWallet = useCallback(async () => {
     if (isMint) disconnectNearWallet();
     if (isBurn) {
@@ -230,15 +223,14 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         </Box>
       </FormWrap>
       <Box height="60px"></Box>
-      (isMint?
-      <Button color="inherit" onClick={connectWallet}>
-        Connect Wallet
+
+      <Button color="inherit" onClick={connectNearWalletWrap}>
+        Connect NEAR Wallet (mint)
       </Button>
-      :
-      <Button color="inherit" onClick={connectWallet}>
-        Connect Wallet
+      <Button color="inherit" onClick={connectAlgoWalletWrap}>
+        Connect Algo Wallet (burn)
       </Button>
-      )
+
       <Button color="inherit" onClick={disconnectWallet}>
         Sign Out From Wallet
       </Button>
