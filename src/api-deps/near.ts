@@ -9,8 +9,6 @@ import { checkOptedIn, optInGoNear } from "./algorand";
 import { CONFIG } from "./config";
 
 export { nearWallet, authorizeMintTransaction };
-// const receiverId = "abstrlabs.testnet";
-// const amountStr = "1.56789";
 
 const near = new nearAPI.Near({
   headers: {},

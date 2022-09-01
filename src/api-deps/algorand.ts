@@ -20,12 +20,12 @@ let connectedAccounts: Awaited<ReturnType<typeof myAlgoWallet.connect>>;
 const ALGO_UNIT = 10_000_000_000;
 const GO_NEAR_ASA_ID = 83251085;
 
-// const algodClient = new algosdk.Algodv2('', 'https://node.testnet.algoexplorerapi.io', '');
 const algodClient = new algosdk.Algodv2(
   { "X-API-Key": "WLJDqY55G5560kyCJVp647ERNZ5kJkdZ8OUdGNnV" },
   "https://testnet-algorand.api.purestake.io/ps2",
   ""
 );
+// old param:('', 'https://node.testnet.algoexplorerapi.io', '')
 
 async function connectAlgoWallet() {
   connectedAccounts = await myAlgoWallet.connect();
