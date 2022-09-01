@@ -65,15 +65,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
 
   // connect and step function
-  const [nearAcc, setNearAcc] = useState<string>(
-    nearWallet.account().accountId ?? ""
-  );
   const [algoAcc, setAlgoAcc] = useState<string>("");
-  //todo: ref: rm`connectedAcc`;
-  const connectedAcc = useMemo(
-    () => (isMint ? nearAcc : algoAcc),
-    [algoAcc, isMint, nearAcc]
-  );
 
   // modal control
   const [isModalOpen, setModalOpen] = useState(false);
@@ -142,7 +134,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     } else {
       nearWallet.requestSignIn("abstrlabs.testnet");
     }
-    setNearAcc(nearWallet.account().accountId);
   }, []);
   const connectAlgoWalletWrap = useCallback(async () => {
     const accounts = await connectAlgoWallet();
