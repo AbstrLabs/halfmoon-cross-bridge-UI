@@ -119,16 +119,13 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     nearWallet.signOut();
   }, []);
 
-  const connectAlgoWalletWrap = useCallback(async () => {
-    await connectAlgoWallet();
-  }, []);
-
   const disconnectWallet = useCallback(async () => {
     if (isMint) disconnectNearWallet();
     if (isBurn) {
       disconnectAlgoWallet();
     }
   }, [isBurn, isMint, disconnectNearWallet]);
+
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
       if (isAmountValid && isBeneficiaryValid) {
@@ -214,7 +211,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       <Button color="inherit" onClick={connectNearWallet}>
         Connect NEAR Wallet (mint)
       </Button>
-      <Button color="inherit" onClick={connectAlgoWalletWrap}>
+      <Button color="inherit" onClick={connectAlgoWallet}>
         Connect Algo Wallet (burn)
       </Button>
 
