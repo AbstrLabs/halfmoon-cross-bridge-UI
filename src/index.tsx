@@ -28,7 +28,7 @@ checkApiVersion()
   })
   .catch((err) => {
     console.error(err);
-    window.alert(`Failed to check API version. Error: ${err.message}`);
+    console.error(`Failed to check API version. Error: ${err.message}`);
   });
 
 root.render(<App />);

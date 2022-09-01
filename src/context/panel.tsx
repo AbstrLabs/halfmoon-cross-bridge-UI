@@ -69,6 +69,9 @@ export type panelType = {
   setModalOpen: React.Dispatch<boolean>;
   connectedAcc: string;
   updateStepsFinished: (pos: 0 | 1 | 2, newVal: boolean) => void;
+  connectWallet: () => Promise<void>;
+  validateForm: () => void;
+  authorizeTxn: () => Promise<void>;
 };
 
 export const PanelContext = createContext<Partial<panelType>>({});
@@ -245,7 +248,7 @@ const PanelContextProvider = ({
       [TxnStepName.CONNECT_WALLET]: {
         stepId: 0,
         icon: <></>,
-        action: async () => await connectWallet(),
+        action: async () => connectWallet(),
         title: {
           default: "Connect to Wallet",
           finished: "Wallet Connected",
@@ -264,7 +267,7 @@ const PanelContextProvider = ({
       [TxnStepName.AUTH_TXN]: {
         stepId: 2,
         icon: <></>,
-        action: async () => await authorizeTxn(),
+        action: async () => authorizeTxn(),
         title: {
           default: "Start the Transaction",
           finished: "Transaction Authorized",
@@ -297,6 +300,9 @@ const PanelContextProvider = ({
     setModalOpen,
     connectedAcc,
     updateStepsFinished,
+    connectWallet,
+    validateForm,
+    authorizeTxn,
   };
 
   return (
