@@ -12,11 +12,11 @@ import {
   styled,
   Button,
 } from "@mui/material";
-import React, { useContext, useEffect } from "react";
-import { PanelContext, panelType } from "../context/panel";
+import React, { useContext } from "react";
+import { PanelContext, PanelCtxInterface } from "../context/panel";
 
 export function TxnPanel() {
-  const panel = useContext(PanelContext) as panelType;
+  const panel = useContext(PanelContext) as PanelCtxInterface;
 
   // render page
   // STEP0: connect to wallet

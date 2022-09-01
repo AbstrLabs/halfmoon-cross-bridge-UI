@@ -46,7 +46,7 @@ type TSteps = {
 };
 
 // create context for panel
-export type panelType = {
+export interface PanelCtxInterface {
   isMint: boolean;
   isBurn: boolean;
   DEFAULT_BENEFICIARY: string;
@@ -70,9 +70,9 @@ export type panelType = {
   connectWallet: () => Promise<void>;
   validateForm: () => void;
   authorizeTxn: () => Promise<void>;
-};
+}
 
-export const PanelContext = createContext<Partial<panelType>>({});
+export const PanelContext = createContext<Partial<PanelCtxInterface>>({});
 
 // create provider
 const PanelContextProvider = ({
@@ -82,6 +82,8 @@ const PanelContextProvider = ({
   txnType: TxnType;
   children: JSX.Element | JSX.Element[];
 }) => {
+  const isDev = process.env.NODE_ENV === "development";
+
   const isMint = useMemo(() => txnType === TxnType.MINT, [txnType]);
   const isBurn = useMemo(() => txnType === TxnType.BURN, [txnType]);
   const DEFAULT_BENEFICIARY = isMint
@@ -90,7 +92,6 @@ const PanelContextProvider = ({
   const DEFAULT_AMOUNT = isMint ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
 
   //form input
-  const isDev = process.env.NODE_ENV === "development";
   const [beneficiary, setBeneficiary] = useState(
     isDev ? DEFAULT_BENEFICIARY : ""
   );
@@ -101,11 +102,11 @@ const PanelContextProvider = ({
   const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
 
   // connect and step function
-  //
   const [nearAcc, setNearAcc] = useState<string>(
     nearWallet.account().accountId ?? ""
   );
   const [algoAcc, setAlgoAcc] = useState<string>("");
+  //todo: ref: rm`connectedAcc`;
   const connectedAcc = useMemo(
     () => (isMint ? nearAcc : algoAcc),
     [algoAcc, isMint, nearAcc]
@@ -158,7 +159,6 @@ const PanelContextProvider = ({
     }
     if (!isAmountValid) {
       alert("Invalid amount");
-      return;
     }
   }, [
     amount,
@@ -251,7 +251,7 @@ const PanelContextProvider = ({
     [validateForm, connectWallet, authorizeTxn]
   );
 
-  const value: panelType = {
+  const value: PanelCtxInterface = {
     isMint,
     isBurn,
     DEFAULT_BENEFICIARY,
