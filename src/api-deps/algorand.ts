@@ -1,5 +1,7 @@
 /**
  * This file wraps up Algorand transactions we need.
+ * Browser will block pop-up if user doesn't trigger myAlgoWallet.connect() with a button interaction
+ *
  */
 
 import { CONFIG } from "./config";
@@ -13,6 +15,7 @@ export {
   checkOptedIn,
   authorizeBurnTransaction,
   connectAlgoWallet,
+  disconnectAlgoWallet,
 };
 
 const myAlgoWallet = new MyAlgoConnect();
@@ -31,7 +34,10 @@ async function connectAlgoWallet() {
   connectedAccounts = await myAlgoWallet.connect();
   return connectedAccounts;
 }
-/*Warning: Browser will block pop-up if user doesn't trigger myAlgoWallet.connect() with a button interation */
+
+async function disconnectAlgoWallet() {
+  connectedAccounts = [];
+}
 
 /* Algorand wallet transfer function */
 async function signGoNearTransaction(

@@ -16,6 +16,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import {
   connectAlgoWallet,
   authorizeBurnTransaction,
+  disconnectAlgoWallet,
 } from "../api-deps/algorand";
 import { TxnType } from "../api-deps/config";
 import { nearWallet, authorizeMintTransaction } from "../api-deps/near";
@@ -109,8 +110,8 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     validateAddress,
     validateAmount,
   ]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const signOutNearWallet = useCallback(() => {
+
+  const disconnectNearWallet = useCallback(() => {
     nearWallet.signOut();
   }, []);
 
@@ -133,6 +134,13 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     if (isBurn) connectAlgoWalletWrap();
   }, [connectAlgoWalletWrap, connectNearWalletWrap, isBurn, isMint]);
 
+  const disconnectWallet = useCallback(async () => {
+    if (isMint) disconnectNearWallet();
+    if (isBurn) {
+      disconnectAlgoWallet();
+      setAlgoAcc("");
+    }
+  }, [isBurn, isMint, disconnectNearWallet]);
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
       if (isAmountValid && isBeneficiaryValid) {
@@ -231,6 +239,9 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         Connect Wallet
       </Button>
       )
+      <Button color="inherit" onClick={disconnectWallet}>
+        Sign Out From Wallet
+      </Button>
       <Button color="inherit" onClick={validateForm}>
         Validate Form
       </Button>
