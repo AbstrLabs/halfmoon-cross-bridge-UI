@@ -1,5 +1,5 @@
 import { TokenId } from "./token";
-import { Addr, ApiAmount, TxnId } from "../type";
+import { Addr, ApiAmount, TxnId } from "./type";
 
 export type { ApiCallParam };
 

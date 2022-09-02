@@ -17,8 +17,8 @@ import { useSearchParams } from "react-router-dom";
 import {
   BridgeTxnSafeObj,
   BridgeTxnStatusEnum,
-} from "../util/shared-types/txn";
-import { TokenId } from "../util/shared-types/token";
+} from "../api-deps/types/txn";
+import { TokenId } from "../api-deps/types/token";
 
 export function ResultPage() {
   let [searchParams] = useSearchParams();

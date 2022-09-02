@@ -7,7 +7,7 @@
 import { CONFIG } from "./config";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
-import { TokenId } from "../util/shared-types/token";
+import { TokenId } from "./types/token";
 
 export {
   myAlgoWallet,

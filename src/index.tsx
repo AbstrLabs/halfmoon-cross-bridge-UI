@@ -10,7 +10,7 @@ const root = ReactDOM.createRoot(
 );
 
 async function checkApiVersion() {
-  const res = await fetch(`${CONFIG.apiServerUrl}/`);
+  const res = await fetch(CONFIG.apiServerUrl);
   const resJson = await res.json();
   if (resJson.API_VERSION !== CONFIG.apiVersion) {
     window.alert(

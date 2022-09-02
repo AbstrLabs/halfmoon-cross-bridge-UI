@@ -4,17 +4,11 @@ export enum TxnType {
 }
 
 export const CONFIG = {
-  // apiServer: {
-  //   hostname: "http://localhost",
-  //   port: "4190",
-  //   path: "/algorand-near",
-  // },
   apiServerUrl:
     process.env.NODE_ENV === "development"
-      ? "http://localhost:4190/algorand-near"
-      : // "https://api.halfmooncross.com/algorand-near"
-        "https://api.halfmooncross.com/algorand-near",
-  apiVersion: "0.1.4",
+      ? "http://localhost:4190/"
+      : "https://api.halfmooncross.com",
+  apiVersion: "1.0.0",
   acc: {
     algorand_master:
       "JMJLRBZQSTS6ZINTD3LLSXCW46K44EI2YZHYKCPBGZP3FLITIQRGPELOBE",

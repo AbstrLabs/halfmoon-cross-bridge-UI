@@ -1,4 +1,4 @@
-import { ApiCallParam } from "../util/shared-types/api";
+import { ApiCallParam } from "./types/api";
 import { CONFIG } from "./config";
 
 /**

@@ -2,7 +2,7 @@
  * This file wraps up NEAR transactions we need.
  */
 import * as nearAPI from "near-api-js";
-import { TokenId } from "../util/shared-types/token";
+import { TokenId } from "./types/token";
 
 import { checkOptedIn, optInGoNear } from "./algorand";
 

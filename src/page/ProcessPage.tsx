@@ -16,9 +16,9 @@ import { NearTransactionLink } from "../component/links/NearTransactionLink";
 import { getTxn, postTxn } from "../api-deps/call-server";
 import { useSearchParams } from "react-router-dom";
 import { useEffectOnce } from "usehooks-ts";
-import { ApiCallParam } from "../util/shared-types/api";
-import { TokenId } from "../util/shared-types/token";
-import { BridgeTxnSafeObj } from "../util/shared-types/txn";
+import { ApiCallParam } from "../api-deps/types/api";
+import { TokenId } from "../api-deps/types/token";
+import { BridgeTxnSafeObj } from "../api-deps/types/txn";
 import { useState } from "react";
 
 const GET_INTERVAL_MS = 3000;
