@@ -1,5 +1,4 @@
-import { ApiCallParam } from "./types/api";
-import { CONFIG } from "./config";
+import { CONFIG, ApiCallParam } from "./config";
 
 /**
  * call server with POST method

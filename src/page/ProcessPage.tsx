@@ -7,19 +7,19 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { Box } from "@mui/system";
 
 import { AlgorandAddressLink } from "../component/links/AlgorandAddressLink";
 import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionLink";
-import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
+
 import { getTxn, postTxn } from "../api-deps/call-server";
+import { TokenId, ApiCallParam, BridgeTxnSafeObj } from "../api-deps/config";
+
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useEffectOnce } from "usehooks-ts";
-import { ApiCallParam } from "../api-deps/types/api";
-import { TokenId } from "../api-deps/types/token";
-import { BridgeTxnSafeObj } from "../api-deps/types/txn";
-import { useState } from "react";
 
 const GET_INTERVAL_MS = 3000;
 

@@ -14,11 +14,7 @@ import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
 import { useSearchParams } from "react-router-dom";
-import {
-  BridgeTxnSafeObj,
-  BridgeTxnStatusEnum,
-} from "../api-deps/types/txn";
-import { TokenId } from "../api-deps/types/token";
+import { BridgeTxnSafeObj, BridgeTxnStatusEnum, TokenId } from "../api-deps/config";
 
 export function ResultPage() {
   let [searchParams] = useSearchParams();

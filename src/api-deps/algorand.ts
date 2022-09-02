@@ -7,7 +7,7 @@
 import { CONFIG } from "./config";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
-import { TokenId } from "./types/token";
+import { TokenId } from "./config";
 
 export {
   optInGoNear,

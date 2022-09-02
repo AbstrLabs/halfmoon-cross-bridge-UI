@@ -9,56 +9,27 @@ import {
 } from "@mui/material";
 import algosdk from "algosdk";
 import React, { useCallback, useMemo, useState } from "react";
-import {
-  connectAlgoWallet,
-  authorizeBurnTransaction,
-  disconnectAlgoWallet,
-} from "../api-deps/algorand";
-import { TxnType } from "../api-deps/config";
-import {
-  nearWallet,
-  authorizeMintTransaction,
-  connectNearWallet,
-} from "../api-deps/near";
 
-const DEFAULT_MINT_BENEFICIARY =
-  "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA";
-const DEFAULT_MINT_AMOUNT = "1.3579";
-const DEFAULT_BURN_BENEFICIARY = "abstrlabs-test.testnet";
-const DEFAULT_BURN_AMOUNT = "1.2345";
-
-// from backend
-const AMOUNT_REGEX = /^[0-9]*\.?[0-9]{0,10}$/;
-const ALGORAND_ADDR_REGEX = /^[2-79A-Z]{58}$/;
-const NEAR_ADDR_REGEX = /^[0-9a-z][0-9a-z\-_]{2,64}.(testnet|mainnet)$/;
+import { TxnType, REX, DEFAULT } from "../api-deps/config";
+import { authorizeBurnTransaction } from "../api-deps/algorand";
+import { authorizeMintTransaction } from "../api-deps/near";
 
 export function TxnPanel({ txnType }: { txnType: TxnType }) {
-  // const panel = useContext(PanelContext) as PanelCtxInterface;
-
-  // render page
-  // STEP0: connect to wallet
-
-  // STEP1: controlled by page state event
-  // STEP2: Authorize transaction
-
-  const isDev = process.env.NODE_ENV === "development";
 
   const isMint = useMemo(() => txnType === TxnType.MINT, [txnType]);
   const isBurn = useMemo(() => txnType === TxnType.BURN, [txnType]);
   const DEFAULT_BENEFICIARY = isMint
-    ? DEFAULT_MINT_BENEFICIARY
-    : DEFAULT_BURN_BENEFICIARY;
-  const DEFAULT_AMOUNT = isMint ? DEFAULT_MINT_AMOUNT : DEFAULT_BURN_AMOUNT;
+    ? DEFAULT.DEFAULT_MINT_BENEFICIARY
+    : DEFAULT.DEFAULT_BURN_BENEFICIARY;
+  const DEFAULT_AMOUNT = isMint ? DEFAULT.DEFAULT_MINT_AMOUNT : DEFAULT.DEFAULT_BURN_AMOUNT;
   const SENDING_UNIT = isMint ? "NEAR" : "goNEAR";
   const RECEIVING_UNIT = isMint ? "goNEAR" : "NEAR";
   const FEE_TEXT = isMint ? "0.0%+1" : "0.2%+1";
   const USER_RECEIVING_PROPORTION = isMint ? 1 : 0.998;
 
   //form input
-  const [beneficiary, setBeneficiary] = useState(
-    isDev ? DEFAULT_BENEFICIARY : ""
-  );
-  const [amount, setAmount] = useState(isDev ? DEFAULT_AMOUNT : "");
+  const [beneficiary, setBeneficiary] = useState("");
+  const [amount, setAmount] = useState("");
 
   //form input valid
   const [isAmountValid, setIsAmountValid] = useState(true);
@@ -72,8 +43,8 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   // form check
   const quickCheckAddress = useCallback(
     (addr: string) =>
-      (isMint && ALGORAND_ADDR_REGEX.test(addr)) ||
-      (isBurn && NEAR_ADDR_REGEX.test(addr)),
+      (isMint && REX.ALGORAND_ADDR_REGEX.test(addr)) ||
+      (isBurn && REX.NEAR_ADDR_REGEX.test(addr)),
     [isBurn, isMint]
   );
   const validateAddress = useCallback(
@@ -84,7 +55,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   );
 
   const quickCheckAmount = useCallback(
-    (amount: string) => AMOUNT_REGEX.test(amount),
+    (amount: string) => REX.AMOUNT_REGEX.test(amount),
     []
   );
   const validateAmount = useCallback(
@@ -110,17 +81,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     validateAmount,
   ]);
 
-  const disconnectNearWallet = useCallback(() => {
-    nearWallet.signOut();
-  }, []);
-
-  const disconnectWallet = useCallback(async () => {
-    if (isMint) disconnectNearWallet();
-    if (isBurn) {
-      disconnectAlgoWallet();
-    }
-  }, [isBurn, isMint, disconnectNearWallet]);
-
   const authorizeTxn = useCallback(
     async (/* amount: string, beneficiary: string */) => {
       if (isAmountValid && isBeneficiaryValid) {
@@ -139,7 +99,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     <React.Fragment>
       <FormWrap>
         <TextField
-          helperText={`e.g. ${DEFAULT_BENEFICIARY}`}
+          placeholder={`e.g. ${DEFAULT_BENEFICIARY}`}
           label={
             isMint
               ? "Beneficiary (Algorand public address)"
@@ -164,7 +124,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         />
         <Box display="flex">
           <TextField
-            helperText={`e.g. ${DEFAULT_AMOUNT}, up to 10 decimals`}
+            placeholder={`e.g. ${DEFAULT_AMOUNT}, up to 10 decimals`}
             inputProps={{
               inputMode: "numeric",
               step: 0.000_000_000_1,
@@ -202,17 +162,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
         </Box>
       </FormWrap>
       <Box height="60px"></Box>
-
-      <Button color="inherit" onClick={connectNearWallet}>
-        Connect NEAR Wallet (mint)
-      </Button>
-      <Button color="inherit" onClick={connectAlgoWallet}>
-        Connect Algo Wallet (burn)
-      </Button>
-
-      <Button color="inherit" onClick={disconnectWallet}>
-        Sign Out From Wallet
-      </Button>
       <Button color="inherit" onClick={validateForm}>
         Validate Form
       </Button>
@@ -261,7 +210,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
 
 const FormWrap = styled("div")(({ theme }) => ({
   position: "relative",
-  margin: "20px 0 0",
+  margin: "2px",
   width: "100%",
   padding: "1rem",
   wrap: "pre-wrap",
