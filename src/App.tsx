@@ -43,6 +43,7 @@ function App() {
 }
 
 export default App;
+
 function genThemeByMode(isDarkMode: boolean): any {
   return createTheme({
     palette: {
@@ -60,12 +61,6 @@ function genThemeByMode(isDarkMode: boolean): any {
           }),
     },
     components: {
-      /* This is nor working.
-      /* MuiTypography: {
-        styleOverrides: {
-          h1: { "&.MuiTypography-gutterBottom": { marginBottom: 6.25 } },
-        },
-      }, */
       MuiOutlinedInput: {
         styleOverrides: {
           input: {
@@ -89,7 +84,7 @@ function genThemeByMode(isDarkMode: boolean): any {
 
 /* ======== STYLED ======== */
 const AppWarp = styled("div")(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#080808" : "#fff",
+  backgroundColor: theme.palette.mode === "dark" ? "#0D1019" : "#fff",
   backgroundImage: `url("${process.env.PUBLIC_URL}/svg/bcg-shapes.svg")`,
   minHeight: "100vh",
   maxWidth: "100vw",

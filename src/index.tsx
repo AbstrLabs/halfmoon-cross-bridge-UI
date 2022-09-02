@@ -1,5 +1,13 @@
 import "./index.css";
 
+//font
+import "./font/Supply-Regular.otf"
+import "./font/Supply-Light.otf"
+import "./font/Supply-UltraLight.otf"
+import "./font/Supply-Medium.otf"
+import "./font/Supply-Bold.otf"
+
+// config
 import App from "./App";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -10,7 +18,7 @@ const root = ReactDOM.createRoot(
 );
 
 async function checkApiVersion() {
-  const res = await fetch(CONFIG.apiServerUrl);
+  const res = await fetch(CONFIG.apiServerUrl + '/status');
   const resJson = await res.json();
   if (resJson.API_VERSION !== CONFIG.apiVersion) {
     window.alert(

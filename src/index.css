@@ -47,20 +47,43 @@
   max-width: 100vw;
 }
 
-html {
-  font-size: 20px;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
   background-color: #7f7f7f50;
+}
+
+@font-face {
+  font-family: Regular;
+  font-style: normal;
+  font-display: swap;
+  src: url("./font/Supply-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: Light;
+  font-style: normal;
+  font-display: swap;
+  src: url("./font/Supply-Light.otf") format("opentype");
+}
+
+@font-face {
+  font-family: UltraLight;
+  font-style: normal;
+  font-display: swap;
+  src: url("./font/Supply-UltraLight.otf") format("opentype");
+}
+
+@font-face {
+  font-family: Medium;
+  font-style: normal;
+  font-display: swap;
+  src: url("./font/Supply-Medium.otf") format("opentype");
+}
+
+@font-face {
+  font-family: Bold;
+  font-style: normal;
+  font-display: swap;
+  src: url("./font/Supply-Bold.otf") format("opentype");
 }

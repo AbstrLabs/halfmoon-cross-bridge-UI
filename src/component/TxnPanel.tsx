@@ -1,8 +1,3 @@
-// TODO: BAN-70
-// TODO steps for Stepper should not index a function (for readability and performance).
-// TODO Instead, create a Record<string,callable> to store the relation of step and function.
-// TODO The stepper can use the Record<,> directly, instead of using `.action`
-
 import { Fingerprint } from "@mui/icons-material";
 import {
   Box,
@@ -269,6 +264,5 @@ const FormWrap = styled("div")(({ theme }) => ({
   margin: "20px 0 0",
   width: "100%",
   padding: "1rem",
-  backgroundColor: theme.palette.background.default,
   wrap: "pre-wrap",
 }));

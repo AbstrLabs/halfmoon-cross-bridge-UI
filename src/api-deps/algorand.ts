@@ -10,19 +10,17 @@ import algosdk from "algosdk";
 import { TokenId } from "./types/token";
 
 export {
-  myAlgoWallet,
   optInGoNear,
   checkOptedIn,
   authorizeBurnTransaction,
   connectAlgoWallet,
-  disconnectAlgoWallet,
+  disconnectAlgoWallet
 };
 
 const myAlgoWallet = new MyAlgoConnect();
-let connectedAccounts: Awaited<ReturnType<typeof myAlgoWallet.connect>>;
 const ALGO_UNIT = 10_000_000_000;
 const GO_NEAR_ASA_ID = 83251085;
-let algoAccount: string;
+let algoAccount:string = "";
 
 const algodClient = new algosdk.Algodv2(
   { "X-API-Key": "WLJDqY55G5560kyCJVp647ERNZ5kJkdZ8OUdGNnV" },
@@ -32,14 +30,13 @@ const algodClient = new algosdk.Algodv2(
 // old param:('', 'https://node.testnet.algoexplorerapi.io', '')
 
 async function connectAlgoWallet() {
-  connectedAccounts = await myAlgoWallet.connect();
+  let connectedAccounts = await myAlgoWallet.connect();
   algoAccount = connectedAccounts[0].address;
-  return connectedAccounts;
+  return algoAccount;
 }
 
-async function disconnectAlgoWallet() {
-  algoAccount = "";
-  connectedAccounts = [];
+function disconnectAlgoWallet() {
+  algoAccount = "undefined";
 }
 
 /* Algorand wallet transfer function */
@@ -50,18 +47,15 @@ async function signGoNearTransaction(
 ) {
   if (from === undefined) {
     window.alert("No account, please log in again and enable browser pop-up");
-    connectedAccounts = await connectAlgoWallet();
+    algoAccount = await connectAlgoWallet();
     return;
   }
-  if (
-    connectedAccounts === undefined ||
-    connectedAccounts.length === 0 ||
-    connectedAccounts.map((acc) => acc.address).indexOf(from) === -1
-  ) {
+
+  if (algoAccount === "") {
     window.alert(
       "Account not logged in, please log in and enable browser pop-up"
     );
-    connectedAccounts = await connectAlgoWallet();
+    algoAccount = await connectAlgoWallet();
     return;
   }
 
