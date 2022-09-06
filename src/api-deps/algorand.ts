@@ -14,7 +14,8 @@ export {
   checkOptedIn,
   authorizeBurnTransaction,
   connectAlgoWallet,
-  disconnectAlgoWallet
+  disconnectAlgoWallet,
+  requestSignGoNearTxn
 };
 
 const myAlgoWallet = new MyAlgoConnect();
@@ -77,16 +78,10 @@ async function signGoNearTransaction(
   }
 }
 
-const requestSignGoNearTxn = async (fromAddr: string, amountStr: string) => {
+const requestSignGoNearTxn = async (amountStr: string) => {
   if (algoAccount === "") {
-    window.alert("No account, please log in again and enable browser pop-up");
     await connectAlgoWallet();
   }
-
-  console.warn(
-    'not using fromAddr passed in "requestSignGoNearTxn()"',
-    fromAddr
-  );
   const to = CONFIG.acc.algorand_master;
   const amount = +amountStr * ALGO_UNIT;
   try {
@@ -135,7 +130,7 @@ const authorizeBurnTransaction = async (
   cbUrl.searchParams.set("to_addr", burnReceiver);
   cbUrl.searchParams.set("amount", amount);
 
-  let txnId = await requestSignGoNearTxn(burnSender, amount);
+  let txnId = await requestSignGoNearTxn(amount);
   cbUrl.searchParams.set("txnId", txnId);
 
   const callbackUrl = cbUrl.toString();

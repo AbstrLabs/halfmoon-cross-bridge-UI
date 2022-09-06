@@ -62,7 +62,7 @@ export function HomePage() {
         >
           Algorand - NEAR Bridge
       </Typography>
-         <Box sx={{ maxWidth: 400 }}>
+         <Box sx={{ maxWidth:  1000 }}>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map((step, index) => (
           <Step key={step.label}>
@@ -76,7 +76,7 @@ export function HomePage() {
               {step.label}
             </StepLabel>
             <StepContent>
-              <Typography>{step.component}</Typography>
+              <div>{step.component}</div>
               <Box sx={{ mb: 2 }}>
                 <div>
                   <Button
@@ -116,5 +116,5 @@ export function HomePage() {
 const BodyWrap = styled("div")({
   flex: "1 1 auto",
   margin: "0 20px 40px",
-  width: "max(50%,24rem)",
+  width: "max(60%,24rem)",
 });

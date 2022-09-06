@@ -8,7 +8,12 @@ import { checkOptedIn, optInGoNear } from "./algorand";
 
 import { CONFIG } from "./config";
 
-export { nearWallet, authorizeMintTransaction, connectNearWallet, disconnectNearWallet };
+export { 
+  nearWallet, 
+  authorizeMintTransaction, 
+  connectNearWallet, 
+  disconnectNearWallet, 
+  requestSendNearTokenTxn };
 
 const near = new nearAPI.Near({
   headers: {},
@@ -75,7 +80,7 @@ async function createNearTxn({
   return tx;
 }
 
-async function requestSignNearTxn(
+async function requestSendNearTokenTxn(
   amountStr: string,
   callbackUrl: string | undefined = undefined
 ) {
@@ -117,6 +122,6 @@ async function authorizeMintTransaction(
   cbUrl.searchParams.set("to_addr", mintReceiver);
   cbUrl.searchParams.set("amount", amountStr);
   const callbackUrl = cbUrl.toString();
-  await requestSignNearTxn(amountStr, callbackUrl);
+  // await requestSignNearTxn(amountStr, callbackUrl);
 }
 

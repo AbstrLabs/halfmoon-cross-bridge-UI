@@ -10,11 +10,11 @@ import {
 import algosdk from "algosdk";
 import React, { useCallback, useMemo, useState } from "react";
 
-import { TxnType, REX, DEFAULT } from "../api-deps/config";
+import { TxnType, REX, DEFAULT, TokenId, FeeText, ReceivingPropotion } from "../api-deps/config";
 import { authorizeBurnTransaction } from "../api-deps/algorand";
 import { authorizeMintTransaction } from "../api-deps/near";
 
-export function TxnPanel({ txnType }: { txnType: TxnType }) {
+export function SendTokenPanel({ txnType }: { txnType: TxnType }) {
 
   const isMint = useMemo(() => txnType === TxnType.MINT, [txnType]);
   const isBurn = useMemo(() => txnType === TxnType.BURN, [txnType]);
@@ -22,10 +22,10 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     ? DEFAULT.DEFAULT_MINT_BENEFICIARY
     : DEFAULT.DEFAULT_BURN_BENEFICIARY;
   const DEFAULT_AMOUNT = isMint ? DEFAULT.DEFAULT_MINT_AMOUNT : DEFAULT.DEFAULT_BURN_AMOUNT;
-  const SENDING_UNIT = isMint ? "NEAR" : "goNEAR";
-  const RECEIVING_UNIT = isMint ? "goNEAR" : "NEAR";
-  const FEE_TEXT = isMint ? "0.0%+1" : "0.2%+1";
-  const USER_RECEIVING_PROPORTION = isMint ? 1 : 0.998;
+  const SENDING_UNIT = isMint ? TokenId.NEAR : TokenId.goNEAR;
+  const RECEIVING_UNIT = isMint ? TokenId.goNEAR : TokenId.NEAR;
+  const FEE_TEXT = isMint ?  FeeText.MINT : FeeText.BURN;
+  const USER_RECEIVING_PROPORTION = isMint ? ReceivingPropotion.MINT : ReceivingPropotion.BURN;
 
   //form input
   const [beneficiary, setBeneficiary] = useState("");
@@ -35,11 +35,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
 
-  // connect and step function
-
-  // modal control
-  const [isModalOpen, setModalOpen] = useState(false);
-
   // form check
   const quickCheckAddress = useCallback(
     (addr: string) =>
@@ -47,6 +42,7 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       (isBurn && REX.NEAR_ADDR_REGEX.test(addr)),
     [isBurn, isMint]
   );
+
   const validateAddress = useCallback(
     (addr: string) =>
       quickCheckAddress(addr) &&
@@ -58,10 +54,12 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
     (amount: string) => REX.AMOUNT_REGEX.test(amount),
     []
   );
+
   const validateAmount = useCallback(
     (amount: string) => quickCheckAmount(amount),
     [quickCheckAmount]
   );
+  
   const validateForm = useCallback(() => {
     setIsBeneficiaryValid(validateAddress(beneficiary));
     setIsAmountValid(validateAmount(amount));
@@ -173,35 +171,6 @@ export function TxnPanel({ txnType }: { txnType: TxnType }) {
       >
         Authorize Transaction
       </Button>
-      <Modal
-        open={isModalOpen}
-        onClose={() => {
-          setModalOpen(true);
-        }}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            color: "text.primary",
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: "0px 0px 18px 12px #7f7f7f50",
-            p: 4,
-          }}
-        >
-          <Typography variant="h6" component="h2" align="center">
-            SAMPLE MODAL TITLE
-          </Typography>
-          <Typography sx={{ mt: 2 }}>SAMPLE MODAL TEXT</Typography>
-          <Box height="1rem"></Box>
-        </Box>
-      </Modal>
     </React.Fragment>
   );
 }

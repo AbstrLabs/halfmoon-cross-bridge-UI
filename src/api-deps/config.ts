@@ -41,6 +41,16 @@ export enum TokenId {
   goNEAR = 'goNEAR',
 }
 
+export enum FeeText {
+  MINT = "0.0%+1",
+  BURN = "0.2%+1",
+}
+
+export enum ReceivingPropotion {
+  MINT = 1,
+  BURN = 0.998,
+}
+
 // Api call param
 type Addr = string;
 type ApiAmount = string;

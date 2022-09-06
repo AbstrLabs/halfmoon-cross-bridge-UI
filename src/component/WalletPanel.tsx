@@ -16,12 +16,12 @@ export function WalletPanel({ bridgeType }: { bridgeType: BridgeType }) {
       {bridgeType === BridgeType.NEAR ?
         <Sec>
           {signedSig_NEAR ?
-              <p>
+              <div>
               Connected {bridgeType} Wallet {NEARaccount.length < 20 ? NEARaccount : NEARaccount.slice(0,10) + "..." + NEARaccount.slice(-7)}
               <Button color="inherit" onClick={disconnectNearWallet}>
                 Disconnect {bridgeType} wallet and Refresh
               </Button>
-              </p>
+              </div>
             : <Button color="inherit" onClick={connectNearWallet}>
                 Connect {bridgeType} Wallet 
               </Button>
@@ -29,12 +29,12 @@ export function WalletPanel({ bridgeType }: { bridgeType: BridgeType }) {
         </Sec>
       : <Sec>
           {signedSig_Algo ?
-              <p>
+              <div>
               Connected {bridgeType} Wallet {ALGOaccount.slice(0,10)}...{ALGOaccount.slice(-5)}
               <Button color="inherit" onClick={disconnectAlgoWallet}>
                 Disconnect {bridgeType} wallet and Refresh
               </Button>
-            </p>
+            </div>
             : <Button color="inherit" onClick={async () =>{
                 await connectAlgoWallet()
                 window.location.reload()

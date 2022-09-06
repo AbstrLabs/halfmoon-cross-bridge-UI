@@ -2,7 +2,7 @@ import { Box, Tab, styled } from "@mui/material";
 import React, { SyntheticEvent, useCallback, useState } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
-import { TxnPanel } from "./TxnPanel";
+import { SendTxnPanel } from "./SendTxnPanel";
 import { TxnType } from "../api-deps/config";
 
 export function Bridge() {
@@ -23,10 +23,10 @@ export function Bridge() {
           </TabList>
         </Box>
         <TabPanel value={TxnType.MINT}>
-          <TxnPanel txnType={TxnType.MINT} />
+          <SendTxnPanel txnType={TxnType.MINT} />
         </TabPanel>
         <TabPanel value={TxnType.BURN}>
-          <TxnPanel txnType={TxnType.BURN} />
+          <SendTxnPanel txnType={TxnType.BURN} />
         </TabPanel>
       </TabContext>
   );
