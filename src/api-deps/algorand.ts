@@ -32,11 +32,12 @@ const algodClient = new algosdk.Algodv2(
 async function connectAlgoWallet() {
   let connectedAccounts = await myAlgoWallet.connect();
   algoAccount = connectedAccounts[0].address;
-  return algoAccount;
+  localStorage.setItem("Algorand", algoAccount);
+  return algoAccount
 }
 
 function disconnectAlgoWallet() {
-  algoAccount = "undefined";
+  localStorage.removeItem("Algorand")
 }
 
 /* Algorand wallet transfer function */

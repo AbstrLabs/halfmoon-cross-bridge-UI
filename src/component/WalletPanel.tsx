@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { styled, Button } from "@mui/material";
 
 import { connectAlgoWallet, disconnectAlgoWallet } from "../api-deps/algorand";
@@ -8,12 +7,9 @@ import { BridgeType } from "../api-deps/config";
 export function WalletPanel({ bridgeType }: { bridgeType: BridgeType }) {
 
   let signedSig_NEAR = nearWallet.isSignedIn()
-  let [ALGOaccount, setALGOaccount] = useState("")
-
-  const AlgoWalletConnect = async () => {
-    let acc = await connectAlgoWallet()
-    setALGOaccount(acc)
-  };
+  let NEARaccount = nearWallet.account().accountId || ""
+  let ALGOaccount = localStorage.getItem("Algorand") || ""
+  let signedSig_Algo = !!localStorage.getItem("Algorand")
 
   return (
     <Wrap>
@@ -21,24 +17,28 @@ export function WalletPanel({ bridgeType }: { bridgeType: BridgeType }) {
         <Sec>
           {signedSig_NEAR ?
               <p>
-              Connected {bridgeType} Wallet {nearWallet.account().accountId}
+              Connected {bridgeType} Wallet {NEARaccount.length < 20 ? NEARaccount : NEARaccount.slice(0,10) + "..." + NEARaccount.slice(-7)}
+              <Button color="inherit" onClick={disconnectNearWallet}>
+                Disconnect {bridgeType} wallet and Refresh
+              </Button>
               </p>
             : <Button color="inherit" onClick={connectNearWallet}>
                 Connect {bridgeType} Wallet 
               </Button>
           }
-          {signedSig_NEAR &&
-          <Button color="inherit" onClick={disconnectNearWallet}>
-            Disconnect {bridgeType} wallet and Refresh
-          </Button>
-          }
         </Sec>
       : <Sec>
-          {ALGOaccount !== "" ?
+          {signedSig_Algo ?
               <p>
               Connected {bridgeType} Wallet {ALGOaccount.slice(0,10)}...{ALGOaccount.slice(-5)}
-              </p>
-            : <Button color="inherit" onClick={AlgoWalletConnect}>
+              <Button color="inherit" onClick={disconnectAlgoWallet}>
+                Disconnect {bridgeType} wallet and Refresh
+              </Button>
+            </p>
+            : <Button color="inherit" onClick={async () =>{
+                await connectAlgoWallet()
+                window.location.reload()
+                }}>
                 Connect {bridgeType} Wallet 
               </Button>
           }
