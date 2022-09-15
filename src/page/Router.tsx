@@ -3,12 +3,12 @@ import React, { useEffect } from "react";
 
 import { DocsPage } from "./DocsPage";
 import { E404Page } from "./E404Page";
-import { Header } from "../component/Header";
+import { Header } from "../component/sections/Header";
 import { HomePage } from "./HomePage";
-import { ProcessPage } from "./ProcessPage";
+// import { ProcessPage } from "./ProcessPage";
 import { ResultPage } from "./ResultPage";
 
-export function Router() {
+export function Router({ contract, currentUser, nearConfig, wallet }: any) {
   /* ======== URL_QUERY ======== */
 
   function ScrollToTop() {
@@ -29,8 +29,15 @@ export function Router() {
         <Header />
         <Routes>
           <Route path="/">
-            <Route index element={<HomePage />} />
-            <Route path="process" element={<ProcessPage />} />
+            <Route index element={
+              <HomePage
+                contract={contract}
+                currentUser={currentUser}
+                nearConfig={nearConfig}
+                wallet={wallet}
+              />}
+            />
+            {/* <Route path="process" element={<ProcessPage />} /> */}
             <Route path="result" element={<ResultPage />} />
             <Route path="docs" element={<DocsPage />} />
             <Route path="*" element={<E404Page />} />

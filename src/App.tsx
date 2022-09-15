@@ -12,7 +12,7 @@ import React from "react";
 import { Router } from "./page/Router";
 import { useTernaryDarkMode } from "usehooks-ts";
 
-function App() {
+function App({ contract, currentUser, nearConfig, wallet }: any) {
   /* ======== MUI ======== */
   const { isDarkMode } = useTernaryDarkMode();
 
@@ -35,7 +35,12 @@ function App() {
           }}
         />
         <AppWarp>
-          <Router />
+          <Router 
+            contract={contract}
+            currentUser={currentUser}
+            nearConfig={nearConfig}
+            wallet={wallet}
+          />
         </AppWarp>
       </ThemeProvider>
     </StyledEngineProvider>

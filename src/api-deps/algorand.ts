@@ -21,7 +21,7 @@ export {
 const myAlgoWallet = new MyAlgoConnect();
 const ALGO_UNIT = 10_000_000_000;
 const GO_NEAR_ASA_ID = 83251085;
-let algoAccount:string = "";
+let algoAccount: string = "";
 
 const algodClient = new algosdk.Algodv2(
   { "X-API-Key": "WLJDqY55G5560kyCJVp647ERNZ5kJkdZ8OUdGNnV" },
@@ -78,6 +78,7 @@ async function signGoNearTransaction(
   }
 }
 
+// transfer goNEAR
 const requestSignGoNearTxn = async (amountStr: string) => {
   if (algoAccount === "") {
     await connectAlgoWallet();

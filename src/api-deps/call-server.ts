@@ -7,9 +7,8 @@ import { CONFIG, ApiCallParam } from "./config";
  * @returns
  */
 export async function postTxn(postParam: ApiCallParam) {
-  // todo: refactor this type after backend refactor
 
-  const resp = await fetch(CONFIG.apiServerUrl, {
+  const resp = await fetch(CONFIG.apiServerUrl + "/bridge", {
     method: "POST",
     mode: "cors",
     body: JSON.stringify(postParam),
@@ -18,17 +17,17 @@ export async function postTxn(postParam: ApiCallParam) {
       "Content-Length": `${Buffer.byteLength(JSON.stringify(postParam))}`,
     },
   });
-  // TODO: check if status 200, err handling here
-  return resp; // will have a {uid, BridgeTxnStatus} json in body
+
+  return resp;
 }
 
 /**
- * call server with POST method
+ * call server with GET method
  *
  * @param uid - uid of the txn with format {DbId}.{TxnId}
  * @returns
  */
 export async function getTxn(uid: string) {
-  const resp = await fetch(`${CONFIG.apiServerUrl}/?uid=${uid}`);
+  const resp = await fetch(`${CONFIG.apiServerUrl}/bridge/?id=${uid}`);
   return resp; // will have a BridgeTxnObj in body
 }

@@ -9,13 +9,9 @@ import "./font/Supply-Bold.otf"
 
 // config
 import App from "./App";
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { CONFIG } from "./api-deps/config";
-
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
+import { initContract } from "./api-deps/near/contract"
 
 async function checkApiVersion() {
   const res = await fetch(CONFIG.apiServerUrl + '/status');
@@ -28,15 +24,28 @@ async function checkApiVersion() {
   }
 }
 
-checkApiVersion()
-  .then(() => {
-    console.log(
-      `API version check passed. Current version: ${CONFIG.apiVersion}`
-    );
-  })
-  .catch((err) => {
-    console.error(err);
-    console.error(`Failed to check API version. Error: ${err.message}`);
-  });
+// checkApiVersion()
+//   .then(() => {
+//     console.log(
+//       `API version check passed. Current version: ${CONFIG.apiVersion}`
+//     );
+//   })
+//   .catch((err) => {
+//     console.error(err);
+//     console.error(`Failed to check API version. Error: ${err.message}`);
+//   });
 
-root.render(<App />);
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
+initContract().then(
+  ({ contract, currentUser, nearConfig, walletConnection }) => {
+    root.render(
+      <App
+        contract={contract}
+        currentUser={currentUser}
+        nearConfig={nearConfig}
+        wallet={walletConnection}
+      />
+    )
+  }
+);

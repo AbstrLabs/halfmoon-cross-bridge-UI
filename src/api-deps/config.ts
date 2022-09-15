@@ -26,12 +26,16 @@ export let DEFAULT = {
   DEFAULT_MINT_AMOUNT: "1.3579",
   DEFAULT_BURN_BENEFICIARY: "abstrlabs-test.testnet",
   DEFAULT_BURN_AMOUNT: "1.2345",
+  DEFAULT_NEAR_TXN_HASH: "AfKuCQKP78691ygVwwhkKjuW982NSsE3P6AhR2SjYykS",
+  DEFAULT_ALGORAND_TXN_HASH: "AUCI2MXT3WKV6YPMPGR4FTBQR25IYVSOXIMD2RLGOCYUYYGAMHCQ"
 }
 
 export let REX = {
   AMOUNT_REGEX: /^[0-9]*\.?[0-9]{0,10}$/,
   ALGORAND_ADDR_REGEX: /^[2-79A-Z]{58}$/,
-  NEAR_ADDR_REGEX: /^[0-9a-z][0-9a-z\-_]{2,64}.(testnet|mainnet)$/
+  NEAR_ADDR_REGEX: /^[0-9a-z][0-9a-z\-_]{2,64}.(testnet|mainnet)$/,
+  NEAR_TRANSACTION_REGEX: /^[2-79A-Z]{44}$/,
+  ALGORAND_TRANSACTION_REGEX: /^[2-79A-Z]{52}$/
 }
 
 export enum TokenId {
@@ -39,6 +43,17 @@ export enum TokenId {
   NEAR = 'NEAR',
   wALGO = 'wALGO',
   goNEAR = 'goNEAR',
+}
+
+export enum TokenUID {
+  NEAR = 2,
+  Algorand = 3
+}
+
+export enum FROM_AMOUNT_ATOM {
+  NEAR = '000000000000000000000000',
+  goNEAR = '0000000000',
+  ALGO = '000000'
 }
 
 export enum FeeText {
@@ -52,17 +67,15 @@ export enum ReceivingPropotion {
 }
 
 // Api call param
-type Addr = string;
-type ApiAmount = string;
-type TxnId = string;
 
 interface ApiCallParam {
-  amount: ApiAmount;
-  txn_id: TxnId;
-  from_addr: Addr;
-  from_token: TokenId; // token_id
-  to_addr: Addr;
-  to_token: TokenId; // token_id
+  from_addr: string,
+  from_amount_atom: string,
+  from_token_id: number,
+  from_txn_hash: string,
+  to_addr: string,
+  to_token_id: number,
+  comment: string
 }
 
 export type { ApiCallParam };
@@ -70,22 +83,13 @@ export type { ApiCallParam };
 // txn 
 enum BridgeTxnStatusEnum {
   // By order
-  NOT_CREATED = "NOT_CREATED", //                   Only used in ram
-  ERR_SEVER_INTERNAL = "ERR_SEVER_INTERNAL", //     General server internal error
-  ERR_AWS_RDS_DB = "ERR_AWS_RDS_DB", //             General AWS DB External error
-  DOING_INITIALIZE = "DOING_INITIALIZE", //         BridgeTxn without calling initialize
-  ERR_INITIALIZE = "ERR_INITIALIZE", //             BridgeTxn initialize failed
-  DONE_INITIALIZE = "DONE_INITIALIZE", //           BridgeTxn after initialize
-  DOING_INCOMING = "DOING_INCOMING", //             Await confirm incoming
-  ERR_VERIFY_INCOMING = "ERR_VERIFY_INCOMING", //   Verified incoming is wrong
-  ERR_TIMEOUT_INCOMING = "ERR_TIMEOUT_INCOMING", // Confirm incoming timeout
-  DONE_INCOMING = "DONE_INCOMING", //               Confirm incoming success
-  DOING_OUTGOING = "DOING_OUTGOING", //             Await confirm outgoing txn
-  ERR_MAKE_OUTGOING = "ERR_MAKE_OUTGOING", //       Make outgoing txn failed
-  DOING_VERIFY = "DOING_VERIFY", //                 Await verify outgoing txn
-  ERR_CONFIRM_OUTGOING = "ERR_CONFIRM_OUTGOING", // Confirm outgoing timeout
-  DONE_OUTGOING = "DONE_OUTGOING", //               Confirm outgoing success
-  USER_CONFIRMED = "USER_CONFIRMED", //             User confirmed
+  CREATED = 'CREATED',
+  INVALID = 'INVALID',
+  DONE_VERIFY = 'DONE_VERIFY',
+  ERROR_IN_VERIFY = 'ERROR_IN_VERIFY',
+  DOING_OUTGOING = 'DOING_OUTGOING',
+  DONE_OUTGOING = 'DONE_OUTGOING',
+  ERROR_IN_OUTGOING = 'ERROR_IN_OUTGOING'
 }
 
 interface BridgeTxnSafeObj {
