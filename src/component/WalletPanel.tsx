@@ -1,4 +1,5 @@
 import { styled, Button } from "@mui/material";
+import React, { useState } from "react";
 
 import { connectAlgoWallet, disconnectAlgoWallet, checkOptedIn, optInGoNear } from "../api-deps/algorand";
 import { nearWallet, connectNearWallet, disconnectNearWallet } from "../api-deps/near/near";
@@ -11,11 +12,23 @@ export function WalletPanel({ bridgeType }: { bridgeType: BridgeType }) {
   let ALGOaccount = localStorage.getItem("Algorand") || ""
   let signedSig_Algo = !!localStorage.getItem("Algorand")
 
+  const [notOptIn, setTo] = useState(true)
+
+  const checkOptedInFunc = async (addr: string) => {
+    let res = await checkOptedIn(ALGOaccount)
+    if (res === true) setTo(false)
+  }
+
   const optInFunc = async (addr: string) => {
-    const optInTxnId = await optInGoNear(addr);
-    window.alert(
-      `Beneficiary account opted in to goNEAR successfully.\nTransaction ID ${optInTxnId}.`
-    );
+    const optInTxn = await optInGoNear(addr);
+    if (optInTxn !== undefined) {
+      console.log(
+        `Beneficiary account opted in to goNEAR successfully.\nTransaction ID ${optInTxn}.`
+      );
+    } else {
+      console.log("error: " + optInTxn)
+    }
+
   }
 
   return (
@@ -42,13 +55,13 @@ export function WalletPanel({ bridgeType }: { bridgeType: BridgeType }) {
                 Disconnect {bridgeType} wallet
               </Button>
 
-              <Button color="inherit" onClick={async () => await checkOptedIn(ALGOaccount)}>
+              <Button color="inherit" onClick={async () => await checkOptedInFunc(ALGOaccount)}>
                 Check {bridgeType} address opt in goNEAR
               </Button>
-
-              <Button color="inherit" onClick={async () => optInFunc(ALGOaccount)}>
-                Opt in goNEAR ASA
-              </Button>
+              {notOptIn &&
+                <Button color="inherit" onClick={async () => optInFunc(ALGOaccount)}>
+                  Opt in goNEAR ASA
+                </Button>}
             </div>
             : <Button color="inherit" onClick={async () => {
               await connectAlgoWallet()

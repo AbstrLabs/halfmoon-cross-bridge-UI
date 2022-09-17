@@ -7,34 +7,18 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { Box } from "@mui/system";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { AlgorandAddressLink } from "../component/links/AlgorandAddressLink";
 import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionLink";
-import { Box } from "@mui/system";
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
-import { useSearchParams } from "react-router-dom";
-import { BridgeTxnSafeObj, BridgeTxnStatusEnum, TokenId } from "../api-deps/config";
+
+import { getTxn } from "../api-deps/call-server";
+import { BridgeTxnSafeObj, TokenId, GET_INTERVAL_MS } from "../api-deps/config";
 
 export function ResultPage() {
-  let [searchParams] = useSearchParams();
-  const parsedParams: BridgeTxnSafeObj = {
-    dbId: searchParams.get("dbId")!,
-    fixedFeeAtom: searchParams.get("fixedFeeAtom")!,
-    marginFeeAtom: searchParams.get("marginFeeAtom")!,
-    createdTime: new Date(+searchParams.get("createdTime")!).toLocaleString(), // this passes type check but is not by design
-    fromAddr: searchParams.get("fromAddr")!,
-    fromAmountAtom: searchParams.get("fromAmountAtom")!,
-    fromTokenId: searchParams.get("fromTokenId") as TokenId,
-    fromTxnId: searchParams.get("fromTxnId")!,
-    toAddr: searchParams.get("toAddr")!,
-    toAmountAtom: searchParams.get("toAmountAtom")!,
-    toTokenId: searchParams.get("toTokenId") as TokenId,
-    toTxnId: searchParams.get("toTxnId")!,
-    txnStatus: searchParams.get("txnStatus")! as BridgeTxnStatusEnum,
-  };
-  // TODO: if any is empty , show another page or redirect to 404.
-  // TODO: LINK-COMP: refactor type TokenLinks, Links, LinkFromAddr, LinkFromTxnHash
   type LinkFromAddr = ({ addr }: { addr: string }) => JSX.Element;
   type LinkFromTxnHash = ({ txnId }: { txnId: string }) => JSX.Element;
   type TokenLinks = {
@@ -60,6 +44,70 @@ export function ResultPage() {
     },
   };
 
+  const emptyTxn: BridgeTxnSafeObj = {
+    created_time: "",
+    from_addr: "",
+    from_amount_atom: "",
+    from_token_id: TokenId.NEAR,
+    from_txn_hash: "",
+    to_addr: "",
+    to_amount_atom: "",
+    to_token_id: TokenId.goNEAR,
+    to_txn_hash: ""
+  }
+  const [txn, setTxn] = useState(emptyTxn)
+
+  async function watchTxnStatus(uid: string) {
+    let finished = false;
+    let txnJson;
+    while (!finished) {
+      const txnRes = await getTxn(uid);
+      if (txnRes.status === 200) {
+        txnJson = await txnRes.json();
+        if (txnJson.request_status === "DONE_OUTGOING") {
+          finished = true;
+          let txnInfo = {
+            created_time: txnJson.created_time,
+            from_addr: txnJson.from_addr,
+            from_amount_atom: txnJson.from_amount_atom,
+            from_token_id: txnJson.from_token_id === 2 ? TokenId.NEAR : TokenId.goNEAR,
+            from_txn_hash: txnJson.from_txn_hash,
+            to_addr: txnJson.to_addr,
+            to_amount_atom: txnJson.to_amount_atom,
+            to_token_id: txnJson.to_token_id === 2 ? TokenId.NEAR : TokenId.goNEAR,
+            to_txn_hash: txnJson.to_txn_hash
+          }
+          setTxn(txnInfo)
+          break;
+        } else if ((txnJson.request_status as string).startsWith("ERROR_")) {
+          finished = true;
+          window.alert(
+            `Request error: ${txnJson.request_status} on Request [UID:${uid}]. Please contact support providing this UID.`
+          );
+          console.log("error message ", txnJson.err_msg)
+          console.log("invalid reason ", txnJson.invalid_reason)
+          break
+        }
+      }
+      await new Promise((resolve) => setTimeout(resolve, GET_INTERVAL_MS));
+    }
+    return false
+  }
+
+  const watch = useCallback(async () => {
+    const url = new URL(window.location.href);
+    const id = url.searchParams.get("id");
+    if (id !== null) {
+      await watchTxnStatus(id)
+    }
+  }, [watchTxnStatus])
+
+  useEffect(() => {
+    watch();
+    // The effect calls innerFunction, hence it should declare it as a dependency
+    // Otherwise, if something about innerFunction changes (e.g. the data it uses), the effect would run the outdated version of innerFunction
+  }, [watch]);
+
   return (
     <Box textAlign="center" marginBottom="80px">
       <Box height="4rem" />
@@ -67,11 +115,11 @@ export function ResultPage() {
       <Box height="2rem" />
       <Typography variant="h4">See Invoice Transaction on Explorer</Typography>
       {/* TODO: TO-HASH : make this a component */}
-      {parsedParams.toTxnId === null || parsedParams.toTxnId === undefined
+      {txn.to_txn_hash === null || txn.to_txn_hash === undefined
         ? "loading..."
-        : Links[parsedParams.toTokenId].txn({
-            txnId: parsedParams.toTxnId,
-          })}
+        : Links[txn.to_token_id].txn({
+          txnId: txn.to_txn_hash,
+        })}
       <Box height="4rem" />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -79,38 +127,38 @@ export function ResultPage() {
             <TableRow>
               <TableCell>Transaction type</TableCell>
               <TableCell align="right">
-                {parsedParams.fromTokenId} ➡️ {parsedParams.toTokenId}
+                {txn.from_token_id} ➡️ {txn.to_token_id}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Amount Sent (unit: 1e-10)</TableCell>
-              <TableCell align="right">{parsedParams.fromAmountAtom}</TableCell>
+              <TableCell align="right">{txn.from_amount_atom}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Amount Received (unit: 1e-10)</TableCell>
-              <TableCell align="right">{parsedParams.toAmountAtom}</TableCell>
+              <TableCell align="right">{txn.to_amount_atom}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Beneficiary Address</TableCell>
               <TableCell align="right">
-                {Links[parsedParams.toTokenId].acc({
-                  addr: parsedParams.toAddr,
+                {Links[txn.to_token_id].acc({
+                  addr: txn.to_addr,
                 })}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Transaction Signer</TableCell>
               <TableCell align="right">
-                {Links[parsedParams.fromTokenId].acc({
-                  addr: parsedParams.fromAddr,
+                {Links[txn.from_token_id].acc({
+                  addr: txn.from_addr,
                 })}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Signed Transaction ID</TableCell>
               <TableCell align="right">
-                {Links[parsedParams.fromTokenId].txn({
-                  txnId: parsedParams.fromTxnId,
+                {Links[txn.from_token_id].txn({
+                  txnId: txn.from_txn_hash,
                 })}
               </TableCell>
             </TableRow>
@@ -118,25 +166,25 @@ export function ResultPage() {
               <TableCell>Invoice Transaction ID</TableCell>
               <TableCell align="right">
                 {/* TODO: TO-HASH : make this a component */}
-                {parsedParams.toTxnId === null ||
-                parsedParams.toTxnId === undefined
+                {txn.to_txn_hash === null ||
+                  txn.to_txn_hash === undefined
                   ? "loading..."
-                  : Links[parsedParams.toTokenId].txn({
-                      txnId: parsedParams.toTxnId,
-                    })}
+                  : Links[txn.to_token_id].txn({
+                    txnId: txn.to_txn_hash,
+                  })}
               </TableCell>
             </TableRow>
-            <TableRow>
+            {/* <TableRow>
               <TableCell>Sweeping Miner Fee (unit: 1e-10)</TableCell>
-              <TableCell align="right">{parsedParams.fixedFeeAtom}</TableCell>
-            </TableRow>
-            <TableRow>
+              <TableCell align="right">{txn.fixedFeeAtom}</TableCell>
+            </TableRow> */}
+            {/* <TableRow>
               <TableCell>Transaction Fee (unit: 1e-10)</TableCell>
-              <TableCell align="right">{parsedParams.marginFeeAtom}</TableCell>
-            </TableRow>
+              <TableCell align="right">{txn.marginFeeAtom}</TableCell>
+            </TableRow> */}
             <TableRow>
               <TableCell>Created in Database</TableCell>
-              <TableCell align="right">{parsedParams.createdTime}</TableCell>
+              <TableCell align="right">{txn.created_time}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

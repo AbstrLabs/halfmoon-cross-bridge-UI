@@ -22,7 +22,7 @@ export enum BridgeType {
 }
 
 export let DEFAULT = {
-  DEFAULT_MINT_BENEFICIARY: "ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA",
+  DEFAULT_MINT_BENEFICIARY: "Z2TYCC3CSH3GDIYD25MUXMPR4C2UZCDCLJ6E3YTVTYD2EZB2QUN6VDXN7E",
   DEFAULT_MINT_AMOUNT: "1.3579",
   DEFAULT_BURN_BENEFICIARY: "abstrlabs-test.testnet",
   DEFAULT_BURN_AMOUNT: "1.2345",
@@ -91,20 +91,20 @@ enum BridgeTxnStatusEnum {
 }
 
 interface BridgeTxnSafeObj {
-  // TODO: type better (addr,txnId)
-  dbId: number | string;
+  created_time: string;
+  from_addr: string;
+  from_amount_atom: string;
+  from_token_id: TokenId;
+  from_txn_hash: string;
+  to_addr: string;
+  to_amount_atom: string;
+  to_token_id: TokenId;
+  to_txn_hash: string;
+}
+
+interface FeeObj {
   fixedFeeAtom: string;
   marginFeeAtom: string;
-  createdTime: string;
-  fromAddr: string;
-  fromAmountAtom: string;
-  fromTokenId: TokenId;
-  fromTxnId: string;
-  toAddr: string;
-  toAmountAtom: string;
-  toTokenId: TokenId;
-  toTxnId?: string | null;
-  txnStatus: BridgeTxnStatusEnum;
 }
 
 export { BridgeTxnStatusEnum };

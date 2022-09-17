@@ -5,7 +5,6 @@ import { DocsPage } from "./DocsPage";
 import { E404Page } from "./E404Page";
 import { Header } from "../component/sections/Header";
 import { HomePage } from "./HomePage";
-// import { ProcessPage } from "./ProcessPage";
 import { ResultPage } from "./ResultPage";
 
 export function Router({ contract, currentUser, nearConfig, wallet }: any) {
@@ -37,7 +36,6 @@ export function Router({ contract, currentUser, nearConfig, wallet }: any) {
                 wallet={wallet}
               />}
             />
-            {/* <Route path="process" element={<ProcessPage />} /> */}
             <Route path="result" element={<ResultPage />} />
             <Route path="docs" element={<DocsPage />} />
             <Route path="*" element={<E404Page />} />
