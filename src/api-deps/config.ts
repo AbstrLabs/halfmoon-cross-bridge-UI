@@ -70,12 +70,10 @@ export enum ReceivingPropotion {
 
 interface ApiCallParam {
   from_addr: string,
-  from_amount_atom: string,
   from_token_id: number,
   from_txn_hash: string,
-  to_addr: string,
   to_token_id: number,
-  comment: string
+  comment?: string
 }
 
 export type { ApiCallParam };
@@ -111,3 +109,5 @@ interface BridgeTxnSafeObj {
 
 export { BridgeTxnStatusEnum };
 export type { BridgeTxnSafeObj };
+
+export const GET_INTERVAL_MS = 3000;

@@ -2,8 +2,8 @@ import EastIcon from '@mui/icons-material/East';
 import { Typography, Button, styled } from "@mui/material";
 import React, { useCallback, useState } from "react";
 
-import { postTxn } from "../api-deps/call-server";
-import { TokenId, ApiCallParam, FROM_AMOUNT_ATOM, TokenUID } from "../api-deps/config";
+import { postTxn, getTxn } from "../api-deps/call-server";
+import { TokenId, ApiCallParam, TokenUID, GET_INTERVAL_MS } from "../api-deps/config";
 
 export function SignStep({ transactionHash }: { transactionHash: string }) {
 
@@ -11,47 +11,52 @@ export function SignStep({ transactionHash }: { transactionHash: string }) {
 
   const newParam: ApiCallParam = {
     from_addr: 'testalgo.testnet',
-    from_amount_atom: transactionType === TokenId.NEAR ? FROM_AMOUNT_ATOM.NEAR : FROM_AMOUNT_ATOM.goNEAR,
     from_token_id: TokenUID.NEAR,
     from_txn_hash: transactionHash,
-    to_addr: 'ACCSSTKTJDSVP4JPTJWNCGWSDAPHR66ES2AZUAH7MUULEY43DHQSDNR7DA',
     to_token_id: TokenUID.Algorand,
-    comment: ''
   }
 
   const parseResultUrlFromParam = (id: string) => {
     const url = new URL("/result", window.location.origin);
+    url.searchParams.set("transactionHashes", id)
     return url.toString();
   }
 
-  const confirmTxn = () => {
-    postTxn(newParam)
-      .then(async (res: any) => {
-        if (res.status === 400) {
-          window.alert("Invalid transaction");
-          return;
+  async function watchTxnStatus(uid: string) {
+    let finished = false;
+    let txnJson;
+    while (!finished) {
+      const txnRes = await getTxn(uid);
+      if (txnRes.status === 200) {
+        txnJson = await txnRes.json();
+        console.log(txnJson)
+        if (txnJson.request_status === "DONE_OUTGOING") {
+          finished = true;
+        } else if ((txnJson.request_status as string).startsWith("ERROR_")) {
+          finished = true;
+          alert(
+            `Transaction error: ${txnJson.request_status} on Transaction [UID:${uid}]. Please contact support providing this UID.`
+          );
         }
-        if (res.status === 404) {
-          window.alert("Transaction not found");
-          return;
-        }
-        if (res.status === 406) {
-          window.alert("406, should be Double mint detected");
-          return;
-        }
-        if (res.status === 200) {
-          const resJson = res.json();
-          console.log(resJson)
+      }
+      await new Promise((resolve) => setTimeout(resolve, GET_INTERVAL_MS));
+    }
+    console.log(txnJson)
+    // const replacingUrl = parseResultUrlFromParam(txnJson);
+    // window.location.replace(replacingUrl);
+  }
 
-          // window.location.replace(parseResultUrlFromParam)
-          return;
-        }
-        throw new Error(`${res.status} ${res.statusText}`);
-      })
-      .catch((err: any) => {
-        console.error("API server rejected. Error : ", err.message);
-        alert("API server rejected!");
-      })
+  const confirmTxn = async () => {
+    const res = await postTxn(newParam)
+    if (res.status === 400) {
+      window.alert("Invalid transaction");
+      return;
+    }
+    if (res.status === 201) {
+      const resJson = await res.json();
+      console.log(resJson)
+      return;
+    }
   }
 
   return (
@@ -66,6 +71,14 @@ export function SignStep({ transactionHash }: { transactionHash: string }) {
         endIcon={<EastIcon />}
       >
         Confirm Transaction
+      </Button>
+      <Button
+        color="inherit"
+        onClick={() => watchTxnStatus("2")}
+        variant="outlined"
+        endIcon={<EastIcon />}
+      >
+        Check Transaction
       </Button>
     </Wrap>
   );

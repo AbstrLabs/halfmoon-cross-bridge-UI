@@ -2,7 +2,8 @@ import { Box, Tab, styled } from "@mui/material";
 import React, { SyntheticEvent, useCallback, useState } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
-import { SendTxnPanel } from "./SendTxnPanel";
+import { SendTxnMintPanel } from "./SendTxnMintPanel";
+import { SendTxnBurnPanel } from "./SendTxnBurnPanel";
 import { TxnType } from "../api-deps/config";
 
 export function SendStep({ contract, currentUser }: { contract: any, currentUser: string }) {
@@ -24,10 +25,10 @@ export function SendStep({ contract, currentUser }: { contract: any, currentUser
         </TabList>
       </Box>
       <TabPanel value={TxnType.MINT}>
-        <SendTxnPanel txnType={TxnType.MINT} contract={contract} currentUser={currentUser} />
+        <SendTxnMintPanel contract={contract} />
       </TabPanel>
       <TabPanel value={TxnType.BURN}>
-        <SendTxnPanel txnType={TxnType.BURN} contract={contract} currentUser={currentUser} />
+        <SendTxnBurnPanel />
       </TabPanel>
     </TabContext>
   );

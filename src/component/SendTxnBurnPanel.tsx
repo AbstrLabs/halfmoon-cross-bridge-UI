@@ -8,55 +8,31 @@ import {
   Modal,
   Typography
 } from "@mui/material";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 
-import algosdk from "algosdk";
-import Big from "big.js";
-
-import { TxnType, REX, DEFAULT, TokenId, FeeText, ReceivingPropotion } from "../api-deps/config";
+import { REX, DEFAULT, TokenId, FeeText, ReceivingPropotion } from "../api-deps/config";
 import { requestSignGoNearTxn } from "../api-deps/algorand";
 
-const BOATLOAD_OF_GAS = Big(3).times(10 ** 13).toFixed();
+export function SendTxnBurnPanel() {
 
-export function SendTxnPanel({ txnType, contract, currentUser }: { txnType: TxnType, contract: any, currentUser: string }) {
+  const DEFAULT_AMOUNT = DEFAULT.DEFAULT_BURN_AMOUNT;
+  const SENDING_UNIT = TokenId.goNEAR;
+  const RECEIVING_UNIT = TokenId.NEAR;
+  const FEE_TEXT = FeeText.BURN;
+  const USER_RECEIVING_PROPORTION = ReceivingPropotion.BURN;
 
-  const isMint = useMemo(() => txnType === TxnType.MINT, [txnType]);
-  const isBurn = useMemo(() => txnType === TxnType.BURN, [txnType]);
-
-  const DEFAULT_BENEFICIARY = isMint
-    ? DEFAULT.DEFAULT_MINT_BENEFICIARY
-    : DEFAULT.DEFAULT_BURN_BENEFICIARY;
-  const DEFAULT_AMOUNT = isMint ? DEFAULT.DEFAULT_MINT_AMOUNT : DEFAULT.DEFAULT_BURN_AMOUNT;
-  const SENDING_UNIT = isMint ? TokenId.NEAR : TokenId.goNEAR;
-  const RECEIVING_UNIT = isMint ? TokenId.goNEAR : TokenId.NEAR;
-  const FEE_TEXT = isMint ? FeeText.MINT : FeeText.BURN;
-  const USER_RECEIVING_PROPORTION = isMint ? ReceivingPropotion.MINT : ReceivingPropotion.BURN;
+  let ALGOaccount = localStorage.getItem("Algorand") || ""
 
   //form input
-  const [beneficiary, setBeneficiary] = useState("");
   const [amount, setAmount] = useState("");
 
   //form input valid
-  const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
   const [isAmountValid, setIsAmountValid] = useState(true);
 
   // modal control
   const [isModalOpen, setModalOpen] = useState(false);
 
   // form check
-  const quickCheckAddress = useCallback(
-    (addr: string) =>
-      (isMint && REX.ALGORAND_ADDR_REGEX.test(addr)) ||
-      (isBurn && REX.NEAR_ADDR_REGEX.test(addr)),
-    [isBurn, isMint]
-  );
-  const validateAddress = useCallback(
-    (addr: string) =>
-      quickCheckAddress(addr) &&
-      ((isMint && algosdk.isValidAddress(addr)) || isBurn),
-    [isBurn, isMint, quickCheckAddress]
-  );
-
   const quickCheckAmount = useCallback(
     (amount: string) => REX.AMOUNT_REGEX.test(amount),
     []
@@ -68,24 +44,17 @@ export function SendTxnPanel({ txnType, contract, currentUser }: { txnType: TxnT
   );
 
   const validateForm = useCallback(() => {
-    setIsBeneficiaryValid(validateAddress(beneficiary));
     setIsAmountValid(validateAmount(amount));
-    if (!isBeneficiaryValid) {
-      alert("Invalid address");
-      return;
-    }
+
     if (!isAmountValid) {
       alert("Invalid amount");
     }
-    if (isBeneficiaryValid && isAmountValid && beneficiary !== "" && amount !== "") {
+    if (isAmountValid && amount !== "") {
       setModalOpen(true)
     }
   }, [
     amount,
-    beneficiary,
     isAmountValid,
-    isBeneficiaryValid,
-    validateAddress,
     validateAmount,
   ]);
 
@@ -93,55 +62,15 @@ export function SendTxnPanel({ txnType, contract, currentUser }: { txnType: TxnT
   const authorizeTxn = useCallback(
     async (/* amount: string */) => {
       if (isAmountValid) {
-        if (isMint) {
-          contract.add_bridge_request(
-            {
-              to_blockchain: "Algorand",
-              to_token: "goNEAR",
-              to_address: beneficiary,
-              from_token_address: null,
-            },
-            BOATLOAD_OF_GAS,
-            Big(amount).times(10 ** 24).toFixed()
-          ).then(() => {
-            console.log('done')
-          })
-        }
-        if (isBurn) {
-          await requestSignGoNearTxn(amount);
-        }
+        await requestSignGoNearTxn(ALGOaccount, amount);
       }
     },
-    [amount, isBurn, isMint, isAmountValid]
+    [amount, isAmountValid, ALGOaccount]
   );
 
   return (
     <React.Fragment>
       <FormWrap>
-        <TextField
-          helperText={`e.g. ${DEFAULT_BENEFICIARY}`}
-          label={
-            isMint
-              ? "Beneficiary (Algorand public address)"
-              : "Beneficiary (NEAR public address)"
-          }
-          fullWidth
-          margin="normal"
-          value={beneficiary}
-          onChange={(e) => {
-            const v = e.target.value;
-            setBeneficiary?.(v);
-            if (quickCheckAddress?.(v)) {
-              setIsBeneficiaryValid?.(validateAddress?.(v) || v === "");
-            }
-          }}
-          error={!isBeneficiaryValid}
-          onBlur={(e) => {
-            const v = e.target.value;
-            if (v === "") return;
-            setIsBeneficiaryValid?.(validateAddress?.(v) || v === "");
-          }}
-        />
         <Box display="flex">
           <TextField
             placeholder={`e.g. ${DEFAULT_AMOUNT}, up to 10 decimals`}

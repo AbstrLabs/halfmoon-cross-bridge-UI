@@ -39,6 +39,7 @@ async function connectAlgoWallet() {
 
 function disconnectAlgoWallet() {
   localStorage.removeItem("Algorand")
+  window.location.replace(window.location.origin + window.location.pathname);
 }
 
 /* Algorand wallet transfer function */
@@ -79,10 +80,7 @@ async function signGoNearTransaction(
 }
 
 // transfer goNEAR
-const requestSignGoNearTxn = async (amountStr: string) => {
-  if (algoAccount === "") {
-    await connectAlgoWallet();
-  }
+const requestSignGoNearTxn = async (algoAccount: string, amountStr: string) => {
   const to = CONFIG.acc.algorand_master;
   const amount = +amountStr * ALGO_UNIT;
   try {
@@ -96,14 +94,16 @@ const requestSignGoNearTxn = async (amountStr: string) => {
 
 const optInGoNear = async (addr: string) => {
   const response = await signGoNearTransaction(addr, addr, 0);
-  return response.txId;
+  if (response) return response.txId
+  else return response;
 };
 
 async function checkOptedIn(addr: string, option = { showAlert: false }) {
-  if (addr === undefined) {
+  if (addr === undefined || addr === "") {
     window.alert("checking opted-in for empty addr");
     return;
   }
+  console.log(addr)
   let accountInfo = await algodClient.accountInformation(addr).do();
   for (let assetInfo of accountInfo["assets"]) {
     if (assetInfo["asset-id"] === GO_NEAR_ASA_ID) {
@@ -131,7 +131,7 @@ const authorizeBurnTransaction = async (
   cbUrl.searchParams.set("to_addr", burnReceiver);
   cbUrl.searchParams.set("amount", amount);
 
-  let txnId = await requestSignGoNearTxn(amount);
+  let txnId = await requestSignGoNearTxn(burnSender, amount);
   cbUrl.searchParams.set("txnId", txnId);
 
   const callbackUrl = cbUrl.toString();

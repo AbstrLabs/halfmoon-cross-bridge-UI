@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSearchParams } from "react-router-dom";
 import { Typography, styled, Box, Stepper, Step, StepLabel, StepContent, Button, Paper } from "@mui/material";
 
 import { ConnectWallet } from "../component/ConnectWallet";
@@ -8,6 +7,7 @@ import { SignStep } from '../component/SignStep';
 
 export function HomePage({ contract, currentUser }: any) {
   // transaction hash
+  // /?transactionHashes=AfKuCQKP78691ygVwwhkKjuW982NSsE3P6AhR2SjYykS
   const url = new URL(window.location.href)
   const transactionHash = url.searchParams.get("transactionHashes") || ""
 
