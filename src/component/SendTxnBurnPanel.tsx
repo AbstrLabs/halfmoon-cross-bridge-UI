@@ -14,6 +14,7 @@ import { REX, DEFAULT, TokenId, FeeText, ReceivingPropotion } from "../api-deps/
 import { requestSignGoNearTxn } from "../api-deps/algorand";
 
 export function SendTxnBurnPanel() {
+  const DEFAULT_BENEFICIARY = DEFAULT.DEFAULT_BURN_BENEFICIARY
 
   const DEFAULT_AMOUNT = DEFAULT.DEFAULT_BURN_AMOUNT;
   const SENDING_UNIT = TokenId.goNEAR;
@@ -25,14 +26,21 @@ export function SendTxnBurnPanel() {
 
   //form input
   const [amount, setAmount] = useState("");
+  const [beneficiary, setBeneficiary] = useState("");
 
   //form input valid
   const [isAmountValid, setIsAmountValid] = useState(true);
+  const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
 
   // modal control
   const [isModalOpen, setModalOpen] = useState(false);
 
   // form check
+  const validateAddress = useCallback(
+    (addr: string) => REX.NEAR_ADDR_REGEX.test(addr),
+    []
+  );
+
   const quickCheckAmount = useCallback(
     (amount: string) => REX.AMOUNT_REGEX.test(amount),
     []
@@ -44,33 +52,69 @@ export function SendTxnBurnPanel() {
   );
 
   const validateForm = useCallback(() => {
+    setIsBeneficiaryValid(validateAddress(beneficiary));
     setIsAmountValid(validateAmount(amount));
-
+    if (!isBeneficiaryValid) {
+      alert("Invalid address");
+      return;
+    }
     if (!isAmountValid) {
       alert("Invalid amount");
     }
-    if (isAmountValid && amount !== "") {
+    if (isBeneficiaryValid && isAmountValid && beneficiary !== "" && amount !== "") {
       setModalOpen(true)
     }
   }, [
     amount,
+    beneficiary,
     isAmountValid,
+    isBeneficiaryValid,
+    validateAddress,
     validateAmount,
   ]);
 
   // send token
   const authorizeTxn = useCallback(
     async (/* amount: string */) => {
-      if (isAmountValid) {
-        await requestSignGoNearTxn(ALGOaccount, amount);
+      if (isAmountValid && isBeneficiaryValid) {
+        let res = await requestSignGoNearTxn(ALGOaccount, amount, beneficiary);
+        if (typeof (res) === "string") {
+          let transactionHashes = res
+          let url = new URL(window.location.origin)
+          url.searchParams.set("transactionHashes", transactionHashes);
+          window.location.replace(url)
+        }
+
       }
     },
-    [amount, isAmountValid, ALGOaccount]
+    [amount, isAmountValid, ALGOaccount, beneficiary, isBeneficiaryValid]
   );
 
   return (
     <React.Fragment>
       <FormWrap>
+        <TextField
+          helperText={`e.g. ${DEFAULT_BENEFICIARY}`}
+          label={
+            "Beneficiary (Algorand public address)"
+          }
+          fullWidth
+          margin="normal"
+          value={beneficiary}
+          onChange={(e) => {
+            const v = e.target.value;
+            setBeneficiary?.(v);
+            if (validateAddress?.(v)) {
+              setIsBeneficiaryValid?.(validateAddress?.(v) || v === "");
+            }
+          }}
+          error={!isBeneficiaryValid}
+          onBlur={(e) => {
+            const v = e.target.value;
+            if (v === "") return;
+            setIsBeneficiaryValid?.(validateAddress?.(v) || v === "");
+          }}
+        />
         <Box display="flex">
           <TextField
             placeholder={`e.g. ${DEFAULT_AMOUNT}, up to 10 decimals`}
@@ -116,7 +160,7 @@ export function SendTxnBurnPanel() {
         <Modal
           open={isModalOpen}
           onClose={() => {
-            setModalOpen(true);
+            setModalOpen(false);
           }}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"

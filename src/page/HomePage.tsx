@@ -22,7 +22,7 @@ export function HomePage({ contract, currentUser }: any) {
     },
     {
       label: 'Confirm the transaction',
-      component: <SignStep transactionHash={transactionHash} />,
+      component: <SignStep transactionHash={transactionHash} currentUser={currentUser} />,
     },
   ];
 

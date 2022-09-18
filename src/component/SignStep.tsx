@@ -5,16 +5,25 @@ import React, { useCallback, useState } from "react";
 import { postTxn } from "../api-deps/call-server";
 import { TokenId, ApiCallParam, TokenUID } from "../api-deps/config";
 
-export function SignStep({ transactionHash }: { transactionHash: string }) {
+export function SignStep({ transactionHash, currentUser }: { transactionHash: string, currentUser: string }) {
 
   const transactionType = transactionHash.length === 44 ? TokenId.NEAR : TokenId.ALGO
 
-  const newParam: ApiCallParam = {
-    from_addr: 'testalgo.testnet',
+  const newMintParam: ApiCallParam = {
+    from_addr: currentUser,
     from_token_id: TokenUID.NEAR,
     from_txn_hash: transactionHash,
     to_token_id: TokenUID.Algorand,
   }
+
+  const newBurnParam: ApiCallParam = {
+    from_addr: localStorage.getItem("Algorand") || "",
+    from_token_id: TokenUID.Algorand,
+    from_txn_hash: transactionHash,
+    to_token_id: TokenUID.NEAR,
+  }
+
+  let newParam: ApiCallParam = transactionType === TokenId.NEAR ? newMintParam : newBurnParam
 
   const parseResultUrlFromParam = (id: string) => {
     const url = new URL("/result", window.location.origin);
@@ -23,6 +32,7 @@ export function SignStep({ transactionHash }: { transactionHash: string }) {
   }
 
   const confirmTxn = async () => {
+    console.log(newParam)
     const res = await postTxn(newParam)
     if (res.status === 400) {
       window.alert("Invalid transaction");

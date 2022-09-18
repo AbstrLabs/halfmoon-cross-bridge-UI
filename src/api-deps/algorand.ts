@@ -7,12 +7,10 @@
 import { CONFIG } from "./config";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
-import { TokenId } from "./config";
 
 export {
   optInGoNear,
   checkOptedIn,
-  authorizeBurnTransaction,
   connectAlgoWallet,
   disconnectAlgoWallet,
   requestSignGoNearTxn
@@ -21,7 +19,7 @@ export {
 const myAlgoWallet = new MyAlgoConnect();
 const ALGO_UNIT = 10_000_000_000;
 const GO_NEAR_ASA_ID = 83251085;
-let algoAccount: string = "";
+let algoAccount: string = localStorage.getItem("Algorand") || ""
 
 const algodClient = new algosdk.Algodv2(
   { "X-API-Key": "WLJDqY55G5560kyCJVp647ERNZ5kJkdZ8OUdGNnV" },
@@ -46,6 +44,7 @@ function disconnectAlgoWallet() {
 async function signGoNearTransaction(
   from: string,
   to: string,
+  toNEARAddr: string,
   amountAlgo: number
 ) {
   if (from === undefined) {
@@ -64,10 +63,13 @@ async function signGoNearTransaction(
 
   try {
     const suggestedParams = await algodClient.getTransactionParams().do();
+    const enc = new TextEncoder();
+    const note = enc.encode(JSON.stringify({ to_addr: toNEARAddr, to_blockchain: "NEAR" }));
     const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
       suggestedParams,
       from,
       to,
+      note,
       amount: amountAlgo,
       assetIndex: GO_NEAR_ASA_ID,
     });
@@ -80,20 +82,20 @@ async function signGoNearTransaction(
 }
 
 // transfer goNEAR
-const requestSignGoNearTxn = async (algoAccount: string, amountStr: string) => {
+const requestSignGoNearTxn = async (algoAccount: string, amountStr: string, toNEARAddr: string) => {
   const to = CONFIG.acc.algorand_master;
   const amount = +amountStr * ALGO_UNIT;
   try {
-    const response = await signGoNearTransaction(algoAccount, to, amount);
-    // TODO: Err handling: no goNEAR in acc.
-    return response.txId;
+    const response = await signGoNearTransaction(algoAccount, to, toNEARAddr, amount);
+    if (response) return response.txId
+    else return response;
   } catch (err) {
     console.error(err);
   }
 };
 
 const optInGoNear = async (addr: string) => {
-  const response = await signGoNearTransaction(addr, addr, 0);
+  const response = await signGoNearTransaction(addr, addr, "", 0);
   if (response) return response.txId
   else return response;
 };
@@ -120,25 +122,3 @@ async function checkOptedIn(addr: string, option = { showAlert: false }) {
   }
   return false;
 }
-
-const authorizeBurnTransaction = async (
-  burnReceiver: string,
-  amount: string
-) => {
-  const burnSender: string = algoAccount;
-  const cbUrl = new URL("/process", window.location.href);
-  cbUrl.searchParams.set("from_token", TokenId.goNEAR);
-  cbUrl.searchParams.set("from_addr", burnSender);
-  cbUrl.searchParams.set("to_token", TokenId.NEAR);
-  cbUrl.searchParams.set("to_addr", burnReceiver);
-  cbUrl.searchParams.set("amount", amount);
-
-  let txnId = await requestSignGoNearTxn(burnSender, amount);
-  cbUrl.searchParams.set("txnId", txnId);
-
-  const callbackUrl = cbUrl.toString();
-
-  setTimeout(() => {
-    window.location.assign(callbackUrl);
-  }, 14900);
-};
