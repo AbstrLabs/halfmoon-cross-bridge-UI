@@ -24,28 +24,30 @@ async function checkApiVersion() {
   }
 }
 
-// checkApiVersion()
-//   .then(() => {
-//     console.log(
-//       `API version check passed. Current version: ${CONFIG.apiVersion}`
-//     );
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//     console.error(`Failed to check API version. Error: ${err.message}`);
-//   });
-
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
-initContract().then(
-  ({ contract, currentUser, nearConfig, walletConnection }) => {
-    root.render(
-      <App
-        contract={contract}
-        currentUser={currentUser}
-        nearConfig={nearConfig}
-        wallet={walletConnection}
-      />
-    )
-  }
-);
+checkApiVersion()
+  .then(() => {
+    console.log(
+      `API version check passed. Current version: ${CONFIG.apiVersion}`
+    );
+    initContract().then(
+      ({ contract, currentUser, nearConfig, walletConnection }) => {
+        root.render(
+          <App
+            contract={contract}
+            currentUser={currentUser}
+            nearConfig={nearConfig}
+            wallet={walletConnection}
+          />
+        )
+      }
+    );
+  })
+  .catch((err) => {
+    console.error(err);
+    console.error(`Failed to check API version. Error: ${err.message}`);
+    window.alert("Error happened on the server side, please contact us at contact@abstrlabs.com ")
+  });
+
+

@@ -15,19 +15,19 @@ export function ConnectWallet() {
   );
 
   return (
-      <TabContext value={currentTab}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider", margin: " 0 5%"}}>
-          <TabList onChange={handleTabChange} centered>
-            <Tab label={BridgeType.NEAR} value={BridgeType.NEAR} />
-            <Tab label={BridgeType.ALGO} value={BridgeType.ALGO} />
-          </TabList>
-        </Box>
-        <TabPanel value={BridgeType.NEAR}>
-          <WalletPanel bridgeType={BridgeType.NEAR} />
-        </TabPanel>
-        <TabPanel value={BridgeType.ALGO}>
-          <WalletPanel bridgeType={BridgeType.ALGO} />
-        </TabPanel>
-      </TabContext>
+    <TabContext value={currentTab}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider", margin: " 0 5%" }}>
+        <TabList onChange={handleTabChange} centered variant="fullWidth">
+          <Tab label={BridgeType.NEAR} value={BridgeType.NEAR} />
+          <Tab label={BridgeType.ALGO} value={BridgeType.ALGO} />
+        </TabList>
+      </Box>
+      <TabPanel value={BridgeType.NEAR}>
+        <WalletPanel bridgeType={BridgeType.NEAR} />
+      </TabPanel>
+      <TabPanel value={BridgeType.ALGO}>
+        <WalletPanel bridgeType={BridgeType.ALGO} />
+      </TabPanel>
+    </TabContext>
   );
 }

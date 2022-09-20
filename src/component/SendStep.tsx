@@ -18,8 +18,8 @@ export function SendStep({ contract, currentUser }: { contract: any, currentUser
 
   return (
     <TabContext value={currentTab}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider", margin: " 0 5%" }}>
-        <TabList onChange={handleTabChange} centered>
+      <Box sx={{ borderBottom: 1, borderColor: "divider", margin: " 0 5%", fontFamily: "Regular, sans-serif" }}>
+        <TabList onChange={handleTabChange} centered variant="fullWidth">
           <Tab label={TxnType.MINT} value={TxnType.MINT} />
           <Tab label={TxnType.BURN} value={TxnType.BURN} />
         </TabList>

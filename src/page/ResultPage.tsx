@@ -109,7 +109,7 @@ export function ResultPage() {
   }, [watch]);
 
   return (
-    <Box textAlign="center" marginBottom="80px">
+    <Box textAlign="center" marginBottom="80px" sx={{ fontFamily: "Regular, sans-serif" }}>
       <Box height="4rem" />
       <Typography variant="h2">Transaction Completed</Typography>
       <Box height="2rem" />

@@ -6,7 +6,7 @@ import {
   responsiveFontSizes,
   styled,
 } from "@mui/material";
-import { grey, orange, yellow } from "@mui/material/colors";
+import { blue, green, grey, orange, yellow } from "@mui/material/colors";
 
 import React from "react";
 import { Router } from "./page/Router";
@@ -35,7 +35,7 @@ function App({ contract, currentUser, nearConfig, wallet }: any) {
           }}
         />
         <AppWarp>
-          <Router 
+          <Router
             contract={contract}
             currentUser={currentUser}
             nearConfig={nearConfig}
@@ -55,15 +55,15 @@ function genThemeByMode(isDarkMode: boolean): any {
       mode: isDarkMode ? "dark" : "light",
       ...(isDarkMode
         ? {
-            primary: { main: "#8DFFBA" },
-            secondary: { main: orange["A700"] },
-            background: { default: grey["900"] },
-          }
+          primary: { main: "#8DFFBA" },
+          secondary: { main: blue["700"] },
+          background: { default: "#0D1019" },
+        }
         : {
-            primary: { main: yellow["700"] },
-            secondary: { main: orange["700"] },
-            background: { default: grey["100"] },
-          }),
+          primary: { main: "#00bbba" },
+          secondary: { main: blue["900"] },
+          background: { default: "#e8feff50" },
+        }),
     },
     components: {
       MuiOutlinedInput: {
@@ -72,8 +72,7 @@ function genThemeByMode(isDarkMode: boolean): any {
             "&:-webkit-autofill": {
               WebkitBoxShadow: "0 0 0 100px var(--primary-weak) inset",
               WebkitTextFillColor: "var(--text-primary)",
-              // "-webkit-box-shadow": "0 0 0 100px var(--primary-weak) inset",
-              // "-webkit-text-fill-color": "var(--text-primary)",
+              fontFamily: "Regular, sans-serif"
             },
           },
         },
@@ -82,6 +81,7 @@ function genThemeByMode(isDarkMode: boolean): any {
     typography: {
       button: {
         textTransform: "none",
+        fontFamily: "Regular, sans-serif"
       },
     },
   });
@@ -89,7 +89,7 @@ function genThemeByMode(isDarkMode: boolean): any {
 
 /* ======== STYLED ======== */
 const AppWarp = styled("div")(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#0D1019" : "#fff",
+  backgroundColor: theme.palette.mode === "dark" ? "#0D1019" : "#e8feff50",
   backgroundImage: `url("${process.env.PUBLIC_URL}/svg/bcg-shapes.svg")`,
   minHeight: "100vh",
   maxWidth: "100vw",
@@ -97,4 +97,5 @@ const AppWarp = styled("div")(({ theme }) => ({
   flexDirection: "column",
   alignItems: "center",
   color: theme.palette.text.primary,
+  fontFamily: "Regular, sans-serif"
 }));

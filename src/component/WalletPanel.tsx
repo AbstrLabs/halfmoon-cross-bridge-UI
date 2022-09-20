@@ -1,4 +1,4 @@
-import { styled, Button } from "@mui/material";
+import { styled, Button, Typography, Grid } from "@mui/material";
 import React, { useState } from "react";
 
 import { connectAlgoWallet, disconnectAlgoWallet, checkOptedIn, optInGoNear } from "../api-deps/algorand";
@@ -36,37 +36,49 @@ export function WalletPanel({ bridgeType }: { bridgeType: BridgeType }) {
       {bridgeType === BridgeType.NEAR ?
         <Sec>
           {signedSig_NEAR ?
-            <div>
-              Connected {bridgeType} Wallet {NEARaccount.length < 20 ? NEARaccount : NEARaccount.slice(0, 10) + "..." + NEARaccount.slice(-7)}
-              <Button color="inherit" onClick={disconnectNearWallet}>
-                Disconnect {bridgeType} wallet
-              </Button>
-            </div>
-            : <Button color="inherit" onClick={connectNearWallet}>
+            <Grid spacing={0}>
+              <Grid item xs={12} md={8}>
+                Connected {bridgeType} Wallet {NEARaccount.length < 20 ? NEARaccount : NEARaccount.slice(0, 10) + "..." + NEARaccount.slice(-7)}
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <Button onClick={disconnectNearWallet} variant="outlined" sx={{ fontSize: "0.7rem" }}>
+                  Disconnect {bridgeType} wallet
+                </Button>
+              </Grid>
+            </Grid>
+            : <Button onClick={connectNearWallet} variant="outlined" >
               Connect {bridgeType} wallet
             </Button>
           }
         </Sec>
         : <Sec>
           {signedSig_Algo ?
-            <div>
-              Connected {bridgeType} Wallet {ALGOaccount.slice(0, 10)}...{ALGOaccount.slice(-5)}
-              <Button color="inherit" onClick={disconnectAlgoWallet}>
-                Disconnect {bridgeType} wallet
-              </Button>
-
-              <Button color="inherit" onClick={async () => await checkOptedInFunc(ALGOaccount)}>
-                Check {bridgeType} address opt in goNEAR
-              </Button>
-              {notOptIn &&
-                <Button color="inherit" onClick={async () => optInFunc(ALGOaccount)}>
+            <Grid container spacing={0}>
+              <Grid item xs={12} md={10}>
+                Connected {bridgeType} Wallet {ALGOaccount.slice(0, 10)}...{ALGOaccount.slice(-5)}
+              </Grid>
+              <Grid item xs={6} md={4}>
+                <Button onClick={disconnectAlgoWallet} variant="outlined" sx={{ fontSize: "0.7rem" }}>
+                  Disconnect {bridgeType} wallet
+                </Button>
+              </Grid>
+              <Grid item xs={6} md={5}>
+                <Button onClick={async () => await checkOptedInFunc(ALGOaccount)} variant="outlined" sx={{ fontSize: "0.7rem" }}>
+                  Check {bridgeType} address opt in goNEAR
+                </Button>
+              </Grid>
+              {notOptIn ?
+                <Button onClick={async () => optInFunc(ALGOaccount)} variant="outlined" sx={{ fontSize: "0.7rem" }}>
                   Opt in goNEAR ASA
-                </Button>}
-            </div>
-            : <Button color="inherit" onClick={async () => {
+                </Button>
+                : <p>Already opted in goNEAR asset</p>
+              }
+            </Grid>
+            : <Button onClick={async () => {
               await connectAlgoWallet()
               window.location.reload()
-            }}>
+            }}
+              variant="outlined">
               Connect {bridgeType} Wallet
             </Button>
           }
@@ -83,12 +95,11 @@ const Wrap = styled("div")(() => ({
   margin: "2px",
   width: "100%",
   wrap: "pre-wrap",
-  padding: "1px"
+  paddingLeft: "30px"
 }));
 
 const Sec = styled("div")(() => ({
   position: "relative",
   margin: "0",
-  width: "100%",
-  padding: "1px"
+  width: "100%"
 }));

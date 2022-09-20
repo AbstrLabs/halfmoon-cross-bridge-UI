@@ -6,7 +6,8 @@ import {
   styled,
   Button,
   Modal,
-  Typography
+  Typography,
+  Grid
 } from "@mui/material";
 import React, { useCallback, useState } from "react";
 
@@ -54,11 +55,11 @@ export function SendTxnBurnPanel() {
   const validateForm = useCallback(() => {
     setIsBeneficiaryValid(validateAddress(beneficiary));
     setIsAmountValid(validateAmount(amount));
-    if (!isBeneficiaryValid) {
+    if (!isBeneficiaryValid || beneficiary === "") {
       alert("Invalid address");
       return;
     }
-    if (!isAmountValid) {
+    if (!isAmountValid || amount === "") {
       alert("Invalid amount");
     }
     if (isBeneficiaryValid && isAmountValid && beneficiary !== "" && amount !== "") {
@@ -154,7 +155,7 @@ export function SendTxnBurnPanel() {
             disabled
           />
         </Box>
-        <Button color="inherit" onClick={validateForm}>
+        <Button color="inherit" onClick={validateForm} variant="outlined">
           Validate Form
         </Button>
         <Modal
@@ -168,13 +169,14 @@ export function SendTxnBurnPanel() {
           <Box
             sx={{
               position: "absolute",
-              top: "50%",
+              top: "45%",
               left: "50%",
               transform: "translate(-50%, -50%)",
               width: 400,
               color: "text.primary",
               bgcolor: "background.paper",
-              border: "2px solid #000",
+              border: "2px solid #0D1019",
+              borderRadius: "15px",
               boxShadow: "0px 0px 18px 12px #7f7f7f50",
               p: 4,
             }}
@@ -182,22 +184,30 @@ export function SendTxnBurnPanel() {
             <Typography variant="h6" component="h2" align="center">
               Confirm transaction
             </Typography>
-            <Button
-              color="inherit"
-              onClick={authorizeTxn}
-              variant="outlined"
-              endIcon={<SendIcon />}
+            <Grid
+              container
+              direction="row"
+              justifyContent="space-evenly"
+              alignItems="center"
             >
-              Confirm Transaction
-            </Button>
-            <Button
-              color="inherit"
-              onClick={() => { setModalOpen(false) }}
-              variant="outlined"
-              endIcon={<CancelIcon />}
-            >
-              Cancel Transaction
-            </Button>
+              <Button
+                color="inherit"
+                onClick={authorizeTxn}
+                variant="outlined"
+                endIcon={<SendIcon />}
+              >
+                Confirm
+              </Button>
+              <Button
+                color="inherit"
+                onClick={() => { setModalOpen(false) }}
+                variant="outlined"
+                endIcon={<CancelIcon />}
+                sx={{ alignSelf: "right" }}
+              >
+                Cancel
+              </Button>
+            </Grid>
           </Box>
         </Modal>
 
@@ -212,6 +222,6 @@ const FormWrap = styled("div")(({ theme }) => ({
   position: "relative",
   margin: "2px",
   width: "100%",
-  padding: "1rem",
+  padding: "0",
   wrap: "pre-wrap",
 }));

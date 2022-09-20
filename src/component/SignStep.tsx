@@ -48,9 +48,12 @@ export function SignStep({ transactionHash, currentUser }: { transactionHash: st
 
   return (
     <Wrap>
-      <Typography align="center">
-        {transactionHash}
+      <Typography align="left">
+        Sender address: {transactionType === TokenId.NEAR ? currentUser : localStorage.getItem("Algorand")}
       </Typography>
+      <Typography>Send token: {transactionType === TokenId.NEAR ? TokenId.NEAR : TokenId.goNEAR}</Typography>
+      <Typography>Receive token: {transactionType === TokenId.NEAR ? TokenId.goNEAR : TokenId.NEAR}</Typography>
+      <Typography>Transaction hash: {transactionHash}</Typography>
       <Button
         color="inherit"
         onClick={confirmTxn}
@@ -70,5 +73,6 @@ const Wrap = styled("div")(() => ({
   margin: "2px",
   width: "100%",
   wrap: "pre-wrap",
-  padding: "1px"
+  padding: "1px",
+  fontFamily: "Regular, sans-serif"
 }));

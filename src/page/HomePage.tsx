@@ -50,16 +50,16 @@ export function HomePage({ contract, currentUser }: any) {
   return (
     <BodyWrap>
       <Typography
-        variant="h2"
+        variant="h3"
         component="h2"
         sx={{
           fontFamily: "Regular, sans-serif",
-          fontSize: "72px",
+          fontSize: "60px",
           background: "linear-gradient(90.96deg, #8DFFBA 0.59%, #8CF3FC 99.19%)",
           backgroundClip: "text",
           textFillColor: "transparent"
         }}
-        marginY="2rem"
+        marginY="1rem"
         align="center"
       >
         Cross-Chain Bridge
@@ -69,10 +69,10 @@ export function HomePage({ contract, currentUser }: any) {
         component="h5"
         sx={{
           fontFamily: "Regular, sans-serif",
-          fontSize: "12px",
-          color: "#fff"
+          fontSize: "10px",
+          color: "text.secondary"
         }}
-        marginY="2rem"
+        marginY="0.5rem"
         align="center"
       >
         Algorand - NEAR Bridge
@@ -134,5 +134,5 @@ export function HomePage({ contract, currentUser }: any) {
 const BodyWrap = styled("div")({
   flex: "1 1 auto",
   margin: "0 20px 40px",
-  width: "max(60%,24rem)",
+  width: "max(60%,24rem)"
 });
