@@ -1,4 +1,4 @@
-import { styled, Button, Typography, Grid } from "@mui/material";
+import { styled, Button, Grid } from "@mui/material";
 import React, { useState } from "react";
 
 import { connectAlgoWallet, disconnectAlgoWallet, checkOptedIn, optInGoNear } from "../api-deps/algorand";
@@ -36,7 +36,7 @@ export function WalletPanel({ bridgeType }: { bridgeType: BridgeType }) {
       {bridgeType === BridgeType.NEAR ?
         <Sec>
           {signedSig_NEAR ?
-            <Grid spacing={0}>
+            <Grid container spacing={0}>
               <Grid item xs={12} md={8}>
                 Connected {bridgeType} Wallet {NEARaccount.length < 20 ? NEARaccount : NEARaccount.slice(0, 10) + "..." + NEARaccount.slice(-7)}
               </Grid>

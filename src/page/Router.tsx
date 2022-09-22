@@ -1,23 +1,38 @@
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 
 import { DocsPage } from "./DocsPage";
 import { E404Page } from "./E404Page";
 import { Header } from "../component/sections/Header";
 import { HomePage } from "./HomePage";
 import { ResultPage } from "./ResultPage";
+import { ProcessPage } from "./ProcessPage";
+import { initContract } from "../api-deps/near/contract"
 
-export function Router({ contract, currentUser, nearConfig, wallet }: any) {
+export function Router() {
   /* ======== URL_QUERY ======== */
 
   function ScrollToTop() {
     const location = useLocation();
     const { pathname } = location;
+    console.log(pathname)
     useEffect(() => {
       window.scrollTo(0, 0);
     }, [pathname]);
     return null;
   }
+
+  let [near, setNear] = useState({ contract: {}, accountId: "" })
+
+  let check = useCallback(async () => {
+    let contractRes = await initContract()
+    setNear({ contract: contractRes.contract, accountId: contractRes.currentUser?.accountId })
+  }, [])
+
+  useEffect(() => {
+    check()
+    console.log(`near contract inited`)
+  }, [check])
 
   /* ======== test end ======== */
 
@@ -30,13 +45,12 @@ export function Router({ contract, currentUser, nearConfig, wallet }: any) {
           <Route path="/">
             <Route index element={
               <HomePage
-                contract={contract}
-                currentUser={currentUser}
-                nearConfig={nearConfig}
-                wallet={wallet}
+                contract={near.contract}
+                accountId={near.accountId}
               />}
             />
             <Route path="result" element={<ResultPage />} />
+            <Route path="process" element={<ProcessPage accountId={near.accountId} />} />
             <Route path="docs" element={<DocsPage />} />
             <Route path="*" element={<E404Page />} />
           </Route>

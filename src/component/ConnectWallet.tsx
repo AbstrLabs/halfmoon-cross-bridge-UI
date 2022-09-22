@@ -1,4 +1,4 @@
-import { Box, Tab, styled } from "@mui/material";
+import { Box, Tab } from "@mui/material";
 import React, { SyntheticEvent, useCallback, useState } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 

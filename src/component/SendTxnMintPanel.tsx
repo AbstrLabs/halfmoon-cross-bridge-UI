@@ -109,7 +109,7 @@ export function SendTxnMintPanel({ contract }: { contract: any }) {
     <React.Fragment>
       <FormWrap>
         <TextField
-          helperText={`e.g. ${DEFAULT_BENEFICIARY}`}
+          helperText={`e.g. ${localStorage.getItem("Algorand") ? localStorage.getItem("Algorand") : DEFAULT_BENEFICIARY}`}
           label={
             "Beneficiary (Algorand public address)"
           }

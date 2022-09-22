@@ -6,13 +6,31 @@ import {
   responsiveFontSizes,
   styled,
 } from "@mui/material";
-import { blue, green, grey, orange, yellow } from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
 
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { Router } from "./page/Router";
 import { useTernaryDarkMode } from "usehooks-ts";
+import { CONFIG } from "./api-deps/config"
 
-function App({ contract, currentUser, nearConfig, wallet }: any) {
+async function checkApiVersion() {
+  const res = await fetch(CONFIG.apiServerUrl + '/status');
+  const resJson = await res.json();
+  if (resJson.API_VERSION !== CONFIG.apiVersion) {
+    window.alert(
+      `API version mismatch, expected ${CONFIG.apiVersion}, got ${resJson.API_VERSION}`
+    );
+    throw new Error("API version mismatch");
+    // console.error(`Failed to check API version. Error: ${err.message}`);
+    // window.alert("Error happened on the server side, please contact us at contact@abstrlabs.com ")
+
+  }
+  else {
+    console.log(`API version check passed. Current version: ${CONFIG.apiVersion}`)
+  }
+}
+
+function App() {
   /* ======== MUI ======== */
   const { isDarkMode } = useTernaryDarkMode();
 
@@ -22,6 +40,13 @@ function App({ contract, currentUser, nearConfig, wallet }: any) {
     [isDarkMode]
   );
   /* ======== REACT ======== */
+
+  let check = useCallback(async () => await checkApiVersion(), [])
+
+  useEffect(() => {
+    check()
+  }, [check])
+
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
@@ -35,12 +60,7 @@ function App({ contract, currentUser, nearConfig, wallet }: any) {
           }}
         />
         <AppWarp>
-          <Router
-            contract={contract}
-            currentUser={currentUser}
-            nearConfig={nearConfig}
-            wallet={wallet}
-          />
+          <Router />
         </AppWarp>
       </ThemeProvider>
     </StyledEngineProvider>
@@ -89,8 +109,10 @@ function genThemeByMode(isDarkMode: boolean): any {
 
 /* ======== STYLED ======== */
 const AppWarp = styled("div")(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#0D1019" : "#e8feff50",
-  backgroundImage: `url("${process.env.PUBLIC_URL}/svg/bcg-shapes.svg")`,
+  backgroundColor: theme.palette.mode === "dark" ? "#0D1019" : "#8DFFBA10",
+  backgroundImage: theme.palette.mode === "dark" ?
+    `url("${process.env.PUBLIC_URL}/svg/bcg-shapes_dark.svg")`
+    : `url("${process.env.PUBLIC_URL}/svg/bcg-shapes_light.svg")`,
   minHeight: "100vh",
   maxWidth: "100vw",
   display: "flex",

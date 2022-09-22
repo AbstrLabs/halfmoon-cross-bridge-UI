@@ -26,7 +26,6 @@ export async function initContract() {
       balance: (await walletConnection.account().state()).amount
     }
   }
-  console.log(walletConnection.account())
   // Initializing our contract APIs by contract name and configuration
   const contract = await new nearAPI.Contract(
     // User's accountId as a string

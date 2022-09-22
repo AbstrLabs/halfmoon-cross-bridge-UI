@@ -15,7 +15,7 @@ import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionL
 import { NearAddressLink } from "../component/links/NearAddressLink";
 import { NearTransactionLink } from "../component/links/NearTransactionLink";
 
-import { getTxn } from "../api-deps/call-server";
+import { getTxn, getFee } from "../api-deps/call-server";
 import { BridgeTxnSafeObj, TokenId, GET_INTERVAL_MS } from "../api-deps/config";
 
 export function ResultPage() {
@@ -45,17 +45,25 @@ export function ResultPage() {
   };
 
   const emptyTxn: BridgeTxnSafeObj = {
-    created_time: "",
-    from_addr: "",
-    from_amount_atom: "",
+    created_time: "loading",
+    from_addr: "loading",
+    from_amount_atom: "loading",
     from_token_id: TokenId.NEAR,
-    from_txn_hash: "",
-    to_addr: "",
-    to_amount_atom: "",
+    from_txn_hash: "loading",
+    to_addr: "loading",
+    to_amount_atom: "loading",
     to_token_id: TokenId.goNEAR,
-    to_txn_hash: ""
+    to_txn_hash: "loading"
   }
+
   const [txn, setTxn] = useState(emptyTxn)
+  const [fee, setFee] = useState({ fixed_fee_atom: "", margin_fee_atom: "" })
+
+  async function watchFee(from: number, to: number) {
+    const res = await getFee(from, to);
+    const fee = (await res.json())[0]
+    return fee
+  }
 
   async function watchTxnStatus(uid: string) {
     let finished = false;
@@ -78,6 +86,8 @@ export function ResultPage() {
             to_txn_hash: txnJson.to_txn_hash
           }
           setTxn(txnInfo)
+          let feeRes = await watchFee(txnJson.from_token_id, txnJson.to_token_id)
+          setFee({ fixed_fee_atom: feeRes.fixed_fee_atom, margin_fee_atom: feeRes.margin_fee_atom })
           break;
         } else if ((txnJson.request_status as string).startsWith("ERROR_")) {
           finished = true;
@@ -108,20 +118,43 @@ export function ResultPage() {
     // Otherwise, if something about innerFunction changes (e.g. the data it uses), the effect would run the outdated version of innerFunction
   }, [watch]);
 
+  const title = txn.to_txn_hash === "" ? "Transaction in process" : "Transaction Completed"
   return (
     <Box textAlign="center" marginBottom="80px" sx={{ fontFamily: "Regular, sans-serif" }}>
-      <Box height="4rem" />
-      <Typography variant="h2">Transaction Completed</Typography>
-      <Box height="2rem" />
-      <Typography variant="h4">See Invoice Transaction on Explorer</Typography>
-      {/* TODO: TO-HASH : make this a component */}
-      {txn.to_txn_hash === null || txn.to_txn_hash === undefined
-        ? "loading..."
-        : Links[txn.to_token_id].txn({
-          txnId: txn.to_txn_hash,
-        })}
-      <Box height="4rem" />
-      <TableContainer component={Paper}>
+      <Typography
+        variant="h3"
+        sx={{
+          fontFamily: "Regular, sans-serif",
+          fontSize: "60px",
+          background: "linear-gradient(90.96deg, #7ee6a7 0.59%, #7ad6de 99.19%)",
+          backgroundClip: "text",
+          textFillColor: "transparent"
+        }}
+      >{title}
+      </Typography>
+      <TableContainer component={Paper} sx={{
+        marginTop: "15px",
+        background: "rgba(255, 255, 255, 0.04)",
+        border: "5px solid rgba(255, 255, 255, 0.02)",
+        borderRadius: "16px",
+        backdropFilter: "blur(11px)",
+        boxShadow: "0px 10px 15px #88888850"
+      }}>
+        <Typography
+          variant="h5"
+          sx={{
+            fontFamily: "Regular, sans-serif",
+            fontSize: "10px",
+            color: "text.secondary",
+            marginBottom: "3px"
+          }}>
+          See Invoice Transaction on Explore
+        </Typography>
+        {txn.to_txn_hash === ""
+          ? "loading..."
+          : Links[txn.to_token_id].txn({
+            txnId: txn.to_txn_hash,
+          })}
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableBody>
             <TableRow>
@@ -174,14 +207,14 @@ export function ResultPage() {
                   })}
               </TableCell>
             </TableRow>
-            {/* <TableRow>
+            <TableRow>
               <TableCell>Sweeping Miner Fee (unit: 1e-10)</TableCell>
-              <TableCell align="right">{txn.fixedFeeAtom}</TableCell>
-            </TableRow> */}
-            {/* <TableRow>
-              <TableCell>Transaction Fee (unit: 1e-10)</TableCell>
-              <TableCell align="right">{txn.marginFeeAtom}</TableCell>
-            </TableRow> */}
+              <TableCell align="right">{fee.fixed_fee_atom} {txn.from_token_id}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Service Fee (unit: 1e-10)</TableCell>
+              <TableCell align="right">{fee.margin_fee_atom} / 10000</TableCell>
+            </TableRow>
             <TableRow>
               <TableCell>Created in Database</TableCell>
               <TableCell align="right">{txn.created_time}</TableCell>

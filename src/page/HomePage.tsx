@@ -1,13 +1,12 @@
 import React from 'react';
-import { Typography, styled, Box, Stepper, Step, StepLabel, StepContent, Button, Paper } from "@mui/material";
+import { Typography, styled, Box, Stepper, Step, StepLabel, StepContent, Button } from "@mui/material";
 
 import { ConnectWallet } from "../component/ConnectWallet";
 import { SendStep } from "../component/SendStep";
-import { SignStep } from '../component/SignStep';
+import { parseProcessUrlFromParam } from "../api-deps/api"
 
-export function HomePage({ contract, currentUser }: any) {
-  // transaction hash
-  // /?transactionHashes=AfKuCQKP78691ygVwwhkKjuW982NSsE3P6AhR2SjYykS
+export function HomePage({ contract, accountId }: any) {
+
   const url = new URL(window.location.href)
   const transactionHash = url.searchParams.get("transactionHashes") || ""
 
@@ -18,18 +17,13 @@ export function HomePage({ contract, currentUser }: any) {
     },
     {
       label: 'Bridge token',
-      component: <SendStep contract={contract} currentUser={currentUser} />,
-    },
-    {
-      label: 'Confirm the transaction',
-      component: <SignStep transactionHash={transactionHash} currentUser={currentUser} />,
-    },
+      component: <SendStep contract={contract} />,
+    }
   ];
 
   // step
   let currentStep = 0
-  if (currentUser !== undefined && localStorage.getItem("Algorand") !== null) currentStep = 1
-  if (transactionHash !== "") currentStep = 2
+  if (accountId !== undefined || localStorage.getItem("Algorand") !== null) currentStep = 1
   const [activeStep, setActiveStep] = React.useState(currentStep);
 
   const handleNext = () => {
@@ -40,12 +34,11 @@ export function HomePage({ contract, currentUser }: any) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-    contract.get_request_status({ account_id: currentUser }).then((res: any) => {
-      console.log(res)
-    })
-  };
+  if (transactionHash !== "") {
+    console.log(transactionHash)
+    let newUrl = parseProcessUrlFromParam(transactionHash)
+    window.location.replace(newUrl)
+  }
 
   return (
     <BodyWrap>
@@ -55,7 +48,7 @@ export function HomePage({ contract, currentUser }: any) {
         sx={{
           fontFamily: "Regular, sans-serif",
           fontSize: "60px",
-          background: "linear-gradient(90.96deg, #8DFFBA 0.59%, #8CF3FC 99.19%)",
+          background: "linear-gradient(90.96deg, #7ee6a7 0.59%, #7ad6de 99.19%)",
           backgroundClip: "text",
           textFillColor: "transparent"
         }}
@@ -77,17 +70,11 @@ export function HomePage({ contract, currentUser }: any) {
       >
         Algorand - NEAR Bridge
       </Typography>
-      <Box sx={{ maxWidth: 1000 }}>
+      <Box sx={{ maxWidth: "1000", width: '100%' }}>
         <Stepper activeStep={activeStep} orientation="vertical">
           {steps.map((step, index) => (
             <Step key={step.label}>
-              <StepLabel
-                optional={
-                  index === 2 ? (
-                    <Typography variant="caption">Last step, make sure everything is correct!</Typography>
-                  ) : null
-                }
-              >
+              <StepLabel>
                 {step.label}
               </StepLabel>
               <StepContent>
@@ -117,17 +104,10 @@ export function HomePage({ contract, currentUser }: any) {
             </Step>
           ))}
         </Stepper>
-        {activeStep === steps.length && (
-          <Paper square elevation={0} sx={{ p: 3 }}>
-            <Typography>All steps completed - you&apos;re finished</Typography>
-            <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-              Reset
-            </Button>
-          </Paper>
-        )}
       </Box>
     </BodyWrap>
   );
+
 }
 
 /* ======== STYLED ======== */

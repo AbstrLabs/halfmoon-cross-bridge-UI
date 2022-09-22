@@ -1,12 +1,12 @@
-import { Box, Tab, styled } from "@mui/material";
-import React, { SyntheticEvent, useCallback, useState } from "react";
+import { Box, Tab } from "@mui/material";
+import { SyntheticEvent, useCallback, useState } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 import { SendTxnMintPanel } from "./SendTxnMintPanel";
 import { SendTxnBurnPanel } from "./SendTxnBurnPanel";
 import { TxnType } from "../api-deps/config";
 
-export function SendStep({ contract, currentUser }: { contract: any, currentUser: string }) {
+export function SendStep({ contract }: { contract: any }) {
 
   const [currentTab, setCurrentTab] = useState<TxnType>(TxnType.MINT);
   const handleTabChange = useCallback(

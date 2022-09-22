@@ -79,6 +79,7 @@ export function SendTxnBurnPanel() {
     async (/* amount: string */) => {
       if (isAmountValid && isBeneficiaryValid) {
         let res = await requestSignGoNearTxn(ALGOaccount, amount, beneficiary);
+        console.log(res)
         if (typeof (res) === "string") {
           let transactionHashes = res
           let url = new URL(window.location.origin)
