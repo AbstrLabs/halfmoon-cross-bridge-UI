@@ -15,9 +15,13 @@ export const parseProcessUrlFromParam = (transactionHash: string) => {
     return url.toString();
 }
 
+function delay(time: number) {
+    return new Promise(resolve => setTimeout(resolve, time * 1000));
+}
+
 export const confirmTxn = async (newParam: ApiCallParam) => {
-    console.log(newParam)
     const res = await postTxn(newParam)
+    console.log(res)
     if (res.status === 400) {
         window.alert("Invalid transaction");
         console.log(res)
@@ -25,6 +29,7 @@ export const confirmTxn = async (newParam: ApiCallParam) => {
     }
     if (res.status === 201) {
         const resJson = await res.json();
+        await delay(5)
         const replacingUrl = parseResultUrlFromParam(resJson.id);
         window.location.replace(replacingUrl);
         return;

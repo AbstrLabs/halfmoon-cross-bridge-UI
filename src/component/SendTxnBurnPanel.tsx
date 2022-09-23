@@ -1,13 +1,9 @@
 import SendIcon from '@mui/icons-material/Send';
-import CancelIcon from '@mui/icons-material/Cancel';
 import {
   Box,
   TextField,
   styled,
-  Button,
-  Modal,
-  Typography,
-  Grid
+  Button
 } from "@mui/material";
 import React, { useCallback, useState } from "react";
 
@@ -52,32 +48,19 @@ export function SendTxnBurnPanel() {
     [quickCheckAmount]
   );
 
-  const validateForm = useCallback(() => {
-    setIsBeneficiaryValid(validateAddress(beneficiary));
-    setIsAmountValid(validateAmount(amount));
-    if (!isBeneficiaryValid || beneficiary === "") {
-      alert("Invalid address");
-      return;
-    }
-    if (!isAmountValid || amount === "") {
-      alert("Invalid amount");
-    }
-    if (isBeneficiaryValid && isAmountValid && beneficiary !== "" && amount !== "") {
-      setModalOpen(true)
-    }
-  }, [
-    amount,
-    beneficiary,
-    isAmountValid,
-    isBeneficiaryValid,
-    validateAddress,
-    validateAmount,
-  ]);
-
   // send token
   const authorizeTxn = useCallback(
     async (/* amount: string */) => {
-      if (isAmountValid && isBeneficiaryValid) {
+      setIsBeneficiaryValid(validateAddress(beneficiary));
+      setIsAmountValid(validateAmount(amount));
+      if (!isBeneficiaryValid || beneficiary === "") {
+        alert("Invalid address");
+        return;
+      }
+      if (!isAmountValid || amount === "") {
+        alert("Invalid amount");
+      }
+      if (isBeneficiaryValid && isAmountValid && beneficiary !== "" && amount !== "") {
         let res = await requestSignGoNearTxn(ALGOaccount, amount, beneficiary);
         console.log(res)
         if (typeof (res) === "string") {
@@ -156,62 +139,13 @@ export function SendTxnBurnPanel() {
             disabled
           />
         </Box>
-        <Button color="inherit" onClick={validateForm} variant="outlined">
-          Validate Form
+        <Button
+          color="inherit"
+          onClick={authorizeTxn}
+          variant="outlined"
+          endIcon={<SendIcon />}>
+          Validate and Confirm
         </Button>
-        <Modal
-          open={isModalOpen}
-          onClose={() => {
-            setModalOpen(false);
-          }}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box
-            sx={{
-              position: "absolute",
-              top: "45%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: 400,
-              color: "text.primary",
-              bgcolor: "background.paper",
-              border: "2px solid #0D1019",
-              borderRadius: "15px",
-              boxShadow: "0px 0px 18px 12px #7f7f7f50",
-              p: 4,
-            }}
-          >
-            <Typography variant="h6" component="h2" align="center">
-              Confirm transaction
-            </Typography>
-            <Grid
-              container
-              direction="row"
-              justifyContent="space-evenly"
-              alignItems="center"
-            >
-              <Button
-                color="inherit"
-                onClick={authorizeTxn}
-                variant="outlined"
-                endIcon={<SendIcon />}
-              >
-                Confirm
-              </Button>
-              <Button
-                color="inherit"
-                onClick={() => { setModalOpen(false) }}
-                variant="outlined"
-                endIcon={<CancelIcon />}
-                sx={{ alignSelf: "right" }}
-              >
-                Cancel
-              </Button>
-            </Grid>
-          </Box>
-        </Modal>
-
       </FormWrap>
     </React.Fragment>
   );

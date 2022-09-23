@@ -45,7 +45,7 @@ function App() {
 
   useEffect(() => {
     check()
-  }, [check])
+  }, [])
 
   return (
     <StyledEngineProvider injectFirst>

@@ -15,10 +15,9 @@ export function Router() {
   function ScrollToTop() {
     const location = useLocation();
     const { pathname } = location;
-    console.log(pathname)
     useEffect(() => {
       window.scrollTo(0, 0);
-    }, [pathname]);
+    }, []);
     return null;
   }
 
@@ -32,7 +31,7 @@ export function Router() {
   useEffect(() => {
     check()
     console.log(`near contract inited`)
-  }, [check])
+  }, [])
 
   /* ======== test end ======== */
 
@@ -50,7 +49,7 @@ export function Router() {
               />}
             />
             <Route path="result" element={<ResultPage />} />
-            <Route path="process" element={<ProcessPage accountId={near.accountId} />} />
+            <Route path="process" element={<ProcessPage />} />
             <Route path="docs" element={<DocsPage />} />
             <Route path="*" element={<E404Page />} />
           </Route>

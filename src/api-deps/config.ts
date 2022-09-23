@@ -57,8 +57,8 @@ export enum FROM_AMOUNT_ATOM {
 }
 
 export enum FeeText {
-  MINT = "0.0%+1",
-  BURN = "0.2%+1",
+  MINT = "0.0%+0.001",
+  BURN = "0.2%+0.001",
 }
 
 export enum ReceivingPropotion {

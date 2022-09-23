@@ -12,17 +12,17 @@ import { useCallback, useEffect } from "react";
 
 import { confirmTxn } from "../api-deps/api";
 import { TokenId, ApiCallParam, TokenUID, TxnType } from "../api-deps/config";
+import { nearWallet } from "../api-deps/near/near";
 
-export function ProcessPage({ accountId }: { accountId: string }) {
+export function ProcessPage() {
 
   const url = new URL(window.location.href)
   const transactionHash = url.searchParams.get("transactionHashes") || ""
-  console.log(transactionHash)
 
   const transactionType = transactionHash.length === 44 ? TokenId.NEAR : TokenId.ALGO
 
   const newMintParam: ApiCallParam = {
-    from_addr: accountId,
+    from_addr: nearWallet.account().accountId,
     from_token_id: TokenUID.NEAR,
     from_txn_hash: transactionHash,
     to_token_id: TokenUID.Algorand,
@@ -42,13 +42,15 @@ export function ProcessPage({ accountId }: { accountId: string }) {
   const bridge_type = transactionType === TokenId.NEAR ? TxnType.MINT : TxnType.BURN;
 
   const apiCall = useCallback(async () => {
+    console.log(newParam)
     await confirmTxn(newParam)
-  }, [newParam])
+  }, [])
+
 
   useEffect(() => {
     console.log("start sign process")
     apiCall()
-  }, [apiCall])
+  }, [])
 
   return (
     <Box textAlign="center" marginBottom="80px" sx={{ fontFamily: "Regular, sans-serif" }}>

@@ -11,5 +11,5 @@ First part of bridging will be connecting wallet.
 process in myAlgo wallet, goNEAR token id is 83251085.
 
 4. After connect wallet and opted in goNEAR, now you can start minting process. Click continue to go to bridge token step,
-fill in valid Algorand address 
+fill in valid Algorand address to receive goNEAR
 

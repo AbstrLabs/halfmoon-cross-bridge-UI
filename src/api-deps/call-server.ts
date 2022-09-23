@@ -10,11 +10,9 @@ export async function postTxn(postParam: ApiCallParam) {
 
   const resp = await fetch(CONFIG.apiServerUrl + "/bridge", {
     method: "POST",
-    mode: "cors",
     body: JSON.stringify(postParam),
     headers: {
       "Content-Type": "application/json",
-      "Content-Length": `${Buffer.byteLength(JSON.stringify(postParam))}`,
     },
   });
 
