@@ -10,13 +10,11 @@ import React, { useCallback, useState } from "react";
 import algosdk from "algosdk";
 import Big from "big.js";
 
-import { REX, DEFAULT, TokenId, FeeText, ReceivingPropotion } from "../api-deps/config";
+import { REX, DEFAULT, TokenId, FeeText, ReceivingPropotion, FeePortion } from "../api-deps/config";
 
 const BOATLOAD_OF_GAS = Big(3).times(10 ** 13).toFixed();
 
 export function SendTxnMintPanel({ contract }: { contract: any }) {
-
-
   const DEFAULT_BENEFICIARY = DEFAULT.DEFAULT_MINT_BENEFICIARY
 
   const DEFAULT_AMOUNT = DEFAULT.DEFAULT_MINT_AMOUNT;
@@ -138,7 +136,7 @@ export function SendTxnMintPanel({ contract }: { contract: any }) {
             margin="normal"
             value={
               amount
-                ? (Number(amount) * USER_RECEIVING_PROPORTION - 1)
+                ? (Number(amount) * USER_RECEIVING_PROPORTION - FeePortion.MINT)
                   .toFixed(11)
                   .slice(0, -1)
                 : ""

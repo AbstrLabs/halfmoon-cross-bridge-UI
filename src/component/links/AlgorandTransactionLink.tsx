@@ -1,11 +1,10 @@
-/* For testnet only */
-
 import { Link } from "@mui/material";
+import { Links } from "../../api-deps/config"
 
 export function AlgorandTransactionLink({ txnId }: { txnId: string }) {
   return (
     <Link
-      href={"https://testnet.algoexplorer.io/tx/" + txnId}
+      href={Links.AlgorandTxn + txnId}
       title="Transaction on Algo Explorer"
       target="_blank"
     >

@@ -1,118 +1,71 @@
-import React from 'react';
-import { Typography, styled, Box, Stepper, Step, StepLabel, StepContent, Button } from "@mui/material";
+import {
+  Paper,
+  Typography,
+  Box,
+  styled,
+  Grid,
+  Button
+} from "@mui/material";
 
-import { ConnectWallet } from "../component/ConnectWallet";
-import { SendStep } from "../component/SendStep";
-import { parseProcessUrlFromParam } from "../api-deps/api"
+import { Footer } from "../component/sections/Footer"
 
-export function HomePage({ contract, accountId }: any) {
-
-  const url = new URL(window.location.href)
-  const transactionHash = url.searchParams.get("transactionHashes") || ""
-
-  const steps = [
-    {
-      label: 'Connect wallet',
-      component: <ConnectWallet />,
-    },
-    {
-      label: 'Bridge token',
-      component: <SendStep contract={contract} />,
-    }
-  ];
-
-  // step
-  let currentStep = 0
-  if (accountId !== undefined || localStorage.getItem("Algorand") !== null) currentStep = 1
-  const [activeStep, setActiveStep] = React.useState(currentStep);
-
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  if (transactionHash !== "") {
-    console.log(transactionHash)
-    let newUrl = parseProcessUrlFromParam(transactionHash)
-    window.location.replace(newUrl)
-  }
+export function HomePage() {
+  const Item = styled(Paper)(({ theme }) => ({
+    padding: theme.spacing(1),
+    textAlign: 'left',
+    color: theme.palette.text.primary,
+    background: "rgba(255, 255, 255, 0.04)",
+    fontSize: "24px"
+  }));
 
   return (
-    <BodyWrap>
+    <Box textAlign="center" sx={{ fontFamily: "Regular, sans-serif", maxWidth: 1000 }}>
       <Typography
-        variant="h3"
-        component="h2"
         sx={{
           fontFamily: "Regular, sans-serif",
-          fontSize: "60px",
-          background: "linear-gradient(90.96deg, #7ee6a7 0.59%, #7ad6de 99.19%)",
+          fontSize: "90px",
+          background: "linear-gradient(90.96deg,#7ad6de  0.59%, #7ee6a7 99.19%)",
           backgroundClip: "text",
-          textFillColor: "transparent"
+          textFillColor: "transparent",
+          textAlign: "left"
         }}
-        marginY="1rem"
-        align="center"
-      >
-        Cross-Chain Bridge
+      > Bringing
       </Typography>
       <Typography
-        variant="h5"
-        component="h5"
         sx={{
           fontFamily: "Regular, sans-serif",
-          fontSize: "10px",
-          color: "text.secondary"
+          fontSize: "72px",
+          background: "linear-gradient(90.96deg,#7ee6a7  0.59%, #7ad6de 99.19%)",
+          backgroundClip: "text",
+          textFillColor: "transparent",
+          textAlign: "left"
         }}
-        marginY="0.5rem"
-        align="center"
-      >
-        Algorand - NEAR Bridge
+      > NEAR to Algorand
       </Typography>
-      <Box sx={{ maxWidth: "1000", width: '100%' }}>
-        <Stepper activeStep={activeStep} orientation="vertical">
-          {steps.map((step, index) => (
-            <Step key={step.label}>
-              <StepLabel>
-                {step.label}
-              </StepLabel>
-              <StepContent>
-                <div>{step.component}</div>
-                <Box sx={{ mb: 2 }}>
-                  <div>
-                    {index === steps.length - 1 ? null :
-                      <Button
-                        variant="contained"
-                        onClick={handleNext}
-                        sx={{ mt: 1, mr: 1 }}
-                      >Continue
-                      </Button>
-                    }
-                    {index !== 0 &&
-                      <Button
-                        onClick={handleBack}
-                        sx={{ mt: 1, mr: 1 }}
-                      >
-                        Back
-                      </Button>
-                    }
-
-                  </div>
-                </Box>
-              </StepContent>
-            </Step>
-          ))}
-        </Stepper>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={12}>
+          <Item>Building interoperability for web 3.0 and more</Item>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Item>Easy and simple operations to bridge token</Item>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Item>High speed and low fees, no limit on transfering amount</Item>
+        </Grid>
+      </Grid>
+      <Box
+        sx={{
+          textAlign: "left"
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => window.location.replace(window.location.origin + "/bridge ")}
+          sx={{ mt: 3, ml: 1 }}
+        >Go to Bridge
+        </Button>
       </Box>
-    </BodyWrap>
+      <Footer />
+    </Box>
   );
-
 }
-
-/* ======== STYLED ======== */
-const BodyWrap = styled("div")({
-  flex: "1 1 auto",
-  margin: "0 20px 40px",
-  width: "max(60%,24rem)"
-});

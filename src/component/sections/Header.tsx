@@ -7,7 +7,6 @@ export function Header() {
   return (
     <HeaderWrap>
       <Logo />
-      <Box sx={{ mx: 1 }} /* placeholder */ />
       <Navbar />
     </HeaderWrap>
   );
@@ -17,8 +16,8 @@ export function Header() {
 const HeaderWrap = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  justifyContent: "space-around",
-  alignItems: "center",
+  alignContent: "space-between",
+  justifyContent: "space-between",
   padding: "10px 2rem",
   borderBottom: `1px solid ${theme.palette.divider}`,
   width: "100%",

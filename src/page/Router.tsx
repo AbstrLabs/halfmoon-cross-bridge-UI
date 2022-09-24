@@ -1,20 +1,19 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { useEffect, useCallback, useState } from "react";
 
 import { DocsPage } from "./DocsPage";
 import { E404Page } from "./E404Page";
 import { Header } from "../component/sections/Header";
-import { HomePage } from "./HomePage";
+import { BridgePage } from "./BridgePage";
 import { ResultPage } from "./ResultPage";
 import { ProcessPage } from "./ProcessPage";
 import { initContract } from "../api-deps/near/contract"
+import { HomePage } from "./HomePage"
 
 export function Router() {
   /* ======== URL_QUERY ======== */
 
   function ScrollToTop() {
-    const location = useLocation();
-    const { pathname } = location;
     useEffect(() => {
       window.scrollTo(0, 0);
     }, []);
@@ -43,11 +42,12 @@ export function Router() {
         <Routes>
           <Route path="/">
             <Route index element={
-              <HomePage
-                contract={near.contract}
-                accountId={near.accountId}
-              />}
+              <HomePage />}
             />
+            <Route path="bridge" element={<BridgePage
+              contract={near.contract}
+              accountId={near.accountId}
+            />} />
             <Route path="result" element={<ResultPage />} />
             <Route path="process" element={<ProcessPage />} />
             <Route path="docs" element={<DocsPage />} />

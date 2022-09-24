@@ -6,9 +6,11 @@ import {
   TableContainer,
   TableRow,
   Typography,
+  Button,
+  Box
 } from "@mui/material";
-import { Box } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
+import Big from "big.js";
 
 import { AlgorandAddressLink } from "../component/links/AlgorandAddressLink";
 import { AlgorandTransactionLink } from "../component/links/AlgorandTransactionLink";
@@ -48,11 +50,11 @@ export function ResultPage() {
   const emptyTxn: BridgeTxnSafeObj = {
     created_time: "loading",
     from_addr: "loading",
-    from_amount_atom: "loading",
+    from_amount: "loading",
     from_token_id: TokenId.NEAR,
     from_txn_hash: "loading",
     to_addr: "loading",
-    to_amount_atom: "loading",
+    to_amount: "loading",
     to_token_id: TokenId.goNEAR,
     to_txn_hash: "loading"
   }
@@ -67,42 +69,51 @@ export function ResultPage() {
     return fee
   }
 
-  async function watchTxnStatus(uid: string) {
-    let finished = false;
-    let txnJson;
-    while (!finished) {
-      const txnRes = await getTxn(uid);
-      if (txnRes.status === 200) {
-        txnJson = await txnRes.json();
-        if (txnJson.request_status === "DONE_OUTGOING") {
-          finished = true;
-          let txnInfo = {
-            created_time: txnJson.created_time,
-            from_addr: txnJson.from_addr,
-            from_amount_atom: txnJson.from_amount_atom,
-            from_token_id: txnJson.from_token_id === 2 ? TokenId.NEAR : TokenId.goNEAR,
-            from_txn_hash: txnJson.from_txn_hash,
-            to_addr: txnJson.to_addr,
-            to_amount_atom: txnJson.to_amount_atom,
-            to_token_id: txnJson.to_token_id === 2 ? TokenId.NEAR : TokenId.goNEAR,
-            to_txn_hash: txnJson.to_txn_hash
+  const watchTxnStatus = useCallback(
+    async (uid: string) => {
+      let finished = false;
+      let txnJson;
+      while (!finished) {
+        const txnRes = await getTxn(uid);
+        if (txnRes.status === 200) {
+          txnJson = await txnRes.json();
+          if (txnJson.request_status === "DONE_OUTGOING") {
+            finished = true;
+            let from_amount = txnJson.from_token_id === 2 ?
+              Big(txnJson.from_amount_atom).div(10 ** 24).toFixed()
+              : Big(txnJson.from_amount_atom).div(10 ** 10).toFixed()
+            let to_amount = txnJson.from_token_id === 2 ?
+              Big(txnJson.to_amount_atom).div(10 ** 24).toFixed()
+              : Big(txnJson.to_amount_atom).div(10 ** 10).toFixed()
+            let txnInfo = {
+              created_time: txnJson.created_time,
+              from_addr: txnJson.from_addr,
+              from_amount: from_amount,
+              from_token_id: txnJson.from_token_id === 2 ? TokenId.NEAR : TokenId.goNEAR,
+              from_txn_hash: txnJson.from_txn_hash,
+              to_addr: txnJson.to_addr,
+              to_amount: to_amount,
+              to_token_id: txnJson.to_token_id === 2 ? TokenId.NEAR : TokenId.goNEAR,
+              to_txn_hash: txnJson.to_txn_hash
+            }
+            console.log(txnJson)
+            setTxn(txnInfo)
+            let feeRes = await watchFee(txnJson.from_token_id, txnJson.to_token_id)
+            setFee({ fixed_fee_atom: feeRes.fixed_fee_atom, margin_fee_atom: feeRes.margin_fee_atom })
+            break;
+          } else if ((txnJson.request_status as string).startsWith("ERROR_")) {
+            finished = true;
+            console.log("error message ", txnJson.err_msg)
+            console.log("invalid reason ", txnJson.invalid_reason)
+            setError({ err_msg: txnJson.err_msg, invalid_reason: txnJson.invalid_reason === null ? "NULL" : txnJson.invalid_reason })
+            break
           }
-          setTxn(txnInfo)
-          let feeRes = await watchFee(txnJson.from_token_id, txnJson.to_token_id)
-          setFee({ fixed_fee_atom: feeRes.fixed_fee_atom, margin_fee_atom: feeRes.margin_fee_atom })
-          break;
-        } else if ((txnJson.request_status as string).startsWith("ERROR_")) {
-          finished = true;
-          console.log("error message ", txnJson.err_msg)
-          console.log("invalid reason ", txnJson.invalid_reason)
-          setError({ err_msg: txnJson.err_msg, invalid_reason: txnJson.invalid_reason === null ? "NULL" : txnJson.invalid_reason })
-          break
         }
+        await new Promise((resolve) => setTimeout(resolve, GET_INTERVAL_MS));
       }
-      await new Promise((resolve) => setTimeout(resolve, GET_INTERVAL_MS));
-    }
-    return false
-  }
+      return false
+    }, []
+  )
 
   const watch = useCallback(async () => {
     const url = new URL(window.location.href);
@@ -200,7 +211,7 @@ export function ResultPage() {
           }}>
           See Invoice Transaction on Explore
         </Typography>
-        {txn.to_txn_hash === ""
+        {txn.to_txn_hash === "loading"
           ? <Loading />
           : Links[txn.to_token_id].txn({
             txnId: txn.to_txn_hash,
@@ -215,11 +226,11 @@ export function ResultPage() {
             </TableRow>
             <TableRow>
               <TableCell>Amount Sent</TableCell>
-              <TableCell align="right">{txn.from_amount_atom}</TableCell>
+              <TableCell align="right">{txn.from_amount} {txn.from_token_id}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Amount Received</TableCell>
-              <TableCell align="right">{txn.to_amount_atom}</TableCell>
+              <TableCell align="right">{txn.to_amount} {txn.to_token_id}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Beneficiary Address</TableCell>
@@ -261,7 +272,7 @@ export function ResultPage() {
               <TableCell align="right">{fee.fixed_fee_atom} {txn.from_token_id}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Service Fee </TableCell>
+              <TableCell>Service Fee Propotion(%) </TableCell>
               <TableCell align="right">{fee.margin_fee_atom} / 10000 %</TableCell>
             </TableRow>
             <TableRow>
@@ -271,6 +282,12 @@ export function ResultPage() {
           </TableBody>
         </Table>
       </TableContainer>
+      <Button
+        variant="contained"
+        onClick={() => window.location.replace(window.location.origin + "/bridge ")}
+        sx={{ mt: 3, ml: 1 }}
+      >Go back to Bridge
+      </Button>
     </Box>
   );
 }

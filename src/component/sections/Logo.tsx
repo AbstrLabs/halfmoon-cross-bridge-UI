@@ -15,7 +15,7 @@ export function Logo(
   const { isDarkMode } = useTernaryDarkMode();
 
   return (
-    <StyledLink to="/">
+    <StyledLink to="/" sx={{ float: "left" }}>
       {isDarkMode ? (
         <img
           style={{ ...style }}

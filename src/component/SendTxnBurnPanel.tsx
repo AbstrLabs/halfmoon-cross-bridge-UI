@@ -7,8 +7,10 @@ import {
 } from "@mui/material";
 import React, { useCallback, useState } from "react";
 
-import { REX, DEFAULT, TokenId, FeeText, ReceivingPropotion } from "../api-deps/config";
+import { REX, DEFAULT, TokenId, FeeText, ReceivingPropotion, FeePortion } from "../api-deps/config";
 import { requestSignGoNearTxn } from "../api-deps/algorand";
+import { nearWallet } from "../api-deps/near/near";
+
 
 export function SendTxnBurnPanel() {
   const DEFAULT_BENEFICIARY = DEFAULT.DEFAULT_BURN_BENEFICIARY
@@ -28,9 +30,6 @@ export function SendTxnBurnPanel() {
   //form input valid
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [isBeneficiaryValid, setIsBeneficiaryValid] = useState(true);
-
-  // modal control
-  const [isModalOpen, setModalOpen] = useState(false);
 
   // form check
   const validateAddress = useCallback(
@@ -65,7 +64,7 @@ export function SendTxnBurnPanel() {
         console.log(res)
         if (typeof (res) === "string") {
           let transactionHashes = res
-          let url = new URL(window.location.origin)
+          let url = new URL(window.location.href)
           url.searchParams.set("transactionHashes", transactionHashes);
           window.location.replace(url)
         }
@@ -79,7 +78,7 @@ export function SendTxnBurnPanel() {
     <React.Fragment>
       <FormWrap>
         <TextField
-          helperText={`e.g. ${DEFAULT_BENEFICIARY}`}
+          helperText={`e.g. ${nearWallet.account().accountId ? nearWallet.account().accountId : DEFAULT_BENEFICIARY}`}
           label={
             "Beneficiary (Algorand public address)"
           }
@@ -127,7 +126,7 @@ export function SendTxnBurnPanel() {
             margin="normal"
             value={
               amount
-                ? (Number(amount) * USER_RECEIVING_PROPORTION - 1)
+                ? (Number(amount) * USER_RECEIVING_PROPORTION - FeePortion.BURN)
                   .toFixed(11)
                   .slice(0, -1)
                 : ""
