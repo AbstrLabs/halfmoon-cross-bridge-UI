@@ -5,7 +5,7 @@ import { ConnectWallet } from "../component/ConnectWallet";
 import { SendStep } from "../component/SendStep";
 import { parseProcessUrlFromParam } from "../api-deps/api"
 
-export function BridgePage({ contract, accountId }: any) {
+export function BridgePage({ contract, accountId, config, wallet }: any) {
 
   const url = new URL(window.location.href)
   const transactionHash = url.searchParams.get("transactionHashes") || ""
@@ -13,11 +13,11 @@ export function BridgePage({ contract, accountId }: any) {
   const steps = [
     {
       label: 'Connect wallet',
-      component: <ConnectWallet />,
+      component: <ConnectWallet config={config} wallet={wallet} />,
     },
     {
       label: 'Bridge token',
-      component: <SendStep contract={contract} />,
+      component: <SendStep contract={contract} wallet={wallet} />,
     }
   ];
 

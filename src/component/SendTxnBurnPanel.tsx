@@ -9,10 +9,9 @@ import React, { useCallback, useState } from "react";
 
 import { REX, DEFAULT, TokenId, FeeText, ReceivingPropotion, FeePortion } from "../api-deps/config";
 import { requestSignGoNearTxn } from "../api-deps/algorand";
-import { nearWallet } from "../api-deps/near/near";
 
 
-export function SendTxnBurnPanel() {
+export function SendTxnBurnPanel({ wallet }: any) {
   const DEFAULT_BENEFICIARY = DEFAULT.DEFAULT_BURN_BENEFICIARY
 
   const DEFAULT_AMOUNT = DEFAULT.DEFAULT_BURN_AMOUNT;
@@ -61,14 +60,15 @@ export function SendTxnBurnPanel() {
       }
       if (isBeneficiaryValid && isAmountValid && beneficiary !== "" && amount !== "") {
         let res = await requestSignGoNearTxn(ALGOaccount, amount, beneficiary);
-        console.log(res)
         if (typeof (res) === "string") {
           let transactionHashes = res
           let url = new URL(window.location.href)
           url.searchParams.set("transactionHashes", transactionHashes);
           window.location.replace(url)
         }
-
+        else {
+          console.log(res)
+        }
       }
     },
     [amount, isAmountValid, ALGOaccount, beneficiary, isBeneficiaryValid]
@@ -78,7 +78,7 @@ export function SendTxnBurnPanel() {
     <React.Fragment>
       <FormWrap>
         <TextField
-          helperText={`e.g. ${nearWallet.account().accountId ? nearWallet.account().accountId : DEFAULT_BENEFICIARY}`}
+          helperText={`e.g. ${wallet.account().accountId ? wallet.account().accountId : DEFAULT_BENEFICIARY}`}
           label={
             "Beneficiary (Algorand public address)"
           }

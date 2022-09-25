@@ -12,9 +12,8 @@ import { useCallback, useEffect } from "react";
 
 import { confirmTxn } from "../api-deps/api";
 import { TokenId, ApiCallParam, TokenUID, TxnType } from "../api-deps/config";
-import { nearWallet } from "../api-deps/near/near";
 
-export function ProcessPage() {
+export function ProcessPage({ wallet }: any) {
 
   const url = new URL(window.location.href)
   const transactionHash = url.searchParams.get("transactionHashes") || ""
@@ -22,7 +21,7 @@ export function ProcessPage() {
   const transactionType = transactionHash.length === 44 ? TokenId.NEAR : TokenId.ALGO
 
   const newMintParam: ApiCallParam = {
-    from_addr: nearWallet.account().accountId,
+    from_addr: wallet.account().accountId,
     from_token_id: TokenUID.NEAR,
     from_txn_hash: transactionHash,
     to_token_id: TokenUID.Algorand,

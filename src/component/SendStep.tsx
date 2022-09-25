@@ -6,7 +6,7 @@ import { SendTxnMintPanel } from "./SendTxnMintPanel";
 import { SendTxnBurnPanel } from "./SendTxnBurnPanel";
 import { TxnType } from "../api-deps/config";
 
-export function SendStep({ contract }: { contract: any }) {
+export function SendStep({ contract, wallet }: { contract: any, wallet: any }) {
 
   const [currentTab, setCurrentTab] = useState<TxnType>(TxnType.MINT);
   const handleTabChange = useCallback(
@@ -28,7 +28,7 @@ export function SendStep({ contract }: { contract: any }) {
         <SendTxnMintPanel contract={contract} />
       </TabPanel>
       <TabPanel value={TxnType.BURN}>
-        <SendTxnBurnPanel />
+        <SendTxnBurnPanel wallet={wallet} />
       </TabPanel>
     </TabContext>
   );
