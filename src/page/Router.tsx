@@ -20,11 +20,16 @@ export function Router() {
     return null;
   }
 
-  let [near, setNear] = useState({ contract: {}, accountId: "" })
+  let [near, setNear] = useState({ contract: {}, accountId: "", config: {}, wallet: {} })
 
   let check = useCallback(async () => {
     let contractRes = await initContract()
-    setNear({ contract: contractRes.contract, accountId: contractRes.currentUser?.accountId })
+    setNear({
+      contract: contractRes.contract,
+      accountId: contractRes.currentUser?.accountId,
+      config: contractRes.nearConfig,
+      wallet: contractRes.wallet
+    })
   }, [])
 
   useEffect(() => {
@@ -47,9 +52,11 @@ export function Router() {
             <Route path="bridge" element={<BridgePage
               contract={near.contract}
               accountId={near.accountId}
+              config={near.config}
+              wallet={near.wallet}
             />} />
             <Route path="result" element={<ResultPage />} />
-            <Route path="process" element={<ProcessPage />} />
+            <Route path="process" element={<ProcessPage wallet={near.wallet} />} />
             <Route path="docs" element={<DocsPage />} />
             <Route path="*" element={<E404Page />} />
           </Route>

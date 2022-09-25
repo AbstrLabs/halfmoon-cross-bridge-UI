@@ -2,20 +2,20 @@ import { styled, Button, Grid } from "@mui/material";
 import React, { useState } from "react";
 
 import { connectAlgoWallet, disconnectAlgoWallet, checkOptedIn, optInGoNear } from "../api-deps/algorand";
-import { nearWallet, connectNearWallet, disconnectNearWallet } from "../api-deps/near/near";
-import { BridgeType } from "../api-deps/config";
+import { BridgeType, CONFIG } from "../api-deps/config";
 
-export function WalletPanel({ bridgeType }: { bridgeType: BridgeType }) {
+export function WalletPanel({ bridgeType, config, wallet }: { bridgeType: BridgeType, config: any, wallet: any }) {
 
-  let signedSig_NEAR = nearWallet.isSignedIn()
-  let NEARaccount = nearWallet.account().accountId || ""
+  let signedSig_NEAR = wallet.isSignedIn()
+  let NEARaccount = wallet.account().accountId || ""
   let ALGOaccount = localStorage.getItem("Algorand") || ""
   let signedSig_Algo = !!localStorage.getItem("Algorand")
 
   const [notOptIn, setTo] = useState(true)
 
+  // algorand functions
   const checkOptedInFunc = async (addr: string) => {
-    let res = await checkOptedIn(ALGOaccount)
+    let res = await checkOptedIn(addr)
     if (res === true) setTo(false)
   }
 
@@ -30,6 +30,24 @@ export function WalletPanel({ bridgeType }: { bridgeType: BridgeType }) {
     }
 
   }
+
+  // near functions
+  const connectNearWallet = () => {
+    if (wallet.isSignedIn()) {
+      console.log("already signed in")
+    }
+    else {
+      wallet.requestSignIn(CONFIG.acc.near_master);
+    }
+  };
+
+  const disconnectNearWallet = () => {
+    if (wallet.isSignedIn()) {
+      wallet.signOut();
+      window.location.replace(window.location.origin + window.location.pathname);
+    }
+    else { console.log("not signed in wallet") }
+  };
 
   return (
     <Wrap>
