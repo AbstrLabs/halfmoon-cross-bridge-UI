@@ -1,10 +1,10 @@
-import getConfig from './config.js';
 import * as nearAPI from 'near-api-js';
+import { CONFIG } from "./config"
 
 export async function initContract() {
   // get network configuration values from config.js
   // based on the network ID we pass to getConfig()
-  const nearConfig = getConfig(process.env.NEAR_ENV || 'testnet');
+  const nearConfig = getConfig(CONFIG.NEAR_ENV, CONFIG.CONTRACT_NAME);
 
   // create a keyStore for signing transactions using the user's key
   // which is located in the browser local storage after user logs in
@@ -46,4 +46,29 @@ export async function initContract() {
   );
 
   return { contract, currentUser, nearConfig, wallet };
+}
+
+function getConfig(env, contractName) {
+  switch (env) {
+    case 'mainnet':
+      return {
+        networkId: 'mainnet',
+        nodeUrl: 'https://rpc.mainnet.near.org',
+        contractName: contractName,
+        walletUrl: 'https://wallet.near.org',
+        helperUrl: 'https://helper.mainnet.near.org'
+      };
+    case 'production':
+    case 'development':
+    case 'testnet':
+      return {
+        networkId: 'testnet',
+        nodeUrl: 'https://rpc.testnet.near.org',
+        contractName: contractName,
+        walletUrl: 'https://wallet.testnet.near.org',
+        helperUrl: 'https://helper.testnet.near.org'
+      };
+    default:
+      throw Error(`Unconfigured environment '${env}'. Can be configured in src/config.js.`);
+  }
 }

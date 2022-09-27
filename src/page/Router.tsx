@@ -1,13 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { useEffect, useCallback, useState } from "react";
 
+import { initContract } from "../api-deps/near";
+
+import { Header } from "../component/sections/Header";
 import { DocsPage } from "./DocsPage";
 import { E404Page } from "./E404Page";
-import { Header } from "../component/sections/Header";
 import { BridgePage } from "./BridgePage";
 import { ResultPage } from "./ResultPage";
 import { ProcessPage } from "./ProcessPage";
-import { initContract } from "../api-deps/near/contract"
 import { HomePage } from "./HomePage"
 
 export function Router() {
@@ -20,13 +21,12 @@ export function Router() {
     return null;
   }
 
-  let [near, setNear] = useState({ contract: {}, accountId: "", config: {}, wallet: {} })
+  let [near, setNear] = useState({ contract: {}, config: {}, wallet: {} })
 
   let check = useCallback(async () => {
     let contractRes = await initContract()
     setNear({
       contract: contractRes.contract,
-      accountId: contractRes.currentUser?.accountId,
       config: contractRes.nearConfig,
       wallet: contractRes.wallet
     })
@@ -38,7 +38,6 @@ export function Router() {
   }, [])
 
   /* ======== test end ======== */
-
   return (
     <React.Fragment>
       <BrowserRouter>
@@ -51,12 +50,11 @@ export function Router() {
             />
             <Route path="bridge" element={<BridgePage
               contract={near.contract}
-              accountId={near.accountId}
               config={near.config}
               wallet={near.wallet}
             />} />
             <Route path="result" element={<ResultPage />} />
-            <Route path="process" element={<ProcessPage wallet={near.wallet} />} />
+            <Route path="process" element={<ProcessPage />} />
             <Route path="docs" element={<DocsPage />} />
             <Route path="*" element={<E404Page />} />
           </Route>

@@ -82,7 +82,7 @@ export function ResultPage() {
             let from_amount = txnJson.from_token_id === 2 ?
               Big(txnJson.from_amount_atom).div(10 ** 24).toFixed()
               : Big(txnJson.from_amount_atom).div(10 ** 10).toFixed()
-            let to_amount = txnJson.from_token_id === 2 ?
+            let to_amount = txnJson.to_token_id === 2 ?
               Big(txnJson.to_amount_atom).div(10 ** 24).toFixed()
               : Big(txnJson.to_amount_atom).div(10 ** 10).toFixed()
             let txnInfo = {
@@ -99,7 +99,10 @@ export function ResultPage() {
             console.log(txnJson)
             setTxn(txnInfo)
             let feeRes = await watchFee(txnJson.from_token_id, txnJson.to_token_id)
-            setFee({ fixed_fee_atom: feeRes.fixed_fee_atom, margin_fee_atom: feeRes.margin_fee_atom })
+            const fixed_fee = txnJson.from_token_id === 2 ?
+              Big(feeRes.fixed_fee_atom).div(10 ** 10).toFixed()
+              : Big(feeRes.fixed_fee_atom).div(10 ** 24).toFixed()
+            setFee({ fixed_fee_atom: fixed_fee, margin_fee_atom: feeRes.margin_fee_atom })
             break;
           } else if ((txnJson.request_status as string).startsWith("ERROR_")) {
             finished = true;

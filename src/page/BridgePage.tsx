@@ -5,7 +5,7 @@ import { ConnectWallet } from "../component/ConnectWallet";
 import { SendStep } from "../component/SendStep";
 import { parseProcessUrlFromParam } from "../api-deps/api"
 
-export function BridgePage({ contract, accountId, config, wallet }: any) {
+export function BridgePage({ contract, config, wallet }: any) {
 
   const url = new URL(window.location.href)
   const transactionHash = url.searchParams.get("transactionHashes") || ""
@@ -23,7 +23,8 @@ export function BridgePage({ contract, accountId, config, wallet }: any) {
 
   // step
   let currentStep = 0
-  if (accountId !== undefined && localStorage.getItem("Algorand") !== null) currentStep = 1
+  if (localStorage.getItem("algorand-near-bridge_wallet_auth_key") !== null
+    && localStorage.getItem("Algorand") !== null) currentStep = 1
 
   const [activeStep, setActiveStep] = React.useState(currentStep);
 

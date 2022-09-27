@@ -9,8 +9,7 @@ please always use halfmooncross.com and do not access the  product from any othe
 2. Before starting the process of bridge, create your NEAR and Algorand account and keep them privately to yourself.
 First part of bridging will be connecting wallet.
 
-3. Before start minting process, check whether your Algorand account opted in goNEAR asset. If you manually operate opt in 
-process in myAlgo wallet, goNEAR token id is 83251085.
+3. Before start minting process, check whether your Algorand account opted in goNEAR asset. If you manually operate opt in process in myAlgo wallet, goNEAR token id is 83251085(testnet) and 885797225(mainnet).
 
 ### Mint process
 1. After connected wallet and opted in goNEAR, now you can start minting process. Click continue to go to bridge token step, fill in valid Algorand address to receive goNEAR. 

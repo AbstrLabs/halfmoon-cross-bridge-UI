@@ -17,16 +17,14 @@ export {
 };
 
 const myAlgoWallet = new MyAlgoConnect();
-const ALGO_UNIT = 10_000_000_000;
-const GO_NEAR_ASA_ID = 83251085;
+
 let algoAccount: string = localStorage.getItem("Algorand") || ""
 
 const algodClient = new algosdk.Algodv2(
-  { "X-API-Key": "WLJDqY55G5560kyCJVp647ERNZ5kJkdZ8OUdGNnV" },
-  "https://testnet-algorand.api.purestake.io/ps2",
+  { "X-API-Key": CONFIG.X_API_Key },
+  CONFIG.ALGO_CLIENT,
   ""
 );
-// old param:('', 'https://node.testnet.algoexplorerapi.io', '')
 
 async function connectAlgoWallet() {
   let connectedAccounts = await myAlgoWallet.connect();
@@ -71,7 +69,7 @@ async function signGoNearTransaction(
       to,
       note,
       amount: amountAlgo,
-      assetIndex: GO_NEAR_ASA_ID,
+      assetIndex: CONFIG.GO_NEAR_ASA_ID,
     });
     const signedTxn = await myAlgoWallet.signTransaction(txn.toByte());
     const response = await algodClient.sendRawTransaction(signedTxn.blob).do();
@@ -84,7 +82,7 @@ async function signGoNearTransaction(
 // transfer goNEAR
 const requestSignGoNearTxn = async (algoAccount: string, amountStr: string, toNEARAddr: string) => {
   const to = CONFIG.acc.algorand_master;
-  const amount = +amountStr * ALGO_UNIT;
+  const amount = +amountStr * CONFIG.ALGO_UNIT;
   try {
     const response = await signGoNearTransaction(algoAccount, to, toNEARAddr, amount);
     if (response) return response.txId
@@ -109,7 +107,7 @@ async function checkOptedIn(addr: string, option = { showAlert: false }) {
   let accountInfo = await algodClient.accountInformation(addr).do();
   console.log(accountInfo)
   for (let assetInfo of accountInfo["assets"]) {
-    if (assetInfo["asset-id"] === GO_NEAR_ASA_ID) {
+    if (assetInfo["asset-id"] === CONFIG.GO_NEAR_ASA_ID) {
       if (option.showAlert) {
         window.alert("opted in");
       }

@@ -121,7 +121,7 @@ export function SendTxnBurnPanel({ wallet }: any) {
           <Box width="2rem" />
           <TextField
             label={`expected receiving amount (${RECEIVING_UNIT})`}
-            helperText={`Fee: ${FEE_TEXT}. Showing all decimals.`}
+            helperText={`Fee: ${FEE_TEXT}.`}
             fullWidth
             margin="normal"
             value={
@@ -132,7 +132,7 @@ export function SendTxnBurnPanel({ wallet }: any) {
                 : ""
             }
             error={
-              amount ? Number(amount) * USER_RECEIVING_PROPORTION <= 1 : false
+              amount ? Number(amount) * USER_RECEIVING_PROPORTION <= 0.001 : false
             }
             variant="standard"
             disabled

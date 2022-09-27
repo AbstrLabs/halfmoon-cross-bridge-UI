@@ -13,15 +13,20 @@ import { useCallback, useEffect } from "react";
 import { confirmTxn } from "../api-deps/api";
 import { TokenId, ApiCallParam, TokenUID, TxnType } from "../api-deps/config";
 
-export function ProcessPage({ wallet }: any) {
+export function ProcessPage() {
 
   const url = new URL(window.location.href)
   const transactionHash = url.searchParams.get("transactionHashes") || ""
 
   const transactionType = transactionHash.length === 44 ? TokenId.NEAR : TokenId.ALGO
 
+  const NEARaccountId = localStorage.getItem("algorand-near-bridge_wallet_auth_key") !== null ?
+    JSON.parse(localStorage.getItem("algorand-near-bridge_wallet_auth_key") as string).accountId : ""
+
+  console.log(NEARaccountId)
+
   const newMintParam: ApiCallParam = {
-    from_addr: wallet.account().accountId,
+    from_addr: NEARaccountId,
     from_token_id: TokenUID.NEAR,
     from_txn_hash: transactionHash,
     to_token_id: TokenUID.Algorand,
