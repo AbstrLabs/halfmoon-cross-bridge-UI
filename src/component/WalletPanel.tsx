@@ -102,7 +102,7 @@ export function WalletPanel({ bridgeType, wallet }: { bridgeType: BridgeType, wa
                   <Button onClick={async () => optInFunc(ALGOaccount)} variant="outlined" sx={{ fontSize: "0.7rem" }}>
                     Opt in goNEAR ASA
                   </Button>
-                  <p>not opted in</p>
+                  <p>Not opted in</p>
                 </>
                 : (optedIn === opt.OPTEDIN ?
                   <p>Already opted in goNEAR asset</p>
