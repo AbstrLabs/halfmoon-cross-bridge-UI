@@ -5,7 +5,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { WalletPanel } from "./WalletPanel";
 import { BridgeType } from "../api-deps/config";
 
-export function ConnectWallet({ config, wallet }: any) {
+export function ConnectWallet({ wallet }: any) {
   const [currentTab, setCurrentTab] = useState<BridgeType>(BridgeType.NEAR);
   const handleTabChange = useCallback(
     (event: SyntheticEvent<Element, Event>, tabName: BridgeType) => {
@@ -23,10 +23,10 @@ export function ConnectWallet({ config, wallet }: any) {
         </TabList>
       </Box>
       <TabPanel value={BridgeType.NEAR}>
-        <WalletPanel bridgeType={BridgeType.NEAR} config={config} wallet={wallet} />
+        <WalletPanel bridgeType={BridgeType.NEAR} wallet={wallet} />
       </TabPanel>
       <TabPanel value={BridgeType.ALGO}>
-        <WalletPanel bridgeType={BridgeType.ALGO} config={config} wallet={wallet} />
+        <WalletPanel bridgeType={BridgeType.ALGO} wallet={wallet} />
       </TabPanel>
     </TabContext>
   );

@@ -22,6 +22,7 @@ import { getTxn, getFee } from "../api-deps/call-server";
 import { BridgeTxnSafeObj, TokenId, GET_INTERVAL_MS } from "../api-deps/config";
 
 export function ResultPage() {
+
   type LinkFromAddr = ({ addr }: { addr: string }) => JSX.Element;
   type LinkFromTxnHash = ({ txnId }: { txnId: string }) => JSX.Element;
   type TokenLinks = {
@@ -86,7 +87,7 @@ export function ResultPage() {
               Big(txnJson.to_amount_atom).div(10 ** 24).toFixed()
               : Big(txnJson.to_amount_atom).div(10 ** 10).toFixed()
             let txnInfo = {
-              created_time: txnJson.created_time,
+              created_time: new Date(txnJson.created_time).toLocaleString(),
               from_addr: txnJson.from_addr,
               from_amount: from_amount,
               from_token_id: txnJson.from_token_id === 2 ? TokenId.NEAR : TokenId.goNEAR,
@@ -96,7 +97,6 @@ export function ResultPage() {
               to_token_id: txnJson.to_token_id === 2 ? TokenId.NEAR : TokenId.goNEAR,
               to_txn_hash: txnJson.to_txn_hash
             }
-            console.log(txnJson)
             setTxn(txnInfo)
             let feeRes = await watchFee(txnJson.from_token_id, txnJson.to_token_id)
             const fixed_fee = txnJson.from_token_id === 2 ?
@@ -106,8 +106,6 @@ export function ResultPage() {
             break;
           } else if ((txnJson.request_status as string).startsWith("ERROR_")) {
             finished = true;
-            console.log("error message ", txnJson.err_msg)
-            console.log("invalid reason ", txnJson.invalid_reason)
             setError({ err_msg: txnJson.err_msg, invalid_reason: txnJson.invalid_reason === null ? "NULL" : txnJson.invalid_reason })
             break
           }
@@ -133,6 +131,8 @@ export function ResultPage() {
   }, [watch]);
 
   if (error.err_msg !== "") {
+    let url = new URL(window.location.href)
+    let id = url.searchParams.get("id")
     return <Box textAlign="center" marginBottom="80px" sx={{ fontFamily: "Regular, sans-serif" }}>
       <Typography
         variant="h3"
@@ -179,9 +179,25 @@ export function ResultPage() {
           }}>
           Please contact us on our public channels or email to contact@abstrlabs.com
         </Typography>
+        <Typography
+          sx={{
+            fontFamily: "Regular, sans-serif",
+            color: "text.secondary",
+            margin: "3px",
+            padding: "3px"
+          }}>
+          with result id {id}
+        </Typography>
       </TableContainer>
+      <Button
+        variant="contained"
+        onClick={() => window.location.replace(window.location.origin + "/bridge ")}
+        sx={{ mt: 3, ml: 1 }}
+      >Go back to Bridge
+      </Button>
     </Box>
   }
+
   const title = txn.to_txn_hash === "loading" ? "Transaction in process" : "Transaction Completed"
   return (
     <Box textAlign="center" marginBottom="80px" sx={{ fontFamily: "Regular, sans-serif" }}>

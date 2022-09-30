@@ -101,11 +101,9 @@ const optInGoNear = async (addr: string) => {
 async function checkOptedIn(addr: string, option = { showAlert: false }) {
   if (addr === undefined || addr === "") {
     window.alert("checking opted-in for empty addr");
-    return;
+    return false;
   }
-  console.log(addr)
   let accountInfo = await algodClient.accountInformation(addr).do();
-  console.log(accountInfo)
   for (let assetInfo of accountInfo["assets"]) {
     if (assetInfo["asset-id"] === CONFIG.GO_NEAR_ASA_ID) {
       if (option.showAlert) {

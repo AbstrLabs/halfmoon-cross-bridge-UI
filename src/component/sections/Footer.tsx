@@ -21,6 +21,7 @@ const FooterWrap = styled("div")(({ theme }) => ({
   padding: "10px 2rem",
   borderTop: `1px solid ${theme.palette.divider}`,
   width: "100%",
+  maxWidth: "1000px",
   backgroundColor: "rgba(0, 0, 0, 0)",
   position: "fixed",
   bottom: 0

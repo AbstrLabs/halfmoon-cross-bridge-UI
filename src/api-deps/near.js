@@ -4,6 +4,8 @@ import { CONFIG } from "./config"
 export async function initContract() {
   // get network configuration values from config.js
   // based on the network ID we pass to getConfig()
+  console.log(process.env.NODE_ENV)
+
   const nearConfig = getConfig(CONFIG.NEAR_ENV, CONFIG.CONTRACT_NAME);
 
   // create a keyStore for signing transactions using the user's key
@@ -72,3 +74,20 @@ function getConfig(env, contractName) {
       throw Error(`Unconfigured environment '${env}'. Can be configured in src/config.js.`);
   }
 }
+
+const nearConfig = getConfig(CONFIG.NEAR_ENV, CONFIG.CONTRACT_NAME);
+
+const near = new nearAPI.Near({
+  headers: {},
+  keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore(),
+  networkId: nearConfig.networkId,
+  nodeUrl: nearConfig.nodeUrl,
+  walletUrl: nearConfig.walletUrl,
+});
+
+const nearWallet = new nearAPI.WalletConnection(
+  near,
+  "algorand-near-bridgeTest"
+);
+
+export const nearWalletAccount = nearWallet.account();

@@ -65,6 +65,7 @@
     "build": "react-app-rewired build",
     "eject": "echo 'forbidden' # react-app-rewired eject",
     "start": "react-app-rewired start",
+    "start:production": "NODE_ENV=production REACT_APP_NODE_ENV=production yarn start",
     "test": "react-app-rewired test",
     "deploy": "yarn build && echo 'still need to serve with our AWS server, possibly using `afscp:serve'\"'\"''"
   },

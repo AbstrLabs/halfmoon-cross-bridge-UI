@@ -1,4 +1,4 @@
-# Mainnet Cross chain birdge
+# Cross chain bridge
 
 ## Step by Step Guide
 

@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import { Typography, styled, Box, Stepper, Step, StepLabel, StepContent, Button } from "@mui/material";
 
 import { ConnectWallet } from "../component/ConnectWallet";
 import { SendStep } from "../component/SendStep";
-import { parseProcessUrlFromParam } from "../api-deps/api"
 
-export function BridgePage({ contract, config, wallet }: any) {
+import { parseProcessUrlFromParam } from "../api-deps/api"
+import { initContract } from "../api-deps/near";
+
+
+export function BridgePage() {
+
+  // init contract 
+  let [near, setNear] = useState({ contract: {}, wallet: {} })
+
+  let init = useCallback(async () => {
+    let contractRes = await initContract()
+    setNear({
+      contract: contractRes.contract,
+      wallet: contractRes.wallet
+    })
+    console.log(`near contract inited`)
+  }, [])
+
+  useEffect(() => {
+    init()
+  }, [])
 
   const url = new URL(window.location.href)
   const transactionHash = url.searchParams.get("transactionHashes") || ""
@@ -13,19 +33,16 @@ export function BridgePage({ contract, config, wallet }: any) {
   const steps = [
     {
       label: 'Connect wallet',
-      component: <ConnectWallet config={config} wallet={wallet} />,
+      component: <ConnectWallet wallet={near.wallet} />,
     },
     {
       label: 'Bridge token',
-      component: <SendStep contract={contract} wallet={wallet} />,
+      component: <SendStep contract={near.contract} wallet={near.wallet} />,
     }
   ];
 
   // step
   let currentStep = 0
-  if (localStorage.getItem("algorand-near-bridge_wallet_auth_key") !== null
-    && localStorage.getItem("Algorand") !== null) currentStep = 1
-
   const [activeStep, setActiveStep] = React.useState(currentStep);
 
   const handleNext = () => {
@@ -38,8 +55,7 @@ export function BridgePage({ contract, config, wallet }: any) {
 
   if (transactionHash !== "") {
     console.log(transactionHash)
-    let newUrl = parseProcessUrlFromParam(transactionHash)
-    window.location.replace(newUrl)
+    return (<Navigate replace to={"/process?transactionHashes=" + transactionHash} />);
   }
 
   return (

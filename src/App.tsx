@@ -8,27 +8,11 @@ import {
 } from "@mui/material";
 import { blue } from "@mui/material/colors";
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Router } from "./page/Router";
 import { useTernaryDarkMode } from "usehooks-ts";
-import { CONFIG } from "./api-deps/config"
 
-async function checkApiVersion() {
-  const res = await fetch(CONFIG.apiServerUrl + '/status');
-  const resJson = await res.json();
-  if (resJson.API_VERSION !== CONFIG.apiVersion) {
-    window.alert(
-      `API version mismatch, expected ${CONFIG.apiVersion}, got ${resJson.API_VERSION}`
-    );
-    throw new Error("API version mismatch");
-    // console.error(`Failed to check API version. Error: ${err.message}`);
-    // window.alert("Error happened on the server side, please contact us at contact@abstrlabs.com ")
-
-  }
-  else {
-    console.log(`API version check passed. Current version: ${CONFIG.apiVersion}`)
-  }
-}
+import { checkApiVersion } from "./api-deps/api"
 
 function App() {
   /* ======== MUI ======== */
@@ -41,6 +25,8 @@ function App() {
   );
   /* ======== REACT ======== */
 
+
+  // api check
   let check = useCallback(async () => await checkApiVersion(), [])
 
   useEffect(() => {

@@ -4,19 +4,29 @@ import React, { useState } from "react";
 import { connectAlgoWallet, disconnectAlgoWallet, checkOptedIn, optInGoNear } from "../api-deps/algorand";
 import { BridgeType, CONFIG } from "../api-deps/config";
 
-export function WalletPanel({ bridgeType, config, wallet }: { bridgeType: BridgeType, config: any, wallet: any }) {
+export function WalletPanel({ bridgeType, wallet }: { bridgeType: BridgeType, wallet: any }) {
 
-  let signedSig_NEAR = wallet.isSignedIn()
-  let NEARaccount = wallet.account().accountId || ""
+  let check_wallet = Object.keys(wallet).length === 0 && wallet.constructor === Object
+
+  let signedSig_NEAR = check_wallet ? false : wallet.isSignedIn()
+  let NEARaccount = check_wallet ? "" : wallet.account().accountId
+
   let ALGOaccount = localStorage.getItem("Algorand") || ""
   let signedSig_Algo = !!localStorage.getItem("Algorand")
 
-  const [notOptIn, setTo] = useState(true)
+  // optin
+  const opt = {
+    OPTEDIN: "OPTED_IN",
+    NOTIN: "NOT_OPTED_IN",
+    UNKNOWN: ""
+  }
+  const [optedIn, setTo] = useState(opt.UNKNOWN)
 
   // algorand functions
   const checkOptedInFunc = async (addr: string) => {
     let res = await checkOptedIn(addr)
-    if (res === true) setTo(false)
+    if (res === true) setTo(opt.OPTEDIN)
+    if (res === false) setTo(opt.NOTIN)
   }
 
   const optInFunc = async (addr: string) => {
@@ -25,8 +35,10 @@ export function WalletPanel({ bridgeType, config, wallet }: { bridgeType: Bridge
       console.log(
         `Beneficiary account opted in to goNEAR successfully.\nTransaction ID ${optInTxn}.`
       );
+      setTo(opt.NOTIN)
     } else {
       console.log("error: " + optInTxn)
+      setTo(opt.NOTIN)
     }
 
   }
@@ -58,7 +70,7 @@ export function WalletPanel({ bridgeType, config, wallet }: { bridgeType: Bridge
               <Grid item xs={12} md={8}>
                 Connected {bridgeType} Wallet {NEARaccount.length < 20 ? NEARaccount : NEARaccount.slice(0, 10) + "..." + NEARaccount.slice(-7)}
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={4}>
                 <Button onClick={disconnectNearWallet} variant="outlined" sx={{ fontSize: "0.7rem" }}>
                   Disconnect {bridgeType} wallet
                 </Button>
@@ -85,11 +97,17 @@ export function WalletPanel({ bridgeType, config, wallet }: { bridgeType: Bridge
                   Check {bridgeType} address opt in goNEAR
                 </Button>
               </Grid>
-              {notOptIn ?
-                <Button onClick={async () => optInFunc(ALGOaccount)} variant="outlined" sx={{ fontSize: "0.7rem" }}>
-                  Opt in goNEAR ASA
-                </Button>
-                : <p>Already opted in goNEAR asset</p>
+              {optedIn === opt.NOTIN ?
+                <>
+                  <Button onClick={async () => optInFunc(ALGOaccount)} variant="outlined" sx={{ fontSize: "0.7rem" }}>
+                    Opt in goNEAR ASA
+                  </Button>
+                  <p>not opted in</p>
+                </>
+                : (optedIn === opt.OPTEDIN ?
+                  <p>Already opted in goNEAR asset</p>
+                  : <></>
+                )
               }
             </Grid>
             : <Button onClick={async () => {

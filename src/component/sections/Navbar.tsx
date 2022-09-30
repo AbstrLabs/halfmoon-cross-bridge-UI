@@ -43,7 +43,7 @@ export function Navbar() {
   return (
     <Box sx={{ display: "flex", flexDirection: "row" }}>
       <IconButton color="primary" onClick={toggleTernaryDarkMode}
-        sx={{ position: "relative" }}
+        sx={{ position: "relative", paddingTop: "0", marginTop: "-5px" }}
       >
         {ternaryDarkMode === "dark" ? (
           <Brightness4 />
@@ -56,7 +56,7 @@ export function Navbar() {
       <Tabs value={value} aria-label="nav tabs example">
         <LinkTab label="Home" href="/" />
         <LinkTab label="Bridge" href="/bridge" />
-        <LinkTab label="Docs" href="/docs" />
+        <LinkTab label="Docs" href={CONFIG.DocUrl} />
       </Tabs>
       <SplitButton />
     </Box>
@@ -71,16 +71,26 @@ interface optionType {
 
 const optionObj = {
   MAINNET: { label: 'MAINNET', link: CONFIG.HostUrl.MAINNET },
-  TESTNET: { label: 'TESTNET', link: CONFIG.HostUrl.TESTNET }
+  TESTNET: { label: 'TESTNET', link: CONFIG.HostUrl.TESTNET },
+  DEV: { label: 'DEV', link: CONFIG.HostUrl.DEV }
 }
 
-const options = [optionObj.MAINNET, optionObj.TESTNET];
+const options = [optionObj.MAINNET, optionObj.TESTNET, optionObj.DEV];
 
 function SplitButton() {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
+  const displayName = () => {
+    let name = "DEVELOPMENT"
+    for (let i = 0; i < options.length; i++) {
+      if (window.location.origin === options[i].link) {
+        name = options[i].label
+      }
+    }
+    return name
+  }
 
   const handleMenuItemClick = (
     event: React.MouseEvent<HTMLLIElement, MouseEvent>,
@@ -109,12 +119,12 @@ function SplitButton() {
 
   return (
     <React.Fragment>
-      <Box sx={{ mt: 2 }}>
+      <Box sx={{ marginTop: "6px" }}>
         <ButtonGroup
           variant="text"
           ref={anchorRef}
           aria-label="split button">
-          <Button>{options[selectedIndex].label}</Button>
+          <Button>{displayName()}</Button>
           <Button
             size="small"
             aria-controls={open ? 'split-button-menu' : undefined}
@@ -148,15 +158,18 @@ function SplitButton() {
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
                 <MenuList id="split-button-menu" autoFocusItem>
-                  {options.map((option, index) => (
-                    <MenuItem
-                      key={index}
-                      selected={index === selectedIndex}
-                      onClick={(event) => handleMenuItemClick(event, index, option)}
-                    >
-                      {option.label}
-                    </MenuItem>
-                  ))}
+                  {options.map((option, index) => {
+                    if (option.label === 'DEV') { return null }
+                    else {
+                      return <MenuItem
+                        key={index}
+                        selected={index === selectedIndex}
+                        onClick={(event) => handleMenuItemClick(event, index, option)}
+                      >
+                        {option.label}
+                      </MenuItem>
+                    }
+                  })}
                 </MenuList>
               </ClickAwayListener>
             </Paper>
