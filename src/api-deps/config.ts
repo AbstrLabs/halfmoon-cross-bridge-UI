@@ -67,7 +67,7 @@ export let DEFAULT = {
 export let REX = {
   AMOUNT_REGEX: /^[0-9]*\.?[0-9]{0,10}$/,
   ALGORAND_ADDR_REGEX: /^[2-79A-Z]{58}$/,
-  NEAR_ADDR_REGEX: /^[0-9a-z][0-9a-z\-_]{2,64}.(testnet|mainnet)$/,
+  NEAR_ADDR_REGEX: /^[0-9a-z][0-9a-z\-_]{2,64}.(testnet|near)$/,
   NEAR_TRANSACTION_REGEX: /^[2-79A-Z]{44}$/,
   ALGORAND_TRANSACTION_REGEX: /^[2-79A-Z]{52}$/
 }
