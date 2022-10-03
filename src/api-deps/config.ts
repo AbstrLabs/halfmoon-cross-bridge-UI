@@ -1,7 +1,7 @@
 export const CONFIG = {
   apiServerUrl:
     process.env.NODE_ENV === "production"
-      ? "http://localhost:4190"// "https://api.halfmooncross.com"
+      ? "https://api.halfmooncross.com"
       : "http://localhost:4190",
   apiVersion: "1.0.0",
   HostUrl: {

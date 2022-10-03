@@ -80,7 +80,7 @@ export function SendTxnBurnPanel({ wallet }: any) {
         <TextField
           helperText={`e.g. ${wallet.account().accountId ? wallet.account().accountId : DEFAULT_BENEFICIARY}`}
           label={
-            "Beneficiary (Algorand public address)"
+            "Beneficiary (NEAR public address)"
           }
           fullWidth
           margin="normal"
