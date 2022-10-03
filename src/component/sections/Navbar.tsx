@@ -2,7 +2,12 @@ import { Brightness4, Brightness7, BrightnessAuto } from "@mui/icons-material";
 import { Tabs, Tab, IconButton, Box } from "@mui/material";
 import React from 'react';
 import { useTernaryDarkMode } from "usehooks-ts";
-import { CONFIG } from "../../api-deps/config"
+import {
+  CONFIG,
+  MAINNET_CONFIG,
+  TESTNET_CONFIG,
+  DEVELOPMENT_CONFIG
+} from "../../api-deps/config"
 
 // drop down imports
 import Button from '@mui/material/Button';
@@ -39,6 +44,7 @@ export function Navbar() {
     (url === "/bridge" || url === "/process" || url === "/result" ? 1 :
       (url === "/docs" ? 2 : 3)
     )
+  console.log("CONFIG.configName from NavBar.tsx :", CONFIG.configName)
 
   return (
     <Box sx={{ display: "flex", flexDirection: "row" }}>
@@ -70,9 +76,9 @@ interface optionType {
 }
 
 const optionObj = {
-  MAINNET: { label: 'MAINNET', link: CONFIG.HostUrl.MAINNET },
-  TESTNET: { label: 'TESTNET', link: CONFIG.HostUrl.TESTNET },
-  DEV: { label: 'DEV', link: CONFIG.HostUrl.DEV }
+  MAINNET: { label: 'MAINNET', link: MAINNET_CONFIG.HostUrl },
+  TESTNET: { label: 'TESTNET', link: TESTNET_CONFIG.HostUrl },
+  DEV: { label: 'DEV', link: DEVELOPMENT_CONFIG.HostUrl }
 }
 
 const options = [optionObj.MAINNET, optionObj.TESTNET, optionObj.DEV];
@@ -83,13 +89,7 @@ function SplitButton() {
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
   const displayName = () => {
-    let name = "DEVELOPMENT"
-    for (let i = 0; i < options.length; i++) {
-      if (window.location.origin === options[i].link) {
-        name = options[i].label
-      }
-    }
-    return name
+    return CONFIG.configName
   }
 
   const handleMenuItemClick = (

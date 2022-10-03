@@ -32,6 +32,7 @@
     "big.js": "^6.2.1",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
+    "env-cmd": "^10.1.0",
     "near-api-js": "^0.44.2",
     "react": "^18.1.0",
     "react-app-rewired": "^2.2.1",
@@ -63,6 +64,8 @@
   "private": true,
   "scripts": {
     "build": "react-app-rewired build",
+    "build:testnet": "env-cmd -f .env.testnet npm run build",
+    "build:mainnet": "env-cmd -f .env.mainnet npm run build",
     "eject": "echo 'forbidden' # react-app-rewired eject",
     "start": "react-app-rewired start",
     "start:production": "NODE_ENV=production REACT_APP_NODE_ENV=production yarn start",
